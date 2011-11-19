@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/utils/PimpedString.scala</title>
+        <script type="text/javascript" src="../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray.utils
+
+<span class="keyword">import</span> scala.annotation.tailrec
+
+<span class="keyword">class</span> <a title="class PimpedString extends java.lang.Object with ScalaObject" id="10039">PimpedString</a><a href="#10039" title="ScalaObject" class="delimiter">(</a><a title="String" id="10794">underlying</a>: <span title="String">String</span><span class="delimiter">)</span> <span class="delimiter">{</span>
+
+  <span class="comment">/**
+   * Splits the underlying string into the segments that are delimited by the given character.
+   * The delimiter itself is never a part of any segment. If the string does not contain the
+   * delimiter the result is a List containing only the underlying string.
+   * Note that this implementation differs from the original String.split(...) method in that
+   * leading and trailing delimiters are NOT ignored, i.e. they trigger the inclusion of an
+   * empty leading or trailing empty string (respectively).
+   */</span>
+  <span class="keyword">def</span> <a title="(delimiter: Char)List[String]" id="10792">fastSplit</a><span class="delimiter">(</span><a title="Char" id="38895">delimiter</a>: <span title="Char">Char</span><span class="delimiter">)</span>: <span title="List[String]">List</span><span class="delimiter">[</span>String<span class="delimiter">]</span> = <span class="delimiter">{</span>
+    @tailrec
+    <span class="keyword">def</span> <a title="(end: Int, elements: List[String])List[String]" id="98871">split</a><span class="delimiter">(</span><a title="Int" id="98872">end</a>: <span title="Int">Int</span>, <a title="List[String]" id="98873">elements</a>: <span title="List[String]">List</span><span class="delimiter">[</span>String<span class="delimiter">]</span><span class="delimiter">)</span>: <span title="List[String]">List</span><span class="delimiter">[</span>String<span class="delimiter">]</span> = <span class="delimiter">{</span>
+      <span class="keyword">val</span> <a title="Int" id="98875">ix</a> = <a href="#10794" title="String">underlying</a>.<span title="(x$1: Int, x$2: Int)Int">lastIndexOf</span><span class="delimiter">(</span><a href="#38895" title="=&gt; Int">delimiter</a>, <a href="#98872" title="Int">end</a> <span title="(x: Int)Int">-</span> <span title="Int(1)" class="int">1</span><span class="delimiter">)</span>
+      <span title="List[String]" class="keyword">if</span> <span class="delimiter">(</span><a href="#98875" title="Int">ix</a> <span title="(x: Int)Boolean">&lt;</span> <span title="Int(0)" class="int">0</span><span class="delimiter">)</span>
+        <a href="#10794" title="String">underlying</a>.<span title="(x$1: Int, x$2: Int)java.lang.String">substring</span><span class="delimiter">(</span><span title="Int(0)" class="int">0</span>, <a href="#98872" title="Int">end</a><span class="delimiter">)</span> <a href="#98890" title="(x: String)List[String]">::</a> <a href="#98873" title="List[String]">elements</a>
+      <span class="keyword">else</span>
+        <a href="#98871" title="(end: Int, elements: List[String])List[String]">split</a><span class="delimiter">(</span><a href="#98875" title="Int">ix</a>, <a href="#10794" title="String">underlying</a>.<span title="(x$1: Int, x$2: Int)java.lang.String">substring</span><span class="delimiter">(</span><a href="#98875" title="Int">ix</a> <span title="(x: Int)Int">+</span> <span title="Int(1)" class="int">1</span>, <a href="#98872" title="Int">end</a><span class="delimiter">)</span> <a href="#98898" title="(x: String)List[String]">::</a> <a href="#98873" title="List[String]">elements</a><span class="delimiter">)</span>
+    <span class="delimiter">}</span>
+    <a href="#98871" title="(end: Int, elements: List[String])List[String]">split</a><span class="delimiter">(</span><a href="#10794" title="String">underlying</a>.<span title="()Int">length</span>, <span title="object Nil">Nil</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Lazily splits the underlying string into the segments that are delimited by the given character.
+   * Only the segments that are actually accessed are computed.
+   * The delimiter itself is never a part of any segment. If the string does not contain the
+   * delimiter the result is a single-element stream containing only the underlying string.
+   * Note that this implementation differs from the original String.split(...) method in that
+   * leading and trailing delimiters are NOT ignored, i.e. they trigger the inclusion of an
+   * empty leading or trailing empty string (respectively).
+   */</span>
+  <span class="keyword">def</span> <a title="(delimiter: Char)Stream[String]" id="10793">lazySplit</a><span class="delimiter">(</span><a title="Char" id="98908">delimiter</a>: <span title="Char">Char</span><span class="delimiter">)</span>: <span title="Stream[String]">Stream</span><span class="delimiter">[</span>String<span class="delimiter">]</span> = <span class="delimiter">{</span> <span class="comment">// based on an implemented by Jed Wesley-Smith</span>
+    <span class="keyword">def</span> <a title="(start: Int)Stream[String]" id="99184">split</a><span class="delimiter">(</span><a title="Int" id="99185">start</a>: <span title="Int">Int</span><span class="delimiter">)</span>: <span title="Stream[String]">Stream</span><span class="delimiter">[</span>String<span class="delimiter">]</span> = <span class="delimiter">{</span>
+      <span class="keyword">val</span> <a title="Int" id="99186">ix</a> = <a href="#10794" title="String">underlying</a>.<span title="(x$1: Int, x$2: Int)Int">indexOf</span><span class="delimiter">(</span><a href="#98908" title="=&gt; Int">delimiter</a>, <a href="#99185" title="Int">start</a><span class="delimiter">)</span>
+      <span title="Stream[String]" class="keyword">if</span> <span class="delimiter">(</span><a href="#99186" title="Int">ix</a> <span title="(x: Int)Boolean">&lt;</span> <span title="Int(0)" class="int">0</span><span class="delimiter">)</span>
+        <span title="=&gt; collection.immutable.Stream.type">Stream</span>.<span title="(hd: java.lang.String, tl: =&gt; scala.collection.immutable.Stream[java.lang.String])Stream.Cons[java.lang.String]">cons</span><span class="delimiter">(</span><a href="#10794" title="String">underlying</a>.<span title="(x$1: Int)java.lang.String">substring</span><span class="delimiter">(</span><a href="#99185" title="Int">start</a><span class="delimiter">)</span>, <span title="=&gt; collection.immutable.Stream.type">Stream</span>.<span title="object Stream.Empty">Empty</span><span class="delimiter">)</span>
+      <span class="keyword">else</span>
+        <span title="=&gt; collection.immutable.Stream.type">Stream</span>.<span title="(hd: String, tl: =&gt; scala.collection.immutable.Stream[String])Stream.Cons[String]">cons</span><span class="delimiter">(</span><a href="#10794" title="String">underlying</a>.<span title="(x$1: Int, x$2: Int)java.lang.String">substring</span><span class="delimiter">(</span><a href="#99185" title="Int">start</a>, <a href="#99186" title="Int">ix</a><span class="delimiter">)</span>, <a href="#99184" title="(start: Int)Stream[String]">split</a><span class="delimiter">(</span><a href="#99186" title="Int">ix</a> <span title="(x: Int)Int">+</span> <span title="Int(1)" class="int">1</span><span class="delimiter">)</span><span class="delimiter">)</span>
+    <span class="delimiter">}</span>
+    <a href="#99184" title="(start: Int)Stream[String]">split</a><span class="delimiter">(</span><span title="Int(0)" class="int">0</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+
+<span class="delimiter">}</span>
+        </pre>
+    </body>
+</html>

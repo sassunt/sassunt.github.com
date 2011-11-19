@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/typeconversion/SprayJsonSupport.scala</title>
+        <script type="text/javascript" src="../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray
+<span class="keyword">package</span> typeconversion
+
+<span class="keyword">import</span> json._
+<span class="keyword">import</span> http._
+<span class="keyword">import</span> <a href="../http/MediaType.scala.html#9667" title="object cc.spray.http.MediaTypes">MediaTypes</a>._
+
+<span class="comment">/**
+ * A trait providing automatic to and from JSON marshalling/unmarshalling using an in-scope *spray-json* protocol.
+ * Note that *spray-server* does not have an automatic dependency on *spray-json*. You'll need to provide the
+ * appropriate *spray-json* artifacts yourself.
+ */</span>
+<span class="keyword">trait</span> <a title="trait SprayJsonSupport extends java.lang.Object with ScalaObject" id="9957">SprayJsonSupport</a> <span title="ScalaObject" class="delimiter">{</span>
+
+  <span class="keyword">implicit</span> <span class="keyword">def</span> <a title="[A](implicit evidence$1: cc.spray.json.JsonReader[A])cc.spray.typeconversion.UnmarshallerBase[A]" id="89816">sprayJsonUnmarshaller</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="89810">A</a> :JsonReader<span class="delimiter">]</span> = <a href="#89819" title="cc.spray.typeconversion.UnmarshallerBase[A]{}" class="keyword">new</a> <a title="anonymous class $anon extends cc.spray.typeconversion.UnmarshallerBase[A]" id="89819">UnmarshallerBase</a><span class="delimiter">[</span>A<span class="delimiter">]</span> <span class="delimiter">{</span>
+    <span class="keyword">val</span> <a title="List[cc.spray.http.ContentTypeRange]" id="89821">canUnmarshalFrom</a> = <a href="../http/ContentType.scala.html#29934" title="(mediaRange: cc.spray.http.MediaRange, charsetRange: cc.spray.http.HttpCharsetRange)cc.spray.http.ContentTypeRange">ContentTypeRange</a><span class="delimiter">(</span><a href="../http/MediaType.scala.html#22887" title="=&gt; cc.spray.http.MediaType">`application/json`</a><span class="delimiter">)</span> <a href="#89824" title="(x: cc.spray.http.ContentTypeRange)List[cc.spray.http.ContentTypeRange]">::</a> <span title="object Nil">Nil</span>
+
+    <span class="keyword">def</span> <a title="(content: cc.spray.http.HttpContent)Either[cc.spray.typeconversion.DeserializationError,A]" id="89823">unmarshal</a><span class="delimiter">(</span><a title="cc.spray.http.HttpContent" id="89832">content</a>: <a href="../http/HttpContent.scala.html#9562" title="cc.spray.http.HttpContent">HttpContent</a><span class="delimiter">)</span> = <a href="UnmarshallerBase.scala.html#34663" title="(f: =&gt; A)Either[cc.spray.typeconversion.DeserializationError,A]">protect</a> <span class="delimiter">{</span>
+      <span class="keyword">val</span> <a title="java.lang.String" id="89834">jsonSource</a> = <a href="DefaultUnmarshallers.scala.html#9868" title="object cc.spray.typeconversion.DefaultUnmarshallers">DefaultUnmarshallers</a>.<a href="DefaultUnmarshallers.scala.html#38077" title="(content: cc.spray.http.HttpContent)Right[Nothing,java.lang.String]">StringUnmarshaller</a><span class="delimiter">(</span><a href="#89832" title="cc.spray.http.HttpContent">content</a><span class="delimiter">)</span>.<span title="=&gt; Either.RightProjection[Nothing,java.lang.String]">right</span>.<span title="=&gt; java.lang.String">get</span>
+      <span class="keyword">val</span> <a title="cc.spray.json.JsValue" id="89835">json</a> = <span title="(json: String)cc.spray.json.JsValue">JsonParser</span><span class="delimiter">(</span><a href="#89834" title="java.lang.String">jsonSource</a><span class="delimiter">)</span>
+      <span title="[T](implicit reader: cc.spray.json.JsonReader[T])cc.spray.json.JsonReader[T]">jsonReader</span><a href="#89816" title="(implicit reader: cc.spray.json.JsonReader[A])cc.spray.json.JsonReader[A]" class="delimiter">[</a><a href="#89810" title="A">A</a><span class="delimiter">]</span>.<span title="(json: cc.spray.json.JsValue)A">read</span><span class="delimiter">(</span><a href="#89835" title="cc.spray.json.JsValue">json</a><span class="delimiter">)</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">implicit</span> <span class="keyword">def</span> <a title="[A](implicit evidence$2: cc.spray.json.JsonWriter[A])cc.spray.typeconversion.MarshallerBase[A]{lazy val printer: cc.spray.json.JsonPrinter}" id="89918">sprayJsonMarshaller</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="89813">A</a> :JsonWriter<span class="delimiter">]</span> = <a href="#89921" title="cc.spray.typeconversion.MarshallerBase[A]{lazy val printer: cc.spray.json.JsonPrinter}" class="keyword">new</a> <a title="anonymous class $anon extends cc.spray.typeconversion.MarshallerBase[A]" id="89921">MarshallerBase</a><span class="delimiter">[</span>A<span class="delimiter">]</span> <span class="delimiter">{</span>
+    <span class="keyword">val</span> <a title="List[cc.spray.http.ContentType]" id="89923">canMarshalTo</a> = <a href="../http/ContentType.scala.html#25287" title="(mediaType: cc.spray.http.MediaType)cc.spray.http.ContentType">ContentType</a><span class="delimiter">(</span><a href="../http/MediaType.scala.html#22887" title="=&gt; cc.spray.http.MediaType">`application/json`</a><span class="delimiter">)</span> <a href="#89928" title="(x: cc.spray.http.ContentType)List[cc.spray.http.ContentType]">::</a> <span title="object Nil">Nil</span>
+
+    <span class="keyword">lazy</span> <span class="keyword">val</span> <a title="cc.spray.json.JsonPrinter" id="89926">printer</a> = <span title="cc.spray.json.JsonPrinter" class="keyword">if</span> <span class="delimiter">(</span><a href="../SprayBaseSettings.scala.html#9460" title="object cc.spray.SprayBaseSettings">SprayBaseSettings</a>.<a href="../SprayBaseSettings.scala.html#10134" title="=&gt; Boolean">CompactJsonPrinting</a><span class="delimiter">)</span> <span title="object cc.spray.json.CompactPrinter">CompactPrinter</span> <span class="keyword">else</span> <span title="object cc.spray.json.PrettyPrinter">PrettyPrinter</span>
+
+    <span class="keyword">def</span> <a title="(value: A, contentType: cc.spray.http.ContentType)cc.spray.http.HttpContent" id="89927">marshal</a><span class="delimiter">(</span><a title="A" id="90009">value</a>: <a href="#89813" title="A">A</a>, <a title="cc.spray.http.ContentType" id="90010">contentType</a>: <a href="../http/ContentType.scala.html#9532" title="cc.spray.http.ContentType">ContentType</a><span class="delimiter">)</span> = <span class="delimiter">{</span>
+      <span class="keyword">val</span> <a title="cc.spray.json.JsValue" id="90013">json</a> = <a href="#90009" title="(any: A)cc.spray.json.PimpedAny[A]">value</a>.<a href="#89918" title="(implicit writer: cc.spray.json.JsonWriter[A])cc.spray.json.JsValue">toJson</a>
+      <span class="keyword">val</span> <a title="String" id="90014">jsonSource</a> = <a href="#89925" title="(x: cc.spray.json.JsValue)String">printer</a><span class="delimiter">(</span><a href="#90013" title="cc.spray.json.JsValue">json</a><span class="delimiter">)</span>
+      <a href="DefaultMarshallers.scala.html#9853" title="object cc.spray.typeconversion.DefaultMarshallers">DefaultMarshallers</a>.<a href="DefaultMarshallers.scala.html#87707" title="=&gt; cc.spray.typeconversion.MarshallerBase[String]">StringMarshaller</a>.<a href="MarshallerBase.scala.html#87723" title="(value: String, contentType: cc.spray.http.ContentType)cc.spray.http.HttpContent">marshal</a><span class="delimiter">(</span><a href="#90014" title="String">jsonSource</a>, <a href="#90010" title="cc.spray.http.ContentType">contentType</a><span class="delimiter">)</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+<span class="delimiter">}</span>
+
+<span class="keyword">object</span> <a title="object cc.spray.typeconversion.SprayJsonSupport" id="9958">SprayJsonSupport</a> <span title="ScalaObject" class="keyword">extends</span> <a href="#9957" title="cc.spray.typeconversion.SprayJsonSupport">SprayJsonSuppor</a>t
+        </pre>
+    </body>
+</html>

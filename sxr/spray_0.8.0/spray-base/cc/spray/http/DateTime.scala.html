@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/http/DateTime.scala</title>
+        <script type="text/javascript" src="../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray.http
+
+<span class="comment">/**
+ * Immutable, fast and efficient Date + Time implementation without any dependencies.
+ * Does not support TimeZones, all DateTime values are always GMT based.
+ */</span>
+<span class="keyword">sealed</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <a title="class DateTime extends java.lang.Object with Ordered[cc.spray.http.DateTime] with ScalaObject" id="9538">DateTime</a> <a href="#9538" title="ScalaObject" class="keyword">extends</a> <span title="Ordered[cc.spray.http.DateTime]">Ordered</span><span class="delimiter">[</span>DateTime<span class="delimiter">]</span> <span class="delimiter">{</span>
+  <span class="comment">/**
+   * The year.
+   */</span>
+  <span class="keyword">def</span> <a title="=&gt; Int" id="30196">year</a>: <span title="Int">Int</span>
+
+  <span class="comment">/**
+   * The month of the year. January is 1.
+   */</span>
+  <span class="keyword">def</span> <a title="=&gt; Int" id="30197">month</a>: <span title="Int">Int</span>
+
+  <span class="comment">/**
+   * The day of the month. The first day is 1.
+   */</span>
+  <span class="keyword">def</span> <a title="=&gt; Int" id="30198">day</a>: <span title="Int">Int</span>
+
+  <span class="comment">/**
+   * The hour of the day. The first hour is 0.
+   */</span>
+  <span class="keyword">def</span> <a title="=&gt; Int" id="30199">hour</a>: <span title="Int">Int</span>
+
+  <span class="comment">/**
+   * The minute of the hour. The first minute is 0.
+   */</span>
+  <span class="keyword">def</span> <a title="=&gt; Int" id="30200">minute</a>: <span title="Int">Int</span>
+
+  <span class="comment">/**
+   * The second of the minute. The first second is 0.
+   */</span>
+  <span class="keyword">def</span> <a title="=&gt; Int" id="30201">second</a>: <span title="Int">Int</span>
+
+  <span class="comment">/**
+   * The day of the week. Sunday is 0.
+   */</span>
+  <span class="keyword">def</span> <a title="=&gt; Int" id="30202">weekday</a>: <span title="Int">Int</span>
+
+  <span class="comment">/**
+   * The day of the week as a 3 letter abbreviation:
+   * `Sun`, `Mon`, `Tue`, `Wed`, `Thu`, `Fri` or `Sat`
+   */</span>
+  <span class="keyword">def</span> <a title="=&gt; String" id="30203">weekdayStr</a>: <span title="String">String</span> = <a href="#9539" title="object cc.spray.http.DateTime">DateTime</a>.<a href="#30235" title="(i: Int)java.lang.String">WEEKDAYS</a><span class="delimiter">(</span><a href="#30202" title="=&gt; Int">weekday</a><span class="delimiter">)</span>
+
+  <span class="comment">/**
+   * The day of the month as a 3 letter abbreviation:
+   * `Jan`, `Feb`, `Mar`, `Apr`, `May`, `Jun`, `Jul`, `Aug`, `Sep`, `Oct`, `Nov` or `Dec`
+   */</span>
+  <span class="keyword">def</span> <a title="=&gt; String" id="30204">monthStr</a>: <span title="String">String</span> = <a href="#9539" title="object cc.spray.http.DateTime">DateTime</a>.<a href="#30237" title="(i: Int)java.lang.String">MONTHS</a><span class="delimiter">(</span><a href="#30197" title="=&gt; Int">month</a> <span title="(x: Int)Int">-</span> <span title="Int(1)" class="int">1</span><span class="delimiter">)</span>
+
+  <span class="comment">/**
+   * True if leap year.
+   */</span>
+  <span class="keyword">def</span> <a title="=&gt; Boolean" id="30205">isLeapYear</a>: <span title="Boolean">Boolean</span>
+
+  <span class="comment">/**
+   * The number of milliseconds since the start of &quot;the epoch&quot;, namely January 1, 1970, 00:00:00 GMT.
+   */</span>
+  <span class="keyword">def</span> <a title="=&gt; Long" id="30206">clicks</a>: <span title="Long">Long</span>
+
+  <span class="comment">/**
+   * Creates a new `DateTime` that represents the point in time the given number of ms later.
+   */</span>
+  <span class="keyword">def</span> <a title="(millis: Long)cc.spray.http.DateTime" id="30207">+</a> <span class="delimiter">(</span><a title="Long" id="30450">millis</a>: <span title="Long">Long</span><span class="delimiter">)</span>: <a href="#9538" title="cc.spray.http.DateTime">DateTime</a> = <a href="#30244" title="(clicks_: Long)cc.spray.http.DateTime">DateTime</a><span class="delimiter">(</span><a href="#30206" title="=&gt; Long">clicks</a> <span title="(x: Long)Long">+</span> <a href="#30450" title="Long">millis</a><span class="delimiter">)</span>
+
+  <span class="comment">/**
+   * Creates a new `DateTime` that represents the point in time the given number of ms earlier.
+   */</span>
+  <span class="keyword">def</span> <a title="(millis: Long)cc.spray.http.DateTime" id="30208">-</a> <span class="delimiter">(</span><a title="Long" id="30474">millis</a>: <span title="Long">Long</span><span class="delimiter">)</span>: <a href="#9538" title="cc.spray.http.DateTime">DateTime</a> = <a href="#30244" title="(clicks_: Long)cc.spray.http.DateTime">DateTime</a><span class="delimiter">(</span><a href="#30206" title="=&gt; Long">clicks</a> <span title="(x: Long)Long">-</span> <a href="#30474" title="Long">millis</a><span class="delimiter">)</span>
+
+  <span class="comment">/**
+   * `yyyy-mm-dd`
+   */</span>
+  <span class="keyword">def</span> <a title="=&gt; java.lang.String" id="30209">toIsoDateString</a> = <a href="#30196" title="=&gt; Int">year</a> <span title="(x: String)String">+</span> <span title="java.lang.String(&quot;-&quot;)" class="string">&quot;-&quot;</span> <span title="(x$1: Any)java.lang.String">+</span> <a href="#30212" title="(i: Int)java.lang.String">##</a><span class="delimiter">(</span><a href="#30197" title="=&gt; Int">month</a><span class="delimiter">)</span> <span title="(x$1: Any)java.lang.String">+</span> <span title="Char(\'-\')" class="char">'-'</span> <span title="(x$1: Any)java.lang.String">+</span> <a href="#30212" title="(i: Int)java.lang.String">##</a><span class="delimiter">(</span><a href="#30198" title="=&gt; Int">day</a><span class="delimiter">)</span>
+
+  <span class="comment">/**
+   * `yyyy-mm-ddThh:mm:ss`
+   */</span>
+  <span class="keyword">def</span> <a title="=&gt; java.lang.String" id="30210">toIsoDateTimeString</a> = <a href="#30209" title="=&gt; java.lang.String">toIsoDateString</a> <span title="(x$1: Any)java.lang.String">+</span> <span title="Char(\'T\')" class="char">'T'</span> <span title="(x$1: Any)java.lang.String">+</span> <a href="#30212" title="(i: Int)java.lang.String">##</a><span class="delimiter">(</span><a href="#30199" title="=&gt; Int">hour</a><span class="delimiter">)</span> <span title="(x$1: Any)java.lang.String">+</span> <span title="Char(\':\')" class="char">':'</span> <span title="(x$1: Any)java.lang.String">+</span> <a href="#30212" title="(i: Int)java.lang.String">##</a><span class="delimiter">(</span><a href="#30200" title="=&gt; Int">minute</a><span class="delimiter">)</span> <span title="(x$1: Any)java.lang.String">+</span> <span title="Char(\':\')" class="char">':'</span> <span title="(x$1: Any)java.lang.String">+</span> <a href="#30212" title="(i: Int)java.lang.String">##</a><span class="delimiter">(</span><a href="#30201" title="=&gt; Int">second</a><span class="delimiter">)</span>
+
+  <span class="comment">/**
+   * RFC 1123 date string, e.g. `Sun, 06 Nov 1994 08:49:37 GMT`
+   */</span>
+  <span class="keyword">def</span> <a title="=&gt; java.lang.String" id="30211">toRfc1123DateTimeString</a> = <span class="delimiter">{</span>
+    <span title="(x$1: Int)java.lang.StringBuilder" class="keyword">new</span> java.lang.<span title="java.lang.StringBuilder">StringBuilder</span><span class="delimiter">(</span><span title="Int(32)" class="int">32</span><span class="delimiter">)</span>
+      .<span title="(x$1: java.lang.String)java.lang.StringBuilder">append</span><span class="delimiter">(</span><a href="#30203" title="=&gt; String">weekdayStr</a><span class="delimiter">)</span>.<span title="(x$1: java.lang.String)java.lang.StringBuilder">append</span><span class="delimiter">(</span><span title="java.lang.String(&quot;, &quot;)" class="string">&quot;, &quot;</span><span class="delimiter">)</span>
+      .<span title="(x$1: java.lang.String)java.lang.StringBuilder">append</span><span class="delimiter">(</span><a href="#30212" title="(i: Int)java.lang.String">##</a><span class="delimiter">(</span><a href="#30198" title="=&gt; Int">day</a><span class="delimiter">)</span><span class="delimiter">)</span>.<span title="(x$1: Char)java.lang.StringBuilder">append</span><span class="delimiter">(</span><span title="Char(\' \')" class="char">' '</span><span class="delimiter">)</span>
+      .<span title="(x$1: java.lang.String)java.lang.StringBuilder">append</span><span class="delimiter">(</span><a href="#30204" title="=&gt; String">monthStr</a><span class="delimiter">)</span>.<span title="(x$1: Char)java.lang.StringBuilder">append</span><span class="delimiter">(</span><span title="Char(\' \')" class="char">' '</span><span class="delimiter">)</span>
+      .<span title="(x$1: Int)java.lang.StringBuilder">append</span><span class="delimiter">(</span><a href="#30196" title="=&gt; Int">year</a><span class="delimiter">)</span>.<span title="(x$1: Char)java.lang.StringBuilder">append</span><span class="delimiter">(</span><span title="Char(\' \')" class="char">' '</span><span class="delimiter">)</span>
+      .<span title="(x$1: java.lang.String)java.lang.StringBuilder">append</span><span class="delimiter">(</span><a href="#30212" title="(i: Int)java.lang.String">##</a><span class="delimiter">(</span><a href="#30199" title="=&gt; Int">hour</a><span class="delimiter">)</span><span class="delimiter">)</span>.<span title="(x$1: Char)java.lang.StringBuilder">append</span><span class="delimiter">(</span><span title="Char(\':\')" class="char">':'</span><span class="delimiter">)</span>
+      .<span title="(x$1: java.lang.String)java.lang.StringBuilder">append</span><span class="delimiter">(</span><a href="#30212" title="(i: Int)java.lang.String">##</a><span class="delimiter">(</span><a href="#30200" title="=&gt; Int">minute</a><span class="delimiter">)</span><span class="delimiter">)</span>.<span title="(x$1: Char)java.lang.StringBuilder">append</span><span class="delimiter">(</span><span title="Char(\':\')" class="char">':'</span><span class="delimiter">)</span>
+      .<span title="(x$1: java.lang.String)java.lang.StringBuilder">append</span><span class="delimiter">(</span><a href="#30212" title="(i: Int)java.lang.String">##</a><span class="delimiter">(</span><a href="#30201" title="=&gt; Int">second</a><span class="delimiter">)</span><span class="delimiter">)</span>.<span title="(x$1: java.lang.String)java.lang.StringBuilder">append</span><span class="delimiter">(</span><span title="java.lang.String(&quot; GMT&quot;)" class="string">&quot; GMT&quot;</span><span class="delimiter">)</span>
+      .<span title="()java.lang.String">toString</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">private</span> <span class="keyword">def</span> <a title="(i: Int)java.lang.String" id="30212">##</a><span class="delimiter">(</span><a title="Int" id="30493">i</a>: <span title="Int">Int</span><span class="delimiter">)</span> = <span title="object java.lang.String">String</span>.<span title="(x$1: Array[Char])java.lang.String">valueOf</span><span class="delimiter">(</span><span title="[T](xs: T*)(implicit evidence$2: scala.reflect.ClassManifest[T])Array[T]">Array</span><span title="(xs: Char*)(implicit evidence$2: scala.reflect.ClassManifest[Char])Array[Char]" class="delimiter">[</span><span title="Char">Char</span><span class="delimiter">]</span><span title="=&gt; scala.reflect.AnyValManifest[Char]" class="delimiter">(</span><span class="delimiter">(</span><a href="#30493" title="Int">i</a> <span title="(x: Int)Int">/</span> <span title="Int(10)" class="int">10</span> <span title="(x: Char)Int">+</span> <span title="Char(\'0\')" class="char">'0'</span><span class="delimiter">)</span>.<span title="=&gt; Char">toChar</span>, <span class="delimiter">(</span><a href="#30493" title="Int">i</a> <span title="(x: Int)Int">%</span> <span title="Int(10)" class="int">10</span> <span title="(x: Char)Int">+</span> <span title="Char(\'0\')" class="char">'0'</span><span class="delimiter">)</span>.<span title="=&gt; Char">toChar</span><span class="delimiter">)</span><span class="delimiter">)</span>
+
+  <span class="keyword">def</span> <a title="(that: cc.spray.http.DateTime)Int" id="30213">compare</a><span class="delimiter">(</span><a title="cc.spray.http.DateTime" id="31369">that</a>: <a href="#9538" title="cc.spray.http.DateTime">DateTime</a><span class="delimiter">)</span> = <span class="delimiter">{</span>
+    <span title="Int" class="keyword">if</span> <span class="delimiter">(</span><a href="#30206" title="=&gt; Long">clicks</a> <span title="(x: Long)Boolean">&lt;</span> <a href="#31369" title="cc.spray.http.DateTime">that</a>.<a href="#30206" title="=&gt; Long">clicks</a><span class="delimiter">)</span> -<span title="Int(-1)" class="int">1</span> <span class="keyword">else</span> <span title="Int" class="keyword">if</span> <span class="delimiter">(</span><a href="#30206" title="=&gt; Long">clicks</a> <span title="(x: Long)Boolean">&gt;</span> <a href="#31369" title="cc.spray.http.DateTime">that</a>.<a href="#30206" title="=&gt; Long">clicks</a><span class="delimiter">)</span> <span title="Int(1)" class="int">1</span> <span class="keyword">else</span> <span title="Int(0)" class="int">0</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">override</span> <span class="keyword">def</span> <a title="()Int" id="30214">hashCode</a><span class="delimiter">(</span><span class="delimiter">)</span> = <a href="#30206" title="=&gt; Long">clicks</a>.<span title="()Int">##</span>
+
+  <span class="keyword">override</span> <span class="keyword">def</span> <a title="(obj: Any)Boolean" id="30215">equals</a><span class="delimiter">(</span><a title="Any" id="31383">obj</a>: <span title="Any">Any</span><span class="delimiter">)</span> = <a href="#31383" title="Any">obj</a> <span title="Boolean" class="keyword">match</span> <span class="delimiter">{</span>
+    <span class="keyword">case</span> <a title="Boolean" id="31386">x</a>: <a href="#9538" title="cc.spray.http.DateTime">DateTime</a> =&gt; <a href="#31386" title="cc.spray.http.DateTime">x</a>.<a href="#30206" title="=&gt; Long">clicks</a> <span title="(x: Long)Boolean">==</span> <a href="#30206" title="=&gt; Long">clicks</a>
+    <span class="keyword">case</span> <span title="Boolean(false)">_</span> =&gt; <span title="Boolean(false)" class="keyword">false</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">override</span> <span class="keyword">def</span> <a title="()java.lang.String" id="30216">toString</a> = <a href="#30210" title="=&gt; java.lang.String">toIsoDateTimeString</a>
+<span class="delimiter">}</span>
+
+<span class="keyword">object</span> <a title="object cc.spray.http.DateTime" id="9539">DateTime</a> <span title="ScalaObject" class="delimiter">{</span>
+  <span class="keyword">val</span> <a title="Array[java.lang.String]" id="30235">WEEKDAYS</a> = <span title="(xs: java.lang.String*)(implicit evidence$2: scala.reflect.ClassManifest[java.lang.String])Array[java.lang.String]">Array</span><span title="(clazz: java.lang.Class[_])scala.reflect.ClassManifest[java.lang.String]" class="delimiter">(</span><span title="java.lang.String(&quot;Sun&quot;)" class="string">&quot;Sun&quot;</span>, <span title="java.lang.String(&quot;Mon&quot;)" class="string">&quot;Mon&quot;</span>, <span title="java.lang.String(&quot;Tue&quot;)" class="string">&quot;Tue&quot;</span>, <span title="java.lang.String(&quot;Wed&quot;)" class="string">&quot;Wed&quot;</span>, <span title="java.lang.String(&quot;Thu&quot;)" class="string">&quot;Thu&quot;</span>, <span title="java.lang.String(&quot;Fri&quot;)" class="string">&quot;Fri&quot;</span>, <span title="java.lang.String(&quot;Sat&quot;)" class="string">&quot;Sat&quot;</span><span class="delimiter">)</span>
+  <span class="keyword">val</span> <a title="Array[java.lang.String]" id="30237">MONTHS</a> = <span title="(xs: java.lang.String*)(implicit evidence$2: scala.reflect.ClassManifest[java.lang.String])Array[java.lang.String]">Array</span><span title="(clazz: java.lang.Class[_])scala.reflect.ClassManifest[java.lang.String]" class="delimiter">(</span><span title="java.lang.String(&quot;Jan&quot;)" class="string">&quot;Jan&quot;</span>, <span title="java.lang.String(&quot;Feb&quot;)" class="string">&quot;Feb&quot;</span>, <span title="java.lang.String(&quot;Mar&quot;)" class="string">&quot;Mar&quot;</span>, <span title="java.lang.String(&quot;Apr&quot;)" class="string">&quot;Apr&quot;</span>, <span title="java.lang.String(&quot;May&quot;)" class="string">&quot;May&quot;</span>, <span title="java.lang.String(&quot;Jun&quot;)" class="string">&quot;Jun&quot;</span>, <span title="java.lang.String(&quot;Jul&quot;)" class="string">&quot;Jul&quot;</span>, <span title="java.lang.String(&quot;Aug&quot;)" class="string">&quot;Aug&quot;</span>, <span title="java.lang.String(&quot;Sep&quot;)" class="string">&quot;Sep&quot;</span>, <span title="java.lang.String(&quot;Oct&quot;)" class="string">&quot;Oct&quot;</span>, <span title="java.lang.String(&quot;Nov&quot;)" class="string">&quot;Nov&quot;</span>, <span title="java.lang.String(&quot;Dec&quot;)" class="string">&quot;Dec&quot;</span><span class="delimiter">)</span>
+  <span class="keyword">val</span> <a title="cc.spray.http.DateTime" id="30239">MinValue</a> = <a href="#30243" title="(year_: Int, month_: Int, day_: Int, hour_: Int, minute_: Int, second_: Int)cc.spray.http.DateTime">DateTime</a><span class="delimiter">(</span><span title="Int(1800)" class="int">1800</span>, <span title="Int(1)" class="int">1</span>, <span title="Int(1)" class="int">1</span><span class="delimiter">)</span>
+  <span class="keyword">val</span> <a title="cc.spray.http.DateTime" id="30241">MaxValue</a> = <a href="#30243" title="(year_: Int, month_: Int, day_: Int, hour_: Int, minute_: Int, second_: Int)cc.spray.http.DateTime">DateTime</a><span class="delimiter">(</span><span title="Int(2199)" class="int">2199</span>, <span title="Int(12)" class="int">12</span>, <span title="Int(31)" class="int">31</span>, <span title="Int(23)" class="int">23</span>, <span title="Int(59)" class="int">59</span>, <span title="Int(59)" class="int">59</span><span class="delimiter">)</span>
+
+  <span class="comment">/**
+   * Creates a new `DateTime` with the given properties.
+   */</span>
+  <span class="keyword">def</span> <a title="(year_: Int, month_: Int, day_: Int, hour_: Int, minute_: Int, second_: Int)cc.spray.http.DateTime" id="30243">apply</a><span class="delimiter">(</span><a title="Int" id="30456">year_</a> :<span title="Int">Int</span>, <a title="Int" id="30457">month_</a> :<span title="Int">Int</span>, <a title="Int" id="30458">day_</a> :<span title="Int">Int</span>, <a title="Int" id="30463">hour_</a> :<span title="Int">Int</span> = <span title="Int(0)" class="int">0</span>, <a title="Int" id="30464">minute_</a> :<span title="Int">Int</span> = <span title="Int(0)" class="int">0</span>, <a title="Int" id="30465">second_</a> :<span title="Int">Int</span> = <span title="Int(0)" class="int">0</span><span class="delimiter">)</span>: <a href="#9538" title="cc.spray.http.DateTime">DateTime</a> = <a href="#31550" title="cc.spray.http.DateTime{}" class="keyword">new</a> <a href="#9538" title="anonymous class $anon extends cc.spray.http.DateTime" id="31550">DateTime</a> <span class="delimiter">{</span>
+    <span class="keyword">val</span> <a title="Int" id="31557">year</a> = <a href="#31576" title="(x: Int, test: Boolean, msg: String)Int">check</a><span class="delimiter">(</span><a href="#30456" title="Int">year_</a>, <span title="Int(1800)" class="int">1800</span> <span title="(x: Int)Boolean">&lt;=</span> <a href="#30456" title="Int">year_</a> <span title="(x: Boolean)Boolean">&amp;&amp;</span> <a href="#30456" title="Int">year_</a> <span title="(x: Int)Boolean">&lt;=</span> <span title="Int(2199)" class="int">2199</span>, <span title="java.lang.String(&quot;year must be &gt;= 1800 and &lt;= 2199&quot;)" class="string">&quot;year must be &gt;= 1800 and &lt;= 2199&quot;</span><span class="delimiter">)</span>
+    <span class="keyword">val</span> <a title="Int" id="31559">month</a> = <a href="#31576" title="(x: Int, test: Boolean, msg: String)Int">check</a><span class="delimiter">(</span><a href="#30457" title="Int">month_</a>, <span title="Int(1)" class="int">1</span> <span title="(x: Int)Boolean">&lt;=</span> <a href="#30457" title="Int">month_</a> <span title="(x: Boolean)Boolean">&amp;&amp;</span> <a href="#30457" title="Int">month_</a> <span title="(x: Int)Boolean">&lt;=</span> <span title="Int(12)" class="int">12</span>, <span title="java.lang.String(&quot;month must be &gt;= 1 and &lt;= 12&quot;)" class="string">&quot;month must be &gt;= 1 and &lt;= 12&quot;</span><span class="delimiter">)</span>
+    <span class="keyword">val</span> <a title="Int" id="31561">day</a> = <a href="#31576" title="(x: Int, test: Boolean, msg: String)Int">check</a><span class="delimiter">(</span><a href="#30458" title="Int">day_</a>, <span title="Int(1)" class="int">1</span> <span title="(x: Int)Boolean">&lt;=</span> <a href="#30458" title="Int">day_</a> <span title="(x: Boolean)Boolean">&amp;&amp;</span> <a href="#30458" title="Int">day_</a> <span title="(x: Int)Boolean">&lt;=</span> <span title="Int(31)" class="int">31</span>, <span title="java.lang.String(&quot;day must be &gt;= 1 and &lt;= 31&quot;)" class="string">&quot;day must be &gt;= 1 and &lt;= 31&quot;</span><span class="delimiter">)</span>
+    <span class="keyword">val</span> <a title="Int" id="31563">hour</a> = <a href="#31576" title="(x: Int, test: Boolean, msg: String)Int">check</a><span class="delimiter">(</span><a href="#30463" title="Int">hour_</a>, <span title="Int(0)" class="int">0</span> <span title="(x: Int)Boolean">&lt;=</span> <a href="#30463" title="Int">hour_</a> <span title="(x: Boolean)Boolean">&amp;&amp;</span> <a href="#30463" title="Int">hour_</a> <span title="(x: Int)Boolean">&lt;=</span> <span title="Int(23)" class="int">23</span>, <span title="java.lang.String(&quot;hour must be &gt;= 0 and &lt;= 23&quot;)" class="string">&quot;hour must be &gt;= 0 and &lt;= 23&quot;</span><span class="delimiter">)</span>
+    <span class="keyword">val</span> <a title="Int" id="31565">minute</a> = <a href="#31576" title="(x: Int, test: Boolean, msg: String)Int">check</a><span class="delimiter">(</span><a href="#30464" title="Int">minute_</a>, <span title="Int(0)" class="int">0</span> <span title="(x: Int)Boolean">&lt;=</span> <a href="#30464" title="Int">minute_</a> <span title="(x: Boolean)Boolean">&amp;&amp;</span> <a href="#30464" title="Int">minute_</a> <span title="(x: Int)Boolean">&lt;=</span> <span title="Int(59)" class="int">59</span>, <span title="java.lang.String(&quot;minute_ must be &gt;= 0 and &lt;= 59&quot;)" class="string">&quot;minute_ must be &gt;= 0 and &lt;= 59&quot;</span><span class="delimiter">)</span>
+    <span class="keyword">val</span> <a title="Int" id="31567">second</a> = <a href="#31576" title="(x: Int, test: Boolean, msg: String)Int">check</a><span class="delimiter">(</span><a href="#30465" title="Int">second_</a>, <span title="Int(0)" class="int">0</span> <span title="(x: Int)Boolean">&lt;=</span> <a href="#30465" title="Int">second_</a> <span title="(x: Boolean)Boolean">&amp;&amp;</span> <a href="#30465" title="Int">second_</a> <span title="(x: Int)Boolean">&lt;=</span> <span title="Int(59)" class="int">59</span>, <span title="java.lang.String(&quot;second must be &gt;= 0 and &lt;= 59&quot;)" class="string">&quot;second must be &gt;= 0 and &lt;= 59&quot;</span><span class="delimiter">)</span>
+
+    <span class="keyword">lazy</span> <span class="keyword">val</span> <a href="#31572" title="(Long, Int)" id="31570" class="delimiter">(</a><a href="#31569" title="Long" id="31572">clicks</a>, <a href="#31569" title="Int" id="31574">weekday</a><span class="delimiter">)</span> = <span title="(Long, Int) @unchecked" class="delimiter">{</span>
+      <span class="comment">// compute yearday from month/monthday</span>
+      <span class="keyword">val</span> <a title="Int" id="31630">m</a> = <a href="#31559" title="=&gt; Int">month</a> <span title="(x: Int)Int">-</span> <span title="Int(1)" class="int">1</span>
+      <span class="keyword">var</span> <a title="Int" id="31631">d</a> = <span class="delimiter">(</span><a href="#31630" title="Int">m</a> <span title="(x: Int)Int">%</span> <span title="Int(7)" class="int">7</span><span class="delimiter">)</span> <span title="(x: Int)Int">*</span> <span title="Int(30)" class="int">30</span> <span title="(x: Int)Int">+</span> <span class="delimiter">(</span><a href="#31630" title="Int">m</a> <span title="(x: Int)Int">%</span> <span title="Int(7)" class="int">7</span> <span title="(x: Int)Int">+</span> <span title="Int(1)" class="int">1</span><span class="delimiter">)</span> <span title="(x: Int)Int">/</span> <span title="Int(2)" class="int">2</span> <span title="(x: Int)Int">+</span> <a href="#31561" title="=&gt; Int">day</a>
+      <span title="Unit" class="keyword">if</span> <span class="delimiter">(</span><a href="#31630" title="Int">m</a> <span title="(x: Int)Boolean">&gt;=</span> <span title="Int(7)" class="int">7</span><span class="delimiter">)</span> <a href="#31631" title="Int">d</a> <span title="(x: Int)Int">+=</span> <span title="Int(214)" class="int">214</span>
+      <span title="Unit" class="keyword">if</span> <span class="delimiter">(</span><a href="#31631" title="Int">d</a> <span title="(x: Int)Boolean">&gt;=</span> <span title="Int(61)" class="int">61</span><span class="delimiter">)</span> <a href="#31631" title="Int">d</a> <span title="(x: Int)Int">-=</span> <span title="Int(1)" class="int">1</span> <span class="comment">// skip non-existent Feb 30</span>
+      <span title="Unit" class="keyword">if</span> <span class="delimiter">(</span><span title="=&gt; Boolean">!</span><a href="#31575" title="=&gt; Boolean">isLeapYear</a> <span title="(x: Boolean)Boolean">&amp;&amp;</span> <span class="delimiter">(</span><a href="#31631" title="Int">d</a> <span title="(x: Int)Boolean">&gt;=</span> <span title="Int(60)" class="int">60</span><span class="delimiter">)</span><span class="delimiter">)</span> <a href="#31631" title="Int">d</a> <span title="(x: Int)Int">-=</span><span title="Int(1)" class="int">1</span> <span class="comment">// skip non-existent Feb 29</span>
+
+      <span class="comment">// convert year/yearday to days since Jan 1, 1970, 00:00:00</span>
+      <span class="keyword">val</span> <a title="Int" id="31632">y</a> = <a href="#31557" title="=&gt; Int">year</a> <span title="(x: Int)Int">-</span> <span title="Int(1)" class="int">1</span>
+      <a href="#31631" title="Int">d</a> <span title="(x: Int)Int">+=</span> <a href="#31632" title="Int">y</a> <span title="(x: Int)Int">*</span> <span title="Int(365)" class="int">365</span> <span title="(x: Int)Int">+</span> <a href="#31632" title="Int">y</a> <span title="(x: Int)Int">/</span> <span title="Int(4)" class="int">4</span> <span title="(x: Int)Int">-</span> <a href="#31632" title="Int">y</a> <span title="(x: Int)Int">/</span> <span title="Int(100)" class="int">100</span> <span title="(x: Int)Int">+</span> <a href="#31632" title="Int">y</a> <span title="(x: Int)Int">/</span> <span title="Int(400)" class="int">400</span>
+      <span class="keyword">val</span> <a title="Int" id="31633">dn</a> = <a href="#31631" title="Int">d</a> <span title="(x: Int)Int">-</span> <span class="delimiter">(</span><span class="int">1969</span> * <span class="int">365</span> + <span class="int">492</span> - <span class="int">19</span> <span title="Int(719162)">+</span> <span class="int">4</span><span class="delimiter">)</span>
+
+      <span class="keyword">val</span> <a title="Long" id="31634">c</a> = <span class="delimiter">(</span><a href="#31633" title="Int">dn</a> <span title="(x: Int)Int">-</span> <span title="Int(1)" class="int">1</span><span class="delimiter">)</span> <span title="(x: Long)Long">*</span> <span title="Long(86400L)" class="long">86400L</span> <span title="(x: Long)Long">+</span> <a href="#31563" title="=&gt; Int">hour</a> <span title="(x: Long)Long">*</span> <span title="Long(3600L)" class="long">3600L</span> <span title="(x: Long)Long">+</span> <a href="#31565" title="=&gt; Int">minute</a> <span title="(x: Long)Long">*</span> <span title="Long(60L)" class="long">60L</span> <span title="(x: Int)Long">+</span> <a href="#31567" title="=&gt; Int">second</a> <span class="comment">// seconds since Jan 1, 1970, 00:00:00</span>
+      <span title="(_1: Long, _2: Int)(Long, Int)" class="delimiter">(</span><a href="#31634" title="Long">c</a> <span title="(x: Int)Long">*</span> <span title="Int(1000)" class="int">1000</span>, <a href="#31631" title="Int">d</a> <span title="(x: Int)Int">%</span> <span title="Int(7)" class="int">7</span><span class="delimiter">)</span>
+    <span class="delimiter">}</span>
+
+    <span class="keyword">def</span> <a title="=&gt; Boolean" id="31575">isLeapYear</a> = <span class="delimiter">(</span><span class="delimiter">(</span><a href="#31557" title="=&gt; Int">year</a> <span title="(x: Int)Int">%</span> <span title="Int(4)" class="int">4</span> <span title="(x: Int)Boolean">==</span> <span title="Int(0)" class="int">0</span><span class="delimiter">)</span> <span title="(x: Boolean)Boolean">&amp;&amp;</span> <span title="=&gt; Boolean">!</span><span class="delimiter">(</span><a href="#31557" title="=&gt; Int">year</a> <span title="(x: Int)Int">%</span> <span title="Int(100)" class="int">100</span> <span title="(x: Int)Boolean">==</span> <span title="Int(0)" class="int">0</span><span class="delimiter">)</span><span class="delimiter">)</span> <span title="(x: Boolean)Boolean">||</span> <span class="delimiter">(</span><a href="#31557" title="=&gt; Int">year</a> <span title="(x: Int)Int">%</span> <span title="Int(400)" class="int">400</span> <span title="(x: Int)Boolean">==</span> <span title="Int(0)" class="int">0</span><span class="delimiter">)</span>
+
+    <span class="keyword">private</span> <span class="keyword">def</span> <a title="(x: Int, test: Boolean, msg: String)Int" id="31576">check</a><span class="delimiter">(</span><a title="Int" id="31577">x</a>: <span title="Int">Int</span>, <a title="Boolean" id="31578">test</a>: <span title="Boolean">Boolean</span>, <a title="String" id="31579">msg</a>: <span title="String">String</span><span class="delimiter">)</span> = <span class="delimiter">{</span> <span title="(requirement: Boolean, message: =&gt; Any)Unit">require</span><span class="delimiter">(</span><a href="#31578" title="Boolean">test</a>, <a href="#31579" title="String">msg</a><span class="delimiter">)</span>; <a href="#31577" title="Int">x</a> <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Creates a new `DateTime` from the number of milli seconds
+   * since the start of &quot;the epoch&quot;, namely January 1, 1970, 00:00:00 GMT.
+   */</span>
+  <span class="keyword">def</span> <a title="(clicks_: Long)cc.spray.http.DateTime" id="30244">apply</a><span class="delimiter">(</span><a title="Long" id="30454">clicks_</a> :<span title="Long">Long</span><span class="delimiter">)</span>: <a href="#9538" title="cc.spray.http.DateTime">DateTime</a> = <a href="#31831" title="cc.spray.http.DateTime{}" class="keyword">new</a> <a href="#9538" title="anonymous class $anon extends cc.spray.http.DateTime" id="31831">DateTime</a> <span class="delimiter">{</span>
+    <span class="keyword">val</span> <a title="Long" id="31838">clicks</a> = <a href="#30454" title="Long">clicks_</a> <span title="(x: Long)Long">-</span> <a href="#30454" title="Long">clicks_</a> <span title="(x: Int)Long">%</span> <span title="Int(1000)" class="int">1000</span>
+
+    <span title="(requirement: Boolean, message: =&gt; Any)Unit">require</span><span class="delimiter">(</span><a href="#9539" title="object cc.spray.http.DateTime">DateTime</a>.<a href="#30239" title="=&gt; cc.spray.http.DateTime">MinValue</a> <span title="(that: cc.spray.http.DateTime)Boolean">&lt;=</span> <a href="#31831" title="cc.spray.http.DateTime{}" class="keyword">this</a> <span title="(x: Boolean)Boolean">&amp;&amp;</span> <a href="#31831" title="this.type" class="keyword">this</a> <span title="(that: cc.spray.http.DateTime)Boolean">&lt;=</span> <a href="#9539" title="object cc.spray.http.DateTime">DateTime</a>.<a href="#30241" title="=&gt; cc.spray.http.DateTime">MaxValue</a>,
+      <span title="java.lang.String(&quot;DateTime value must be &gt;= &quot;)" class="string">&quot;DateTime value must be &gt;= &quot;</span> <span title="(x$1: Any)java.lang.String">+</span> <a href="#9539" title="object cc.spray.http.DateTime">DateTime</a>.<a href="#30239" title="=&gt; cc.spray.http.DateTime">MinValue</a> <span title="(x$1: Any)java.lang.String">+</span> <span title="java.lang.String(&quot; and &lt;= &quot;)" class="string">&quot; and &lt;= &quot;</span> <span title="(x$1: Any)java.lang.String">+</span> <a href="#9539" title="object cc.spray.http.DateTime">DateTime</a>.<a href="#30241" title="=&gt; cc.spray.http.DateTime">MaxValue</a><span class="delimiter">)</span>
+
+    <span class="comment">// based on a fast RFC1123 implementation (C) 2000 by Tim Kientzle &lt;kientzle@acm.org&gt;</span>
+    <span class="keyword">lazy</span> <span class="keyword">val</span> <a href="#31843" title="(Int, Int, Int, Int, Int, Int, Int, Boolean)" id="31841" class="delimiter">(</a><a href="#31840" title="Int" id="31843">year</a>, <a href="#31840" title="Int" id="31845">month</a>, <a href="#31840" title="Int" id="31847">day</a>, <a href="#31840" title="Int" id="31849">hour</a>, <a href="#31840" title="Int" id="31851">minute</a>, <a href="#31840" title="Int" id="31853">second</a>, <a href="#31840" title="Int" id="31855">weekday</a>, <a href="#31840" title="Boolean" id="31857">isLeapYear</a><span class="delimiter">)</span> = <span title="(Int, Int, Int, Int, Int, Int, Int, Boolean) @unchecked" class="delimiter">{</span>
+      <span class="comment">// compute day number, seconds since beginning of day</span>
+      <span class="keyword">var</span> <a title="Long" id="31866">s</a> = <a href="#31838" title="=&gt; Long">clicks</a>
+      <span title="Unit" class="keyword">if</span> <span class="delimiter">(</span><a href="#31866" title="Long">s</a> <span title="(x: Int)Boolean">&gt;=</span> <span title="Int(0)" class="int">0</span><span class="delimiter">)</span> <a href="#31866" title="Long">s</a> <span title="(x: Int)Long">/=</span> <span title="Int(1000)" class="int">1000</span> <span class="comment">// seconds since 1 Jan 1970</span>
+      <span class="keyword">else</span> <a href="#31866" title="Long">s</a> = <span class="delimiter">(</span><a href="#31866" title="Long">s</a> <span title="(x: Int)Long">-</span> <span title="Int(999)" class="int">999</span> <span class="delimiter">)</span> <span title="(x: Int)Long">/</span> <span title="Int(1000)" class="int">1000</span> <span class="comment">// floor(sec/1000)</span>
+
+      <span class="keyword">var</span> <a title="Int" id="31867">dn</a> = <span class="delimiter">(</span><a href="#31866" title="Long">s</a> <span title="(x: Int)Long">/</span> <span title="Int(86400)" class="int">86400</span><span class="delimiter">)</span>.<span title="=&gt; Int">toInt</span>
+      <a href="#31866" title="Long">s</a> <span title="(x: Int)Long">%=</span> <span title="Int(86400)" class="int">86400</span> <span class="comment">// positive seconds since beginning of day</span>
+      <span title="Unit" class="keyword">if</span> <span class="delimiter">(</span><a href="#31866" title="Long">s</a> <span title="(x: Int)Boolean">&lt;</span> <span title="Int(0)" class="int">0</span><span class="delimiter">)</span> <span class="delimiter">{</span> <a href="#31866" title="Long">s</a> <span title="(x: Int)Long">+=</span> <span title="Int(86400)" class="int">86400</span>; <a href="#31867" title="Int">dn</a> <span title="(x: Int)Int">-=</span> <span title="Int(1)" class="int">1</span> <span class="delimiter">}</span>
+      <a href="#31867" title="Int">dn</a> <span title="(x: Int)Int">+=</span> <span class="int">1969</span> * <span class="int">365</span> + <span class="int">492</span> - <span class="int">19</span> <span title="Int(719162)">+</span> <span class="int">4</span> <span class="comment">// days since &quot;1 Jan, year 1&quot;</span>
+
+      <span class="comment">// convert days since 1 Jan, year 1 to year/yearday</span>
+      <span class="keyword">var</span> <a title="Int" id="31868">y</a> = <span title="Int(400)" class="int">400</span> <span title="(x: Int)Int">*</span> <span class="delimiter">(</span><a href="#31867" title="Int">dn</a> <span title="(x: Int)Int">/</span> <span title="Int(146097)" class="int">146097</span><span class="delimiter">)</span>.<span title="=&gt; Int">toInt</span> <span title="(x: Int)Int">+</span> <span title="Int(1)" class="int">1</span>
+      <span class="keyword">var</span> <a title="Int" id="31869">d</a> = <a href="#31867" title="Int">dn</a> <span title="(x: Int)Int">%</span> <span title="Int(146097)" class="int">146097</span>
+      <span title="Unit" class="keyword">if</span> <span class="delimiter">(</span><a href="#31869" title="Int">d</a> <span title="(x: Int)Boolean">==</span> <span title="Int(146096)" class="int">146096</span><span class="delimiter">)</span> <span class="delimiter">{</span> <a href="#31868" title="Int">y</a> <span title="(x: Int)Int">+=</span> <span title="Int(399)" class="int">399</span>; <a href="#31869" title="Int">d</a> = <span title="Int(365)" class="int">365</span> <span class="delimiter">}</span> <span class="comment">// last year of 400 is long</span>
+      <span class="keyword">else</span> <span class="delimiter">{</span>
+        <a href="#31868" title="Int">y</a> <span title="(x: Int)Int">+=</span> <span title="Int(100)" class="int">100</span> <span title="(x: Int)Int">*</span> <span class="delimiter">(</span><a href="#31869" title="Int">d</a> <span title="(x: Int)Int">/</span> <span title="Int(36524)" class="int">36524</span><span class="delimiter">)</span>
+        <a href="#31869" title="Int">d</a> <span title="(x: Int)Int">%=</span> <span title="Int(36524)" class="int">36524</span>
+        <a href="#31868" title="Int">y</a> <span title="(x: Int)Int">+=</span> <span title="Int(4)" class="int">4</span> <span title="(x: Int)Int">*</span> <span class="delimiter">(</span><a href="#31869" title="Int">d</a> <span title="(x: Int)Int">/</span> <span title="Int(1461)" class="int">1461</span><span class="delimiter">)</span>
+        <a href="#31869" title="Int">d</a> <span title="(x: Int)Int">%=</span> <span title="Int(1461)" class="int">1461</span>
+        <span title="Unit" class="keyword">if</span> <span class="delimiter">(</span><a href="#31869" title="Int">d</a> <span title="(x: Int)Boolean">==</span> <span title="Int(1460)" class="int">1460</span><span class="delimiter">)</span> <span class="delimiter">{</span> <a href="#31868" title="Int">y</a> <span title="(x: Int)Int">+=</span> <span title="Int(3)" class="int">3</span>; <a href="#31869" title="Int">d</a>=<span title="Int(365)" class="int">365</span> <span class="delimiter">}</span> <span class="comment">// last year out of 4 is long</span>
+        <span class="keyword">else</span> <span class="delimiter">{</span>
+          <a href="#31868" title="Int">y</a> <span title="(x: Int)Int">+=</span> <a href="#31869" title="Int">d</a> <span title="(x: Int)Int">/</span> <span title="Int(365)" class="int">365</span>
+          <a href="#31869" title="Int">d</a> <span title="(x: Int)Int">%=</span> <span title="Int(365)" class="int">365</span>
+        <span class="delimiter">}</span>
+      <span class="delimiter">}</span>
+
+      <span class="keyword">val</span> <a title="Boolean" id="31870">isLeap</a> = <span class="delimiter">(</span><span class="delimiter">(</span><a href="#31868" title="Int">y</a> <span title="(x: Int)Int">%</span> <span title="Int(4)" class="int">4</span> <span title="(x: Int)Boolean">==</span> <span title="Int(0)" class="int">0</span><span class="delimiter">)</span> <span title="(x: Boolean)Boolean">&amp;&amp;</span> <span title="=&gt; Boolean">!</span><span class="delimiter">(</span><a href="#31868" title="Int">y</a> <span title="(x: Int)Int">%</span> <span title="Int(100)" class="int">100</span> <span title="(x: Int)Boolean">==</span> <span title="Int(0)" class="int">0</span><span class="delimiter">)</span><span class="delimiter">)</span> <span title="(x: Boolean)Boolean">||</span> <span class="delimiter">(</span><a href="#31868" title="Int">y</a> <span title="(x: Int)Int">%</span> <span title="Int(400)" class="int">400</span> <span title="(x: Int)Boolean">==</span> <span title="Int(0)" class="int">0</span><span class="delimiter">)</span>
+
+      <span class="comment">// compute month/monthday from year/yearday</span>
+      <span title="Unit" class="keyword">if</span> <span class="delimiter">(</span><span title="=&gt; Boolean">!</span><a href="#31870" title="Boolean">isLeap</a> <span title="(x: Boolean)Boolean">&amp;&amp;</span> <span class="delimiter">(</span><a href="#31869" title="Int">d</a> <span title="(x: Int)Boolean">&gt;=</span> <span title="Int(59)" class="int">59</span><span class="delimiter">)</span><span class="delimiter">)</span> <a href="#31869" title="Int">d</a> <span title="(x: Int)Int">+=</span><span title="Int(1)" class="int">1</span> <span class="comment">// skip non-existent Feb 29</span>
+      <span title="Unit" class="keyword">if</span> <span class="delimiter">(</span><a href="#31869" title="Int">d</a> <span title="(x: Int)Boolean">&gt;=</span> <span title="Int(60)" class="int">60</span><span class="delimiter">)</span> <a href="#31869" title="Int">d</a> <span title="(x: Int)Int">+=</span> <span title="Int(1)" class="int">1</span> <span class="comment">// skip non-existent Feb 30</span>
+      <span class="keyword">var</span> <a title="Int" id="31871">mon</a> = <span class="delimiter">(</span><span class="delimiter">(</span><a href="#31869" title="Int">d</a> <span title="(x: Int)Int">%</span> <span title="Int(214)" class="int">214</span><span class="delimiter">)</span> <span title="(x: Int)Int">/</span> <span title="Int(61)" class="int">61</span><span class="delimiter">)</span> <span title="(x: Int)Int">*</span> <span title="Int(2)" class="int">2</span> <span title="(x: Int)Int">+</span> <span class="delimiter">(</span><span class="delimiter">(</span><a href="#31869" title="Int">d</a> <span title="(x: Int)Int">%</span> <span title="Int(214)" class="int">214</span><span class="delimiter">)</span> <span title="(x: Int)Int">%</span> <span title="Int(61)" class="int">61</span><span class="delimiter">)</span> <span title="(x: Int)Int">/</span> <span title="Int(31)" class="int">31</span>
+      <span title="Unit" class="keyword">if</span> <span class="delimiter">(</span><a href="#31869" title="Int">d</a> <span title="(x: Int)Boolean">&gt;</span> <span title="Int(213)" class="int">213</span><span class="delimiter">)</span> <a href="#31871" title="Int">mon</a> <span title="(x: Int)Int">+=</span> <span title="Int(7)" class="int">7</span>
+      <a href="#31869" title="Int">d</a> = <span class="delimiter">(</span><span class="delimiter">(</span><a href="#31869" title="Int">d</a> <span title="(x: Int)Int">%</span> <span title="Int(214)" class="int">214</span><span class="delimiter">)</span> <span title="(x: Int)Int">%</span> <span title="Int(61)" class="int">61</span><span class="delimiter">)</span> <span title="(x: Int)Int">%</span> <span title="Int(31)" class="int">31</span> <span title="(x: Int)Int">+</span> <span title="Int(1)" class="int">1</span>
+
+      <span class="comment">// convert second to hour/min/sec</span>
+      <span class="keyword">var</span> <a title="Int" id="31872">m</a> = <span class="delimiter">(</span><a href="#31866" title="Long">s</a> <span title="(x: Int)Long">/</span> <span title="Int(60)" class="int">60</span><span class="delimiter">)</span>.<span title="=&gt; Int">toInt</span>
+      <span class="keyword">val</span> <a title="Int" id="31873">h</a> = <a href="#31872" title="Int">m</a> <span title="(x: Int)Int">/</span> <span title="Int(60)" class="int">60</span>
+      <a href="#31872" title="Int">m</a> <span title="(x: Int)Int">%=</span> <span title="Int(60)" class="int">60</span>
+      <a href="#31866" title="Long">s</a> <span title="(x: Int)Long">%=</span> <span title="Int(60)" class="int">60</span>
+      <span class="keyword">val</span> <a title="Int" id="31874">w</a> = <span class="delimiter">(</span><a href="#31867" title="Int">dn</a> <span title="(x: Int)Int">+</span> <span title="Int(1)" class="int">1</span><span class="delimiter">)</span> <span title="(x: Int)Int">%</span> <span title="Int(7)" class="int">7</span> <span class="comment">// day of week, 0==Sun</span>
+
+      <span title="(_1: Int, _2: Int, _3: Int, _4: Int, _5: Int, _6: Int, _7: Int, _8: Boolean)(Int, Int, Int, Int, Int, Int, Int, Boolean)" class="delimiter">(</span><a href="#31868" title="Int">y</a>, <a href="#31871" title="Int">mon</a> <span title="(x: Int)Int">+</span> <span title="Int(1)" class="int">1</span>, <a href="#31869" title="Int">d</a>, <a href="#31873" title="Int">h</a>, <a href="#31872" title="Int">m</a>, <a href="#31866" title="Long">s</a>.<span title="=&gt; Int">toInt</span>, <a href="#31874" title="Int">w</a>, <a href="#31870" title="Boolean">isLeap</a><span class="delimiter">)</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Creates a new `DateTime` instance for the current point in time.
+   */</span>
+  <span class="keyword">def</span> <a title="=&gt; cc.spray.http.DateTime" id="30245">now</a>: <a href="#9538" title="cc.spray.http.DateTime">DateTime</a> = <a href="#30244" title="(clicks_: Long)cc.spray.http.DateTime">apply</a><span class="delimiter">(</span><span title="object java.lang.System">System</span>.<span title="()Long">currentTimeMillis</span><span class="delimiter">)</span>
+<span class="delimiter">}</span>
+        </pre>
+    </body>
+</html>

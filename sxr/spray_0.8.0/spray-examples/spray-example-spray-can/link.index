@@ -1,0 +1,14 @@
+[cc/spray/examples/spraycan/HelloService.scala]
+ 14337 term cc.spray.examples.spraycan.HelloService.helloService(60291177823a1effd55573b5f69703eccd7f9787)
+ 9915 type cc.spray.examples.spraycan.HelloService
+ 14337 term cc.spray.examples.spraycan.HelloService.helloService
+[cc/spray/examples/spraycan/Boot.scala]
+ 9907 term cc.spray.examples.spraycan.Boot
+ 12240 term cc.spray.examples.spraycan.Boot.httpService
+ 12242 term cc.spray.examples.spraycan.Boot.rootService
+ 12242 term cc.spray.examples.spraycan.Boot.rootService(00a172aff4be2664340310b8f0cfa4b3f8d78239)
+ 12244 term cc.spray.examples.spraycan.Boot.sprayCanServer
+ 12244 term cc.spray.examples.spraycan.Boot.sprayCanServer(00a172aff4be2664340310b8f0cfa4b3f8d78239)
+ 12240 term cc.spray.examples.spraycan.Boot.httpService(00a172aff4be2664340310b8f0cfa4b3f8d78239)
+ 12238 term cc.spray.examples.spraycan.Boot.mainModule
+ 12238 term cc.spray.examples.spraycan.Boot.mainModule(35718223f9b37bf50e5beb4a593c8d682f1af5ab)

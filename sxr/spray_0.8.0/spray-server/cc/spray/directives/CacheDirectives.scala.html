@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/directives/CacheDirectives.scala</title>
+        <script type="text/javascript" src="../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray
+<span class="keyword">package</span> directives
+
+<span class="keyword">import</span> caching._
+
+<span class="keyword">private</span><span class="delimiter">[</span>spray<span class="delimiter">]</span> <span class="keyword">trait</span> <a title="trait CacheDirectives extends java.lang.Object with ScalaObject" id="9786">CacheDirectives</a> <span title="ScalaObject" class="delimiter">{</span>
+  <span class="keyword">this</span>: BasicDirectives =&gt;
+
+  <span class="comment">/**
+   * Wraps its inner Route with caching support using the given [[cc.spray.caching.Cache]] implementation and
+   * keyer function.
+   */</span>
+  <span class="keyword">def</span> <a title="(cache: cc.spray.caching.Cache[cc.spray.RoutingResult], keyer: cc.spray.RequestContext =&gt; Option[Any])cc.spray.directives.TransformRoute" id="10549">cacheResults</a><span class="delimiter">(</span><a title="cc.spray.caching.Cache[cc.spray.RoutingResult]" id="45155">cache</a>: <a href="../caching/Cache.scala.html#9657" title="cc.spray.caching.Cache[cc.spray.RoutingResult]">Cache</a><span class="delimiter">[</span>RoutingResult<span class="delimiter">]</span>, <a title="cc.spray.RequestContext =&gt; Option[Any]" id="45159">keyer</a>: <span title="cc.spray.RequestContext =&gt; Option[Any]">CacheKeyer</span> = <a href="../caching/CacheKeyers.scala.html#9663" title="object cc.spray.caching.CacheKeyers">CacheKeyers</a>.<a href="../caching/CacheKeyers.scala.html#37932" title="=&gt; cc.spray.caching.CacheKeyers.FilteredCacheKeyer">UriGetCacheKeyer</a><span class="delimiter">)</span> = <span class="delimiter">{</span>
+    <a href="BasicDirectives.scala.html#10545" title="(f: cc.spray.RequestContext =&gt; Unit =&gt; cc.spray.RequestContext =&gt; Unit)cc.spray.directives.TransformRoute">transformRoute</a> <span class="delimiter">{</span> <a title="cc.spray.RequestContext =&gt; Unit" id="45161">route</a> =&gt; <a title="cc.spray.RequestContext" id="45163">ctx</a> =&gt;
+      <a href="#45159" title="(v1: cc.spray.RequestContext)Option[Any]">keyer</a><span class="delimiter">(</span><a href="#45163" title="cc.spray.RequestContext">ctx</a><span class="delimiter">)</span> <span title="Unit" class="keyword">match</span> <span class="delimiter">{</span>
+        <span class="keyword">case</span> <span title="Unit">Some</span><span class="delimiter">(</span><a title="Any" id="45166">key</a><span class="delimiter">)</span> =&gt; <span class="delimiter">{</span>
+          <a href="../caching/Cache.scala.html#37692" title="(key: Any)cache.Key">cache</a><a href="../caching/Cache.scala.html#37706" title="(func: akka.dispatch.CompletableFuture[cc.spray.RoutingResult] =&gt; Unit)akka.dispatch.Future[cc.spray.RoutingResult]" class="delimiter">(</a><a href="#45166" title="Any">key</a><span class="delimiter">)</span> <span class="delimiter">{</span> <a title="akka.dispatch.CompletableFuture[cc.spray.RoutingResult]" id="45177">completableFuture</a> =&gt;
+            <a href="#45161" title="(v1: cc.spray.RequestContext)Unit">route</a><span class="delimiter">(</span><a href="#45163" title="cc.spray.RequestContext">ctx</a>.<a href="../RequestContext.scala.html#23754" title="(newResponder: cc.spray.RoutingResult =&gt; Unit)cc.spray.RequestContext">withResponder</a><span class="delimiter">(</span><a href="#45177" title="akka.dispatch.CompletableFuture[cc.spray.RoutingResult]">completableFuture</a>.<span title="(result: cc.spray.RoutingResult)completableFuture.type">completeWithResult</span><span title="Unit" class="delimiter">(</span><a href="#45180" title="cc.spray.RoutingResult">_</a><span class="delimiter">)</span><span class="delimiter">)</span><span class="delimiter">)</span>
+          <span class="delimiter">}</span> <span title="(func: akka.dispatch.Future[cc.spray.RoutingResult] =&gt; Unit)akka.dispatch.Future[cc.spray.RoutingResult]">onComplete</span> <span class="delimiter">{</span> <a title="akka.dispatch.Future[cc.spray.RoutingResult]" id="45191">future</a> =&gt;
+            <a href="#45163" title="cc.spray.RequestContext">ctx</a>.<a href="../RequestContext.scala.html#23746" title="(v1: cc.spray.RoutingResult)Unit">responder</a><span class="delimiter">(</span><a href="#45191" title="akka.dispatch.Future[cc.spray.RoutingResult]">future</a>.<span title="=&gt; cc.spray.RoutingResult">get</span><span class="delimiter">)</span>
+          <span class="delimiter">}</span>
+        <span class="delimiter">}</span>
+        <span class="keyword">case</span> <span title="Unit">_</span> =&gt; <a href="#45161" title="(v1: cc.spray.RequestContext)Unit">route</a><span class="delimiter">(</span><a href="#45163" title="cc.spray.RequestContext">ctx</a><span class="delimiter">)</span>
+      <span class="delimiter">}</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Wraps its inner Route with caching support using a default [[cc.spray.caching.LruCache]] instance
+   * (max-entries = 500, dropFraction = 20%, time-to-live: 5 minutes) and the {{UriGetCacheKeyer}} which
+   * only caches GET requests and uses the request URI as cache key.
+   */</span>
+  <span class="keyword">def</span> <a title="=&gt; cc.spray.directives.TransformRoute" id="10550">cache</a> = <a href="#10549" title="(cache: cc.spray.caching.Cache[cc.spray.RoutingResult], keyer: cc.spray.RequestContext =&gt; Option[Any])cc.spray.directives.TransformRoute">cacheResults</a><span class="delimiter">(</span><a href="../caching/LruCache.scala.html#38260" title="(maxEntries: Int, dropFraction: Double, ttl: akka.util.Duration)cc.spray.caching.LruCache[cc.spray.RoutingResult]">LruCache</a><span class="delimiter">(</span><span class="delimiter">)</span><span class="delimiter">)</span>
+<span class="delimiter">}</span>
+        </pre>
+    </body>
+</html>

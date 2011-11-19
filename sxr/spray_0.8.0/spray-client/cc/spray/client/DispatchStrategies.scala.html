@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/client/DispatchStrategies.scala</title>
+        <script type="text/javascript" src="../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray
+<span class="keyword">package</span> client
+
+<span class="keyword">import</span> http._
+<span class="keyword">import</span> collection.mutable.Queue
+
+<span class="comment">/**
+ * Abstraction over the logic of how to dispatch outgoing requests to one of several connections.
+ */</span>
+<span class="keyword">trait</span> <a title="trait DispatchStrategy extends java.lang.Object" id="9497">DispatchStrategy</a> <span title="java.lang.Object" class="delimiter">{</span>
+  <span class="comment">/**
+   * Requests that the given context be dispatched to one of the given HttpConns, if possible.
+   * The strategy might also be to not dispatch the request at all and save it for a dispatch at a later time.
+   */</span>
+  <span class="keyword">def</span> <a title="(context: cc.spray.client.HttpRequestContext, conns: Seq[cc.spray.client.HttpConn])Unit" id="10157">dispatch</a><span class="delimiter">(</span><a title="cc.spray.client.HttpRequestContext" id="21225">context</a>: <a href="#9499" title="cc.spray.client.HttpRequestContext">HttpRequestContext</a>, <a title="Seq[cc.spray.client.HttpConn]" id="21226">conns</a>: <span title="Seq[cc.spray.client.HttpConn]">Seq</span><span class="delimiter">[</span>HttpConn<span class="delimiter">]</span><span class="delimiter">)</span>
+
+  <span class="comment">/**
+   * Informs the strategy logic of a change in state of the given connections.
+   */</span>
+  <span class="keyword">def</span> <a title="(conns: Seq[cc.spray.client.HttpConn])Unit" id="10158">onStateChange</a><span class="delimiter">(</span><a title="Seq[cc.spray.client.HttpConn]" id="21228">conns</a>: <span title="Seq[cc.spray.client.HttpConn]">Seq</span><span class="delimiter">[</span>HttpConn<span class="delimiter">]</span><span class="delimiter">)</span>
+<span class="delimiter">}</span>
+
+<span class="comment">/**
+ * Abstraction over HTTP connections in the context of a [[cc.spray.client.DispatchStrategy]]
+ */</span>
+<span class="keyword">trait</span> <a title="trait HttpConn extends java.lang.Object" id="9498">HttpConn</a> <span title="java.lang.Object" class="delimiter">{</span>
+  <span class="comment">/**
+   * Returns the number of open requests on this connection.
+   * If the connection is unconnected the method returns -1.
+   */</span>
+  <span class="keyword">def</span> <a title="=&gt; Int" id="21229">pendingResponses</a>: <span title="Int">Int</span>
+
+  <span class="comment">/**
+   * Dispatches the given request context to this connection.
+   */</span>
+  <span class="keyword">def</span> <a title="(context: cc.spray.client.HttpRequestContext)Unit" id="21230">dispatch</a><span class="delimiter">(</span><a title="cc.spray.client.HttpRequestContext" id="21232">context</a>: <a href="#9499" title="cc.spray.client.HttpRequestContext">HttpRequestContext</a><span class="delimiter">)</span>
+<span class="delimiter">}</span>
+
+<span class="keyword">trait</span> <a title="trait HttpRequestContext extends java.lang.Object" id="9499">HttpRequestContext</a> <span title="java.lang.Object" class="delimiter">{</span>
+  <span class="keyword">def</span> <a title="=&gt; cc.spray.http.HttpRequest" id="21227">request</a>: <span title="cc.spray.http.HttpRequest">HttpRequest</span>
+<span class="delimiter">}</span>
+
+<span class="keyword">object</span> <a title="object cc.spray.client.DispatchStrategies" id="9500">DispatchStrategies</a> <span title="ScalaObject" class="delimiter">{</span>
+
+  <span class="comment">/**
+   * Defines a [[cc.spray.client.DispatchStrategy]] with the following logic:
+   *  - Dispatch to the first idle connection in the pool, if there is one.
+   *  - If none is idle, dispatch to the first unconnected connection, if there is one.
+   *  - If all are already connected, store the request and send it as soon as one
+   *    connection becomes either idle or unconnected.
+   */</span>
+  <span class="keyword">class</span> <a title="class NonPipelined extends java.lang.Object with cc.spray.client.DispatchStrategy with ScalaObject" id="10183">NonPipelined</a> <a href="#10183" title="ScalaObject" class="keyword">extends</a> <a href="#9497" title="cc.spray.client.DispatchStrategy">DispatchStrategy</a> <span class="delimiter">{</span>
+    <span class="keyword">val</span> <a title="scala.collection.mutable.Queue[cc.spray.client.HttpRequestContext]" id="10190">queue</a> = <span title="object scala.collection.mutable.Queue">Queue</span>.<span title="[A]=&gt; scala.collection.mutable.Queue[A]">empty</span><span title="scala.collection.mutable.Queue[cc.spray.client.HttpRequestContext]" class="delimiter">[</span><a href="#9499" title="cc.spray.client.HttpRequestContext">HttpRequestContext</a><span class="delimiter">]</span>
+
+    <span class="keyword">def</span> <a title="(context: cc.spray.client.HttpRequestContext, conns: Seq[cc.spray.client.HttpConn])Unit" id="10192">dispatch</a><span class="delimiter">(</span><a title="cc.spray.client.HttpRequestContext" id="21363">context</a>: <a href="#9499" title="cc.spray.client.HttpRequestContext">HttpRequestContext</a>, <a title="Seq[cc.spray.client.HttpConn]" id="21364">conns</a>: <span title="Seq[cc.spray.client.HttpConn]">Seq</span><span class="delimiter">[</span>HttpConn<span class="delimiter">]</span><span class="delimiter">)</span> <span class="delimiter">{</span>
+      <a href="#10194" title="(conns: Seq[cc.spray.client.HttpConn])Option[cc.spray.client.HttpConn]">findAvailableConnection</a><span class="delimiter">(</span><a href="#21364" title="Seq[cc.spray.client.HttpConn]">conns</a><span class="delimiter">)</span> <span title="Unit" class="keyword">match</span> <span class="delimiter">{</span>
+        <span class="keyword">case</span> <span title="Unit">Some</span><span class="delimiter">(</span><a title="cc.spray.client.HttpConn" id="21393">conn</a><span class="delimiter">)</span> =&gt; <a href="#21393" title="cc.spray.client.HttpConn">conn</a>.<a href="#21230" title="(context: cc.spray.client.HttpRequestContext)Unit">dispatch</a><span class="delimiter">(</span><a href="#21363" title="cc.spray.client.HttpRequestContext">context</a><span class="delimiter">)</span>
+        <span class="keyword">case</span> <span title="Unit">None</span> =&gt; <a href="#10190" title="=&gt; scala.collection.mutable.Queue[cc.spray.client.HttpRequestContext]">queue</a>.<span title="(elems: cc.spray.client.HttpRequestContext*)Unit">enqueue</span><span class="delimiter">(</span><a href="#21363" title="cc.spray.client.HttpRequestContext">context</a><span class="delimiter">)</span>
+      <span class="delimiter">}</span>
+    <span class="delimiter">}</span>
+
+    <span class="keyword">def</span> <a title="(conns: Seq[cc.spray.client.HttpConn])Unit" id="10193">onStateChange</a><span class="delimiter">(</span><a title="Seq[cc.spray.client.HttpConn]" id="21794">conns</a>: <span title="Seq[cc.spray.client.HttpConn]">Seq</span><span class="delimiter">[</span>HttpConn<span class="delimiter">]</span><span class="delimiter">)</span> <span class="delimiter">{</span>
+      <span title="Unit" class="keyword">if</span> <span class="delimiter">(</span><a href="#10190" title="=&gt; scala.collection.mutable.Queue[cc.spray.client.HttpRequestContext]">queue</a>.<span title="=&gt; Boolean">nonEmpty</span><span class="delimiter">)</span> <span class="delimiter">{</span>
+        <a href="#10194" title="(conns: Seq[cc.spray.client.HttpConn])Option[cc.spray.client.HttpConn]">findAvailableConnection</a><span class="delimiter">(</span><a href="#21794" title="Seq[cc.spray.client.HttpConn]">conns</a><span class="delimiter">)</span>.<span title="(f: cc.spray.client.HttpConn =&gt; Unit)Unit">foreach</span><span class="delimiter">(</span><a href="#21800" title="cc.spray.client.HttpConn">_</a>.<a href="#21230" title="(context: cc.spray.client.HttpRequestContext)Unit">dispatch</a><span class="delimiter">(</span><a href="#10190" title="=&gt; scala.collection.mutable.Queue[cc.spray.client.HttpRequestContext]">queue</a>.<span title="()cc.spray.client.HttpRequestContext">dequeue</span><span class="delimiter">(</span><span class="delimiter">)</span><span class="delimiter">)</span><span class="delimiter">)</span>
+      <span class="delimiter">}</span>
+    <span class="delimiter">}</span>
+
+    <span class="keyword">def</span> <a title="(conns: Seq[cc.spray.client.HttpConn])Option[cc.spray.client.HttpConn]" id="10194">findAvailableConnection</a><span class="delimiter">(</span><a title="Seq[cc.spray.client.HttpConn]" id="21366">conns</a>: <span title="Seq[cc.spray.client.HttpConn]">Seq</span><span class="delimiter">[</span>HttpConn<span class="delimiter">]</span><span class="delimiter">)</span> = <span class="delimiter">{</span>
+      <a href="#21366" title="Seq[cc.spray.client.HttpConn]">conns</a>.<span title="(p: cc.spray.client.HttpConn =&gt; Boolean)Option[cc.spray.client.HttpConn]">find</span><span class="delimiter">(</span><a href="#21374" title="cc.spray.client.HttpConn">_</a>.<a href="#21229" title="=&gt; Int">pendingResponses</a> <span title="(x: Int)Boolean">==</span> <span title="Int(0)" class="int">0</span><span class="delimiter">)</span> <span title="(alternative: =&gt; Option[cc.spray.client.HttpConn])Option[cc.spray.client.HttpConn]">orElse</span> <span class="delimiter">{</span> <span class="comment">// if possible dispatch to idle connections</span>
+        <a href="#21366" title="Seq[cc.spray.client.HttpConn]">conns</a>.<span title="(p: cc.spray.client.HttpConn =&gt; Boolean)Option[cc.spray.client.HttpConn]">find</span><span class="delimiter">(</span><a href="#21385" title="cc.spray.client.HttpConn">_</a>.<a href="#21229" title="=&gt; Int">pendingResponses</a> <span title="(x: Int)Boolean">==</span> -<span title="Int(-1)" class="int">1</span><span class="delimiter">)</span> <span class="comment">// otherwise look for unconnected connections</span>
+      <span class="delimiter">}</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">object</span> <a title="object cc.spray.client.DispatchStrategies.NonPipelined" id="10184">NonPipelined</a> <span title="ScalaObject" class="keyword">extends</span> <a href="#10183" title="cc.spray.client.DispatchStrategies.NonPipelined">NonPipelined</a>
+
+  <span class="comment">/**
+   * Defines a [[cc.spray.client.DispatchStrategy]] with the following logic:
+   *  - Dispatch to the first idle connection in the pool, if there is one.
+   *  - If none is idle, dispatch to the first unconnected connection, if there is one.
+   *  - If all are already connected, dispatch to the connection with the least open requests.
+   */</span>
+  <span class="keyword">class</span> <a title="class Pipelined extends java.lang.Object with cc.spray.client.DispatchStrategy with ScalaObject" id="10186">Pipelined</a> <a href="#10186" title="ScalaObject" class="keyword">extends</a> <a href="#9497" title="cc.spray.client.DispatchStrategy">DispatchStrategy</a> <span class="delimiter">{</span>
+    <span class="keyword">def</span> <a title="(context: cc.spray.client.HttpRequestContext, conns: Seq[cc.spray.client.HttpConn])Unit" id="21804">dispatch</a><span class="delimiter">(</span><a title="cc.spray.client.HttpRequestContext" id="21807">context</a>: <a href="#9499" title="cc.spray.client.HttpRequestContext">HttpRequestContext</a>, <a title="Seq[cc.spray.client.HttpConn]" id="21808">conns</a>: <span title="Seq[cc.spray.client.HttpConn]">Seq</span><span class="delimiter">[</span>HttpConn<span class="delimiter">]</span><span class="delimiter">)</span> <span class="delimiter">{</span>
+      <span class="comment">// if possible dispatch to idle connections, if no idle ones are available prefer</span>
+      <span class="comment">// unconnected connections over busy ones and less busy ones over more busy ones</span>
+      <span class="keyword">val</span> <a title="cc.spray.client.HttpConn" id="21810">conn</a> = <a href="#21808" title="Seq[cc.spray.client.HttpConn]">conns</a>.<span title="(p: cc.spray.client.HttpConn =&gt; Boolean)Option[cc.spray.client.HttpConn]">find</span><span class="delimiter">(</span><a href="#21816" title="cc.spray.client.HttpConn">_</a>.<a href="#21229" title="=&gt; Int">pendingResponses</a> <span title="(x: Int)Boolean">==</span> <span title="Int(0)" class="int">0</span><span class="delimiter">)</span>.<span title="(default: =&gt; cc.spray.client.HttpConn)cc.spray.client.HttpConn">getOrElse</span><span class="delimiter">(</span><a href="#21808" title="Seq[cc.spray.client.HttpConn]">conns</a>.<span title="(f: cc.spray.client.HttpConn =&gt; Int)(implicit cmp: Ordering[Int])cc.spray.client.HttpConn">minBy</span><span title="object scala.math.Ordering.Int" class="delimiter">(</span><a href="#21835" title="cc.spray.client.HttpConn">_</a>.<a href="#21229" title="=&gt; Int">pendingResponses</a><span class="delimiter">)</span><span class="delimiter">)</span>
+      <a href="#21810" title="cc.spray.client.HttpConn">conn</a>.<a href="#21230" title="(context: cc.spray.client.HttpRequestContext)Unit">dispatch</a><span class="delimiter">(</span><a href="#21807" title="cc.spray.client.HttpRequestContext">context</a><span class="delimiter">)</span>
+    <span class="delimiter">}</span>
+
+    <span class="keyword">def</span> <a title="(conns: Seq[cc.spray.client.HttpConn])Unit" id="21805">onStateChange</a><span class="delimiter">(</span><a title="Seq[cc.spray.client.HttpConn]" id="23506">conns</a>: <span title="Seq[cc.spray.client.HttpConn]">Seq</span><span class="delimiter">[</span>HttpConn<span class="delimiter">]</span><span class="delimiter">)</span> <span title="Unit" class="delimiter">{</span>
+      <span class="comment">// nothing to do here</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">object</span> <a title="object cc.spray.client.DispatchStrategies.Pipelined" id="10187">Pipelined</a> <span title="ScalaObject" class="keyword">extends</span> <a href="#10186" title="cc.spray.client.DispatchStrategies.Pipelined">Pipelined</a>
+<span class="delimiter">}</span>
+        </pre>
+    </body>
+</html>

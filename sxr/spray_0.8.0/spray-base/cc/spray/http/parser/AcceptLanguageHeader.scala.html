@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/http/parser/AcceptLanguageHeader.scala</title>
+        <script type="text/javascript" src="../../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray.http
+<span class="keyword">package</span> parser
+
+<span class="keyword">import</span> org.parboiled.scala._
+<span class="keyword">import</span> <a href="BasicRules.scala.html#9765" title="object cc.spray.http.parser.BasicRules">BasicRules</a>._
+<span class="keyword">import</span> <a href="../LanguageRange.scala.html#9656" title="object cc.spray.http.LanguageRanges">LanguageRanges</a>._
+
+<span class="keyword">private</span><span class="delimiter">[</span>parser<span class="delimiter">]</span> <span class="keyword">trait</span> <a title="trait AcceptLanguageHeader extends java.lang.Object with ScalaObject" id="9741">AcceptLanguageHeader</a> <span title="ScalaObject" class="delimiter">{</span>
+  <span class="keyword">this</span>: Parser <span class="keyword">with</span> ProtocolParameterRules =&gt;
+
+  <span class="keyword">def</span> <a title="=&gt; org.parboiled.scala.rules.Rule1[cc.spray.http.HttpHeaders.Accept-Language]" id="42526">ACCEPT_LANGUAGE</a> = <a href="#9741" title="(block: =&gt; org.parboiled.scala.rules.Rule1[cc.spray.http.HttpHeaders.Accept-Language])(implicit creator: org.parboiled.matchers.Matcher =&gt; org.parboiled.scala.rules.Rule1[cc.spray.http.HttpHeaders.Accept-Language])org.parboiled.scala.rules.Rule1[cc.spray.http.HttpHeaders.Accept-Language]">rule</a> <a href="#60428" title="(m: org.parboiled.matchers.Matcher)org.parboiled.scala.package.Rule1[Nothing]" class="delimiter">(</a>
+    <a href="#9741" title="(sub: org.parboiled.scala.package.Rule1[Product with Serializable with cc.spray.http.LanguageRange], separator: org.parboiled.scala.package.Rule0)org.parboiled.scala.package.Rule1[List[Product with Serializable with cc.spray.http.LanguageRange]]">oneOrMore</a><span class="delimiter">(</span><a href="#42527" title="=&gt; org.parboiled.scala.rules.Rule1[Product with Serializable with cc.spray.http.LanguageRange]">LanguageRangeDef</a>, separator = <a href="BasicRules.scala.html#47974" title="=&gt; org.parboiled.scala.package.Rule0">ListSep</a><span class="delimiter">)</span> <span title="(other: org.parboiled.scala.rules.Rule0)org.parboiled.scala.rules.Rule1[List[Product with Serializable with cc.spray.http.LanguageRange]]">~</span> <span title="=&gt; org.parboiled.scala.package.Rule0">EOI</span> <span title="(f: List[Product with Serializable with cc.spray.http.LanguageRange] =&gt; cc.spray.http.HttpHeaders.Accept-Language)org.parboiled.scala.rules.Rule1[cc.spray.http.HttpHeaders.Accept-Language]">~~&gt;</span> <span class="delimiter">(</span><a href="../HttpHeader.scala.html#9606" title="object cc.spray.http.HttpHeaders">HttpHeaders</a>.<a href="../HttpHeader.scala.html#43427" title="(languageRanges: Seq[cc.spray.http.LanguageRange])cc.spray.http.HttpHeaders.Accept-Language">`Accept-Language`</a><span class="delimiter">(</span><a href="#60394" title="List[Product with Serializable with cc.spray.http.LanguageRange]">_</a><span class="delimiter">)</span><span class="delimiter">)</span>
+  <span class="delimiter">)</span>
+  
+  <span class="keyword">def</span> <a title="=&gt; org.parboiled.scala.rules.Rule1[Product with Serializable with cc.spray.http.LanguageRange]" id="42527">LanguageRangeDef</a> = <a href="#9741" title="(block: =&gt; org.parboiled.scala.rules.Rule1[Product with Serializable with cc.spray.http.LanguageRange])(implicit creator: org.parboiled.matchers.Matcher =&gt; org.parboiled.scala.rules.Rule1[Product with Serializable with cc.spray.http.LanguageRange])org.parboiled.scala.rules.Rule1[Product with Serializable with cc.spray.http.LanguageRange]">rule</a> <a href="#60211" title="(m: org.parboiled.matchers.Matcher)org.parboiled.scala.package.Rule1[Nothing]" class="delimiter">{</a>
+    <span class="delimiter">(</span><a href="ProtocolParameterRules.scala.html#42488" title="=&gt; org.parboiled.scala.rules.Rule2[java.lang.String,List[java.lang.String]]">LanguageTag</a> <span title="(f: (java.lang.String, List[java.lang.String]) =&gt; cc.spray.http.LanguageRanges.Language)org.parboiled.scala.rules.Rule1[cc.spray.http.LanguageRanges.Language]">~~&gt;</span> <span class="delimiter">(</span><a href="../LanguageRange.scala.html#46591" title="(primaryTag: String, subTags: String*)cc.spray.http.LanguageRanges.Language">Language</a><span class="delimiter">(</span><a href="#59318" title="java.lang.String">_</a>, <a href="#59319" title="List[java.lang.String]">_</a>: _*<span class="delimiter">)</span><span class="delimiter">)</span> <span title="(other: org.parboiled.scala.rules.Rule1[Product with Serializable with cc.spray.http.LanguageRange])org.parboiled.scala.rules.Rule1[Product with Serializable with cc.spray.http.LanguageRange]">|</span> <a href="#9741" title="implicit org.parboiled.scala.Parser.toRule : (string: String)org.parboiled.scala.package.Rule0" class="string">&quot;*&quot;</a> <span title="(other: org.parboiled.scala.rules.Rule1[cc.spray.http.LanguageRanges.*.type])org.parboiled.scala.rules.Rule1[cc.spray.http.LanguageRanges.*.type]">~</span> <a href="#9741" title="(f: =&gt; cc.spray.http.LanguageRanges.*.type)org.parboiled.scala.package.Rule1[cc.spray.http.LanguageRanges.*.type]">push</a><span class="delimiter">(</span><a href="../LanguageRange.scala.html#46548" title="object cc.spray.http.LanguageRanges.*">`*`</a><span class="delimiter">)</span><span class="delimiter">)</span> <span title="(other: org.parboiled.scala.rules.Rule0)org.parboiled.scala.rules.Rule1[Product with Serializable with cc.spray.http.LanguageRange]">~</span> <a href="#9741" title="(sub: org.parboiled.scala.package.Rule0)org.parboiled.scala.package.Rule0">optional</a><span class="delimiter">(</span><a href="#42528" title="=&gt; org.parboiled.scala.rules.Rule0">LanguageQuality</a><span class="delimiter">)</span> 
+  <span class="delimiter">}</span>
+  
+  <span class="keyword">def</span> <a title="=&gt; org.parboiled.scala.rules.Rule0" id="42528">LanguageQuality</a> = <a href="#9741" title="(block: =&gt; org.parboiled.scala.rules.Rule0)(implicit creator: org.parboiled.matchers.Matcher =&gt; org.parboiled.scala.rules.Rule0)org.parboiled.scala.rules.Rule0">rule</a> <a href="#60127" title="implicit org.parboiled.scala.package.creator4Rule0 : (m: org.parboiled.matchers.Matcher)org.parboiled.scala.package.Rule0" class="delimiter">{</a>
+    <a href="#9741" title="implicit org.parboiled.scala.Parser.toRule : (string: String)org.parboiled.scala.package.Rule0" class="string">&quot;;&quot;</a> <span title="(other: org.parboiled.scala.rules.Rule0)org.parboiled.scala.rules.Rule0">~</span> <a href="#9741" title="implicit org.parboiled.scala.Parser.toRule : (string: String)org.parboiled.scala.package.Rule0" class="string">&quot;q&quot;</a> <span title="(other: org.parboiled.scala.rules.Rule0)org.parboiled.scala.rules.Rule0">~</span> <a href="#9741" title="implicit org.parboiled.scala.Parser.toRule : (string: String)org.parboiled.scala.package.Rule0" class="string">&quot;=&quot;</a> <span title="(other: org.parboiled.scala.rules.Rule0)org.parboiled.scala.rules.Rule0">~</span> <a href="ProtocolParameterRules.scala.html#42487" title="=&gt; org.parboiled.scala.rules.Rule0">QValue</a>  <span class="comment">// TODO: support language quality</span>
+  <span class="delimiter">}</span>
+  
+<span class="delimiter">}</span>
+        </pre>
+    </body>
+</html>

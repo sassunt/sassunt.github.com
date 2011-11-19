@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/caching/LruCache.scala</title>
+        <script type="text/javascript" src="../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray
+<span class="keyword">package</span> caching
+
+<span class="keyword">import</span> utils._
+<span class="keyword">import</span> akka.util.duration._
+<span class="keyword">import</span> akka.util.Duration
+<span class="keyword">import</span> collection.mutable.LinkedHashMap
+<span class="keyword">import</span> akka.dispatch.<span class="delimiter">{</span>AlreadyCompletedFuture, Future<span class="delimiter">}</span>
+
+<span class="keyword">object</span> <a title="object cc.spray.caching.LruCache" id="9673">LruCache</a> <span title="ScalaObject" class="delimiter">{</span>
+  <span class="comment">/**
+   * Creates a new LruCache instance
+   */</span>
+  <span class="keyword">def</span> <a title="[V](maxEntries: Int, dropFraction: Double, ttl: akka.util.Duration)cc.spray.caching.LruCache[V]" id="38260">apply</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="38424">V</a><span class="delimiter">]</span><span class="delimiter">(</span><a title="Int" id="38422">maxEntries</a>: <span title="Int">Int</span> = <span title="Int(500)" class="int">500</span>, <a title="Double" id="38425">dropFraction</a>: <span title="Double">Double</span> = <span title="Double(0.2)" class="double">0.20</span>, <a title="akka.util.Duration" id="38428">ttl</a>: <span title="akka.util.Duration">Duration</span> = <span title="implicit akka.util.duration.package.intToDurationInt : (n: Int)akka.util.DurationInt" class="int">5</span>.<span title="=&gt; akka.util.Duration">minutes</span><span class="delimiter">)</span> = <span class="delimiter">{</span>
+    <span title="cc.spray.caching.LruCache[V]" class="keyword">new</span> <a href="#9675" title="cc.spray.caching.LruCache[V]">LruCache</a><span class="delimiter">[</span>V<span class="delimiter">]</span><span class="delimiter">(</span><a href="#38422" title="Int">maxEntries</a>, <a href="#38425" title="Double">dropFraction</a>, <a href="#38428" title="akka.util.Duration">ttl</a><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+<span class="delimiter">}</span>
+
+<span class="comment">/**
+ * A last-recently-used cache with a defined capacity and time-to-live.
+ * The {{dropFraction}} parameter is used for evicting items from the cache when the maximum capacity is reached.
+ * E.g. with a {{maxEntries}} value of 100 and a {{dropFraction}} of 0.20 the cache will evict the oldest 20 cache
+ * entries when the 101st entry is about to be stored.
+ */</span>
+<span class="keyword">class</span> <a title="class LruCache[V] extends java.lang.Object with cc.spray.caching.Cache[V] with ScalaObject" id="9675">LruCache</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="9676">V</a><span class="delimiter">]</span><a href="#9675" title="ScalaObject" class="delimiter">(</a><span class="keyword">val</span> <a title="Int" id="38280">maxEntries</a>: <span title="Int">Int</span>, <span class="keyword">val</span> <a title="Double" id="38281">dropFraction</a>: <span title="Double">Double</span>, <span class="keyword">val</span> <a title="akka.util.Duration" id="38282">ttl</a>: <span title="akka.util.Duration">Duration</span><span class="delimiter">)</span> <span class="keyword">extends</span> <a href="Cache.scala.html#9657" title="cc.spray.caching.Cache[V]">Cache</a><span class="delimiter">[</span>V<span class="delimiter">]</span> <span class="delimiter">{</span> cache =&gt;
+  <span title="(requirement: Boolean, message: =&gt; Any)Unit">require</span><span class="delimiter">(</span><span title="Double(0.0)" class="double">0.0</span> <span title="(x: Double)Boolean">&lt;</span> <a href="#38281" title="=&gt; Double">dropFraction</a> <span title="(x: Boolean)Boolean">&amp;&amp;</span> <a href="#38281" title="=&gt; Double">dropFraction</a> <span title="(x: Double)Boolean">&lt;</span> <span title="Double(1.0)" class="double">1.0</span>, <span title="java.lang.String(&quot;dropFraction must be &gt; 0 and &lt; 1&quot;)" class="string">&quot;dropFraction must be &gt; 0 and &lt; 1&quot;</span><span class="delimiter">)</span>
+
+  <span class="keyword">class</span> <a title="class Entry extends java.lang.Object with ScalaObject" id="38274">Entry</a><a href="#38274" title="ScalaObject" class="delimiter">(</a><span class="keyword">val</span> <a title="akka.dispatch.Future[V]" id="39158">future</a>: <span title="akka.dispatch.Future[V]">Future</span><span class="delimiter">[</span>V<span class="delimiter">]</span><span class="delimiter">)</span> <span class="delimiter">{</span>
+    <span class="keyword">private</span> <span class="keyword">var</span> <a title="Long" id="38970">lastUsed</a> = <span title="object java.lang.System">System</span>.<span title="()Long">currentTimeMillis</span>
+    <span class="keyword">def</span> <a title="()Unit" id="38972">refresh</a><span class="delimiter">(</span><span class="delimiter">)</span> <span class="delimiter">{</span> <a href="#38970" title="(x$1: Long)Unit">lastUsed</a> = <span title="object java.lang.System">System</span>.<span title="()Long">currentTimeMillis</span> <span class="delimiter">}</span>
+    <span class="keyword">def</span> <a title="=&gt; Boolean" id="38973">isAlive</a> = <span class="delimiter">(</span><span title="object java.lang.System">System</span>.<span title="()Long">currentTimeMillis</span> <span title="implicit akka.util.duration.package.longToDurationLong : (n: Long)akka.util.DurationLong">-</span> <a href="#38970" title="=&gt; Long">lastUsed</a><span class="delimiter">)</span>.<span title="=&gt; akka.util.Duration">millis</span> <span title="(other: akka.util.Duration)Boolean">&lt;</span> <a href="#38282" title="=&gt; akka.util.Duration">ttl</a> <span class="comment">// note that infinite Durations do not support .toMillis</span>
+    <span class="keyword">override</span> <span class="keyword">def</span> <a title="()java.lang.String" id="38974">toString</a> = <a href="#39158" title="=&gt; akka.dispatch.Future[V]">future</a>.<span title="=&gt; Option[Either[Throwable,V]]">value</span> <span title="java.lang.String" class="keyword">match</span> <span class="delimiter">{</span>
+      <span class="keyword">case</span> <span title="java.lang.String">Some</span><span class="delimiter">(</span>Right<span class="delimiter">(</span><a title="V" id="39181">value</a><span class="delimiter">)</span><span class="delimiter">)</span> =&gt; <a href="#39181" title="V">value</a>.<span title="()java.lang.String">toString</span>
+      <span class="keyword">case</span> <span title="java.lang.String">Some</span><span class="delimiter">(</span>Left<span class="delimiter">(</span><a title="Throwable" id="39184">exception</a><span class="delimiter">)</span><span class="delimiter">)</span> =&gt; <a href="#39184" title="Throwable">exception</a>.<span title="()java.lang.String">toString</span>
+      <span class="keyword">case</span> <span title="java.lang.String(&quot;pending&quot;)">None</span> =&gt; <span title="java.lang.String(&quot;pending&quot;)" class="string">&quot;pending&quot;</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">protected</span><span class="delimiter">[</span>caching<span class="delimiter">]</span> <span class="keyword">val</span> <a title="LruCache.this.Store" id="38275">store</a> = <span title="LruCache.this.Store" class="keyword">new</span> <a href="#38279" title="LruCache.this.Store">Store</a>
+
+  <span class="keyword">def</span> <a title="(key: Any)Option[akka.dispatch.Future[V]]" id="38277">get</a><span class="delimiter">(</span><a title="Any" id="39185">key</a>: <span title="Any">Any</span><span class="delimiter">)</span> = <a href="#9675" title="(x$1: Option[akka.dispatch.Future[V]])Option[akka.dispatch.Future[V]]">synchronized</a> <span class="delimiter">{</span>
+    <a href="#38275" title="=&gt; LruCache.this.Store">store</a>.<a href="#38572" title="(key: Any)Option[LruCache.this.Entry]">getEntry</a><span class="delimiter">(</span><a href="#39185" title="Any">key</a><span class="delimiter">)</span>.<span title="(f: LruCache.this.Entry =&gt; akka.dispatch.Future[V])Option[akka.dispatch.Future[V]]">map</span><span class="delimiter">(</span><a href="#39196" title="LruCache.this.Entry">_</a>.<a href="#39158" title="=&gt; akka.dispatch.Future[V]">future</a><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">def</span> <a title="(key: Any)(future: =&gt; akka.dispatch.Future[V])akka.dispatch.Future[V]" id="38278">fromFuture</a><span class="delimiter">(</span><a title="Any" id="39199">key</a>: <span title="Any">Any</span><span class="delimiter">)</span><span class="delimiter">(</span><a title="=&gt; akka.dispatch.Future[V]" id="39200">future</a>: =&gt; Future<span class="delimiter">[</span>V<span class="delimiter">]</span><span class="delimiter">)</span>: <span title="akka.dispatch.Future[V]">Future</span><span class="delimiter">[</span>V<span class="delimiter">]</span> = <a href="#9675" title="(x$1: akka.dispatch.Future[V])akka.dispatch.Future[V]">synchronized</a> <span class="delimiter">{</span>
+    <a href="#38275" title="=&gt; LruCache.this.Store">store</a>.<a href="#38572" title="(key: Any)Option[LruCache.this.Entry]">getEntry</a><span class="delimiter">(</span><a href="#39199" title="Any">key</a><span class="delimiter">)</span> <span title="akka.dispatch.Future[V]" class="keyword">match</span> <span class="delimiter">{</span>
+      <span class="keyword">case</span> <span title="akka.dispatch.Future[V]">Some</span><span class="delimiter">(</span><a title="LruCache.this.Entry" id="39206">entry</a><span class="delimiter">)</span> =&gt; <a href="#39206" title="LruCache.this.Entry">entry</a>.<a href="#39158" title="=&gt; akka.dispatch.Future[V]">future</a>
+      <span class="keyword">case</span> <span title="akka.dispatch.Future[V]">None</span> =&gt; <span title="(a: akka.dispatch.Future[V])(f: akka.dispatch.Future[V] =&gt; Any)akka.dispatch.Future[V]">make</span><span class="delimiter">(</span><a href="#39200" title="=&gt; akka.dispatch.Future[V]">future</a><span class="delimiter">)</span> <span class="delimiter">{</span> <a title="akka.dispatch.Future[V]" id="39216">future</a> =&gt;
+        <a href="#38275" title="=&gt; LruCache.this.Store">store</a>.<a href="#38573" title="(key: Any, entry: LruCache.this.Entry)Unit">setEntry</a><span class="delimiter">(</span><a href="#39199" title="Any">key</a>, <span title="LruCache.this.Entry" class="keyword">new</span> <a href="#38274" title="LruCache.this.Entry">Entry</a><span class="delimiter">(</span><a href="#39216" title="akka.dispatch.Future[V]">future</a><span class="delimiter">)</span><span class="delimiter">)</span>
+        <span title="Any" class="keyword">if</span> <span class="delimiter">(</span><span title="=&gt; Boolean">!</span><a href="#39216" title="akka.dispatch.Future[V]">future</a>.<span title="[T0]=&gt; Boolean">isInstanceOf</span><span title="Boolean" class="delimiter">[</span><span title="akka.dispatch.AlreadyCompletedFuture[_]">AlreadyCompletedFuture</span><span class="delimiter">[</span>_<span class="delimiter">]</span><span class="delimiter">]</span><span class="delimiter">)</span> <span class="delimiter">{</span>
+          <a href="#39216" title="akka.dispatch.Future[V]">future</a>.<span title="(func: akka.dispatch.Future[V] =&gt; Unit)future.type">onComplete</span> <span class="delimiter">{</span> <a title="akka.dispatch.Future[V]" id="39249">fut</a> =&gt;
+            <a href="#9675" title="LruCache.this.type">cache</a>.<span title="(x$1: Any)Any">synchronized</span> <span title="Unit" class="delimiter">{</span>
+              <a href="#39249" title="akka.dispatch.Future[V]">fut</a>.<span title="=&gt; Option[Either[Throwable,V]]">value</span>.<span title="=&gt; Either[Throwable,V]">get</span> <span title="Any" class="keyword">match</span> <span class="delimiter">{</span>
+                <span class="keyword">case</span> <span title="Unit">Right</span><span class="delimiter">(</span><a title="V" id="39253">value</a><span class="delimiter">)</span> =&gt; <a href="#38275" title="=&gt; LruCache.this.Store">store</a>.<a href="#38573" title="(key: Any, entry: LruCache.this.Entry)Unit">setEntry</a><span class="delimiter">(</span><a href="#39199" title="Any">key</a>, <span title="LruCache.this.Entry" class="keyword">new</span> <a href="#38274" title="LruCache.this.Entry">Entry</a><span class="delimiter">(</span><span title="akka.dispatch.AlreadyCompletedFuture[V]" class="keyword">new</span> <span title="akka.dispatch.AlreadyCompletedFuture[V]">AlreadyCompletedFuture</span><span class="delimiter">(</span><span title="(b: V)Right[Nothing,V]">Right</span><span class="delimiter">(</span><a href="#39253" title="V">value</a><span class="delimiter">)</span><span class="delimiter">)</span><span class="delimiter">)</span><span class="delimiter">)</span>
+                <span class="keyword">case</span> <span title="Option[LruCache.this.Entry]">_</span> =&gt; <a href="#38275" title="=&gt; LruCache.this.Store">store</a>.<span title="(key: Any)Option[LruCache.this.Entry]">remove</span><span class="delimiter">(</span><a href="#39199" title="Any">key</a><span class="delimiter">)</span> <span class="comment">// in case of exceptions we remove the cache entry (i.e. try again later)</span>
+              <span class="delimiter">}</span>
+            <span class="delimiter">}</span>
+          <span class="delimiter">}</span>
+        <span class="delimiter">}</span>
+      <span class="delimiter">}</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">protected</span> <span class="keyword">class</span> <a title="class Store extends scala.collection.mutable.LinkedHashMap[Any,LruCache.this.Entry] with ScalaObject" id="38279">Store</a> <a href="#38279" title="ScalaObject" class="keyword">extends</a> <span title="scala.collection.mutable.LinkedHashMap[Any,LruCache.this.Entry]">LinkedHashMap</span><span class="delimiter">[</span>Any, Entry<span class="delimiter">]</span> <span class="delimiter">{</span>
+    <span class="keyword">def</span> <a title="(key: Any)Option[LruCache.this.Entry]" id="38572">getEntry</a><span class="delimiter">(</span><a title="Any" id="39190">key</a>: <span title="Any">Any</span><span class="delimiter">)</span>: <span title="Option[LruCache.this.Entry]">Option</span><span class="delimiter">[</span>cache.Entry<span class="delimiter">]</span> = <a href="#38279" title="(key: Any)Option[LruCache.this.Entry]">get</a><span class="delimiter">(</span><a href="#39190" title="Any">key</a><span class="delimiter">)</span>.<span title="(f: LruCache.this.Entry =&gt; Option[LruCache.this.Entry])Option[LruCache.this.Entry]">flatMap</span> <span class="delimiter">{</span> <a title="LruCache.this.Entry" id="39299">entry</a> =&gt;
+      <span title="Option[LruCache.this.Entry]" class="keyword">if</span> <span class="delimiter">(</span><a href="#39299" title="LruCache.this.Entry">entry</a>.<a href="#38973" title="=&gt; Boolean">isAlive</a><span class="delimiter">)</span> <span class="delimiter">{</span>
+        <a href="#39299" title="LruCache.this.Entry">entry</a>.<a href="#38972" title="()Unit">refresh</a><span class="delimiter">(</span><span class="delimiter">)</span>
+        <a href="#38279" title="(key: Any)Option[LruCache.this.Entry]">remove</a><span class="delimiter">(</span><a href="#39190" title="Any">key</a><span class="delimiter">)</span>       <span class="comment">// TODO: replace with optimized &quot;refresh&quot; implementation</span>
+        <a href="#38279" title="(key: Any, value: LruCache.this.Entry)Option[LruCache.this.Entry]">put</a><span class="delimiter">(</span><a href="#39190" title="Any">key</a>, <a href="#39299" title="LruCache.this.Entry">entry</a><span class="delimiter">)</span>
+        <span title="(x: LruCache.this.Entry)Some[LruCache.this.Entry]">Some</span><span class="delimiter">(</span><a href="#39299" title="LruCache.this.Entry">entry</a><span class="delimiter">)</span>
+      <span class="delimiter">}</span> <span class="keyword">else</span> <span class="delimiter">{</span>
+        <span class="comment">// entry expired, so remove this one and all earlier ones (they have expired as well)</span>
+        <span title="Unit" class="keyword">while</span> <span class="delimiter">(</span><a href="#38279" title="=&gt; Store.this.Entry">firstEntry</a>.<span title="=&gt; Any">key</span> <span title="(x$1: Any)Boolean">!=</span> <a href="#39190" title="Any">key</a><span class="delimiter">)</span> <a href="#38279" title="(key: Any)Option[LruCache.this.Entry]">remove</a><a href="#39309" title="()Unit" class="delimiter">(</a><a href="#38279" title="=&gt; Store.this.Entry">firstEntry</a>.<span title="=&gt; Any">key</span><span class="delimiter">)</span>
+        <a href="#38279" title="(key: Any)Option[LruCache.this.Entry]">remove</a><span class="delimiter">(</span><a href="#39190" title="Any">key</a><span class="delimiter">)</span>
+        <span title="object None">None</span>
+      <span class="delimiter">}</span>
+    <span class="delimiter">}</span>
+
+    <span class="keyword">def</span> <a title="(key: Any, entry: LruCache.this.Entry)Unit" id="38573">setEntry</a><span class="delimiter">(</span><a title="Any" id="39217">key</a>: <span title="Any">Any</span>, <a title="LruCache.this.Entry" id="39218">entry</a>: cache.<a href="#38274" title="LruCache.this.Entry">Entry</a><span class="delimiter">)</span> <span class="delimiter">{</span>
+      <a href="#38279" title="(key: Any, value: LruCache.this.Entry)Option[LruCache.this.Entry]">put</a><span class="delimiter">(</span><a href="#39217" title="Any">key</a>, <a href="#39218" title="LruCache.this.Entry">entry</a><span class="delimiter">)</span>
+      <span title="Unit" class="keyword">if</span> <span class="delimiter">(</span><a href="#38279" title="=&gt; Int">size</a> <span title="(x: Int)Boolean">&gt;</span> <a href="#38280" title="=&gt; Int">maxEntries</a><span class="delimiter">)</span> <span class="delimiter">{</span>
+        <span class="comment">// remove the earliest entries</span>
+        <span class="keyword">val</span> <a title="Int" id="39325">newSize</a> = <a href="#38280" title="=&gt; Int">maxEntries</a> <span title="(x: Int)Int">-</span> <span class="delimiter">(</span><a href="#38280" title="=&gt; Int">maxEntries</a> <span title="(x: Double)Double">*</span> <a href="#38281" title="=&gt; Double">dropFraction</a><span class="delimiter">)</span>.<span title="=&gt; Int">toInt</span>
+        <span title="Unit" class="keyword">while</span> <span class="delimiter">(</span><a href="#38279" title="=&gt; Int">size</a> <span title="(x: Int)Boolean">&gt;</span> <a href="#39325" title="Int">newSize</a><span class="delimiter">)</span> <a href="#38279" title="(key: Any)Option[LruCache.this.Entry]">remove</a><a href="#39334" title="()Unit" class="delimiter">(</a><a href="#38279" title="=&gt; Store.this.Entry">firstEntry</a>.<span title="=&gt; Any">key</span><span class="delimiter">)</span>
+      <span class="delimiter">}</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+<span class="delimiter">}</span>
+        </pre>
+    </body>
+</html>

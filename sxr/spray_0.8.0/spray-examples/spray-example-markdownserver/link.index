@@ -1,0 +1,16 @@
+[cc/spray/examples/markdownserver/MarkdownService.scala]
+ 13495 term cc.spray.examples.markdownserver.MarkdownService.rewritePath(1212e8bcae157bd966e64887bb1f8ab0ee9f63b4)
+ 13493 term cc.spray.examples.markdownserver.MarkdownService.markdownService
+ 13491 term cc.spray.examples.markdownserver.MarkdownService.MarkdownType(48b7160bb2001d254c559e5fc2cec474a78d7708)
+ 13496 term cc.spray.examples.markdownserver.MarkdownService.markdown2Html(8b242b991797eedd5b3f51d50016a23f0b8b2809)
+ 13491 term cc.spray.examples.markdownserver.MarkdownService.MarkdownType
+ 9910 type cc.spray.examples.markdownserver.MarkdownService
+ 13493 term cc.spray.examples.markdownserver.MarkdownService.markdownService(60291177823a1effd55573b5f69703eccd7f9787)
+[cc/spray/examples/markdownserver/Boot.scala]
+ 9902 type cc.spray.examples.markdownserver.Boot
+ 11335 term cc.spray.examples.markdownserver.Boot.httpService
+ 11333 term cc.spray.examples.markdownserver.Boot.mainModule
+ 11335 term cc.spray.examples.markdownserver.Boot.httpService(00a172aff4be2664340310b8f0cfa4b3f8d78239)
+ 11337 term cc.spray.examples.markdownserver.Boot.rootService(00a172aff4be2664340310b8f0cfa4b3f8d78239)
+ 11337 term cc.spray.examples.markdownserver.Boot.rootService
+ 11333 term cc.spray.examples.markdownserver.Boot.mainModule(6c32344e65eeedd804588f97585a3276491e080f)

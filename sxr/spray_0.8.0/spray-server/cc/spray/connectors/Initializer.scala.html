@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/connectors/Initializer.scala</title>
+        <script type="text/javascript" src="../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray.connectors
+
+<span class="keyword">import</span> akka.actor.BootableActorLoaderService
+
+<span class="keyword">import</span> javax.servlet.<span class="delimiter">{</span>ServletContextListener, ServletContextEvent<span class="delimiter">}</span>
+<span class="keyword">import</span> akka.util.AkkaLoader
+
+<span class="keyword">class</span> <a title="class Initializer extends java.lang.Object with javax.servlet.ServletContextListener with ScalaObject" id="9697">Initializer</a> <a href="#9697" title="ScalaObject" class="keyword">extends</a> <span title="javax.servlet.ServletContextListener">ServletContextListener</span> <span class="delimiter">{</span>
+  <span class="keyword">lazy</span> <span class="keyword">val</span> <a title="akka.util.AkkaLoader" id="42448">loader</a> = <span title="akka.util.AkkaLoader" class="keyword">new</span> <span title="akka.util.AkkaLoader">AkkaLoader</span>
+  
+  <span class="keyword">def</span> <a title="(e: javax.servlet.ServletContextEvent)Unit" id="42449">contextDestroyed</a><span class="delimiter">(</span><a title="javax.servlet.ServletContextEvent" id="42465">e</a>: <span title="javax.servlet.ServletContextEvent">ServletContextEvent</span><span class="delimiter">)</span> <span class="delimiter">{</span>
+    <a href="#42447" title="=&gt; akka.util.AkkaLoader">loader</a>.<span title="()Unit">shutdown</span><span class="delimiter">(</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+  
+  <span class="keyword">def</span> <a title="(e: javax.servlet.ServletContextEvent)Unit" id="42450">contextInitialized</a><span class="delimiter">(</span><a title="javax.servlet.ServletContextEvent" id="42470">e</a>: <span title="javax.servlet.ServletContextEvent">ServletContextEvent</span><span class="delimiter">)</span> <span class="delimiter">{</span>
+    <a href="#42447" title="=&gt; akka.util.AkkaLoader">loader</a>.<span title="(withBanner: Boolean, b: akka.util.Bootable)Unit">boot</span><span class="delimiter">(</span><span title="Boolean(true)" class="keyword">true</span>, <a href="#42472" title="java.lang.Object with akka.actor.BootableActorLoaderService" class="keyword">new</a> <a title="anonymous class $anon extends java.lang.Object with akka.actor.BootableActorLoaderService" id="42472">BootableActorLoaderService</a> <span class="delimiter">{</span><span class="delimiter">}</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+<span class="delimiter">}</span>
+
+        </pre>
+    </body>
+</html>

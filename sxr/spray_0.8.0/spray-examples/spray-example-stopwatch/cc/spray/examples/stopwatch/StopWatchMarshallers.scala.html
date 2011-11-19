@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/examples/stopwatch/StopWatchMarshallers.scala</title>
+        <script type="text/javascript" src="../../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="keyword">package</span> cc.spray
+<span class="keyword">package</span> examples.stopwatch
+
+<span class="keyword">import</span> http._
+<span class="keyword">import</span> typeconversion._
+<span class="keyword">import</span> <span title="object cc.spray.http.MediaTypes">MediaTypes</span>._
+<span class="keyword">import</span> collection.Map
+
+<span class="keyword">trait</span> <a title="trait StopWatchMarshallers extends java.lang.Object with cc.spray.typeconversion.DefaultMarshallers with ScalaObject" id="9911">StopWatchMarshallers</a> <span title="ScalaObject" class="keyword">extends</span> <span title="cc.spray.typeconversion.DefaultMarshallers">DefaultMarshallers</span> <span class="delimiter">{</span>
+  <span class="keyword">this</span>: StopWatchService =&gt;
+
+  <span class="comment">/**
+   * Marshaller for a whole map of StopWatches
+   */</span>
+  <span class="keyword">implicit</span> <span class="keyword">object</span> <a title="object StopWatchMarshallers.this.StopWatchesMarshaller" id="14977">StopWatchesMarshaller</a> <span title="ScalaObject" class="keyword">extends</span> <span title="cc.spray.typeconversion.MarshallerBase[scala.collection.Map[Int,StopWatchMarshallers.this.StopWatch]]">MarshallerBase</span><span class="delimiter">[</span>Map<span class="delimiter">[</span>Int, StopWatch<span class="delimiter">]</span><span class="delimiter">]</span> <span class="delimiter">{</span>
+    <span class="keyword">val</span> <a title="List[cc.spray.http.ContentType]" id="19468">canMarshalTo</a> = <span title="(mediaType: cc.spray.http.MediaType)cc.spray.http.ContentType">ContentType</span><span class="delimiter">(</span><span title="=&gt; cc.spray.http.MediaType">`text/html`</span><span class="delimiter">)</span> <a href="#34942" title="(x: cc.spray.http.ContentType)List[cc.spray.http.ContentType]">::</a> <span title="object Nil">Nil</span>
+
+    <span class="keyword">def</span> <a title="(value: scala.collection.Map[Int,StopWatchMarshallers.this.StopWatch], contentType: cc.spray.http.ContentType)cc.spray.http.HttpContent" id="19470">marshal</a><span class="delimiter">(</span><a title="scala.collection.Map[Int,StopWatchMarshallers.this.StopWatch]" id="34987">value</a>: <span title="scala.collection.Map[Int,StopWatchMarshallers.this.StopWatch]">Map</span><span class="delimiter">[</span>Int, StopWatch<span class="delimiter">]</span>, <a title="cc.spray.http.ContentType" id="34988">contentType</a>: <span title="cc.spray.http.ContentType">ContentType</span><span class="delimiter">)</span> = <a href="#34988" title="cc.spray.http.ContentType">contentType</a> <span title="cc.spray.http.HttpContent" class="keyword">match</span> <span class="delimiter">{</span>
+      <span class="keyword">case</span> <a title="cc.spray.http.HttpContent" id="34993">x</a>@ ContentType<span class="delimiter">(</span><span title="=&gt; cc.spray.http.MediaType">`text/html`</span>, _<span class="delimiter">)</span> =&gt; <a href="#9911" title="=&gt; cc.spray.typeconversion.MarshallerBase[scala.xml.NodeSeq]">NodeSeqMarshaller</a>.<span title="(value: scala.xml.NodeSeq, contentType: cc.spray.http.ContentType)cc.spray.http.HttpContent">marshal</span><span class="delimiter">(</span><a href="#19471" title="(value: scala.collection.Map[Int,StopWatchMarshallers.this.StopWatch])scala.xml.Elem">marshalToHtml</a><span class="delimiter">(</span><a href="#34987" title="scala.collection.Map[Int,StopWatchMarshallers.this.StopWatch]">value</a><span class="delimiter">)</span>, <a href="#34993" title="cc.spray.http.ContentType">x</a><span class="delimiter">)</span>  
+      <span class="keyword">case</span> <span title="Nothing">_</span> =&gt; <span title="Nothing" class="keyword">throw</span> <span title="java.lang.IllegalArgumentException" class="keyword">new</span> <span title="java.lang.IllegalArgumentException">IllegalArgumentException</span>
+    <span class="delimiter">}</span>
+    
+    <span class="keyword">def</span> <a title="(value: scala.collection.Map[Int,StopWatchMarshallers.this.StopWatch])scala.xml.Elem" id="19471">marshalToHtml</a><span class="delimiter">(</span><a title="scala.collection.Map[Int,StopWatchMarshallers.this.StopWatch]" id="34996">value</a>: <span title="scala.collection.Map[Int,StopWatchMarshallers.this.StopWatch]">Map</span><span class="delimiter">[</span>Int, StopWatch<span class="delimiter">]</span><span class="delimiter">)</span> = <span class="delimiter">{</span>
+      &lt;<a title="scala.xml.Elem" id="34999">html</a>&gt;
+        &lt;<a title="scala.xml.Elem" id="35000">body</a>&gt;
+          &lt;<a title="scala.xml.Elem" id="35001">h1</a>&gt;<span title="scala.xml.Text">Stopwatches</span>&lt;/h1&gt;
+          <span class="delimiter">{</span>
+            <span title="Any" class="keyword">if</span> <span class="delimiter">(</span><a href="#34996" title="scala.collection.Map[Int,StopWatchMarshallers.this.StopWatch]">value</a>.<span title="=&gt; Boolean">isEmpty</span><span class="delimiter">)</span> <span class="delimiter">{</span>
+              &lt;<a title="scala.xml.Elem" id="35008">p</a>&gt;<span title="scala.xml.Text">No</span> watches defined&lt;/p&gt;
+            <span class="delimiter">}</span> <span class="keyword">else</span> <span class="delimiter">{</span>
+              <span class="keyword">for</span> <span class="delimiter">(</span><span class="delimiter">(</span><a title="Int" id="35048">id</a>, <a title="StopWatchMarshallers.this.StopWatch" id="35049">watch</a><span class="delimiter">)</span> &lt;- <a href="#34996" title="(f: (Int, StopWatchMarshallers.this.StopWatch) =&gt; scala.xml.Elem)(implicit bf: scala.collection.generic.CanBuildFrom[scala.collection.Map[Int,StopWatchMarshallers.this.StopWatch],scala.xml.Elem,Any])Any">value</a><span class="delimiter">)</span> <span class="keyword">yield</span> <span class="delimiter">{</span>
+                <span class="keyword">val</span> <a title="java.lang.String" id="35050">watchUri</a> = <span title="java.lang.String(&quot;/watch/&quot;)" class="string">&quot;/watch/&quot;</span> <span title="(x$1: Any)java.lang.String">+</span> <a href="#35048" title="Int">id</a>              
+                &lt;<a title="scala.xml.Elem" id="35051">p</a>&gt;<span title="scala.xml.Text">Watch</span> <span class="delimiter">{</span><a href="#35048" title="Int">id</a><span class="delimiter">}</span>:
+                <span class="delimiter">{</span>
+                  <span title="(xs: java.lang.String*)List[java.lang.String]">List</span><span class="delimiter">(</span><span title="java.lang.String(&quot;view&quot;)" class="string">&quot;view&quot;</span>, <span title="java.lang.String(&quot;delete&quot;)" class="string">&quot;delete&quot;</span>, <span title="java.lang.String(&quot;start&quot;)" class="string">&quot;start&quot;</span>, <span title="java.lang.String(&quot;stop&quot;)" class="string">&quot;stop&quot;</span>, <span title="java.lang.String(&quot;clear&quot;)" class="string">&quot;clear&quot;</span><span class="delimiter">)</span>.<span title="(f: java.lang.String =&gt; scala.xml.Elem)(implicit bf: scala.collection.generic.CanBuildFrom[List[java.lang.String],scala.xml.Elem,Any])Any">map</span> <span title="scala.collection.generic.CanBuildFrom[scala.collection.immutable.List.Coll,scala.xml.Elem,List[scala.xml.Elem]]" class="delimiter">{</span> <a title="java.lang.String" id="35100">action</a> =&gt;
+                    <span class="keyword">val</span> <a title="java.lang.String" id="35101">path</a> = <span title="java.lang.String" class="keyword">if</span> <span class="delimiter">(</span><a href="#35100" title="java.lang.String">action</a> <span title="(x$1: AnyRef)Boolean">==</span> <span title="java.lang.String(&quot;view&quot;)" class="string">&quot;view&quot;</span><span class="delimiter">)</span> <span title="java.lang.String(&quot;&quot;)" class="string">&quot;&quot;</span> <span class="keyword">else</span> <span title="java.lang.String(&quot;/&quot;)" class="string">&quot;/&quot;</span> <span title="(x$1: Any)java.lang.String">+</span> <a href="#35100" title="java.lang.String">action</a> <span title="(x$1: Any)java.lang.String">+</span> <span title="java.lang.String(&quot;?method=post&quot;)" class="string">&quot;?method=post&quot;</span> 
+                    &lt;<a title="scala.xml.Elem" id="35106">span</a>&gt; &lt;<a title="scala.xml.MetaData" id="35112">a</a> href=<span class="delimiter">{</span><a href="#35050" title="java.lang.String">watchUri</a> <span title="(x$1: Any)java.lang.String">+</span> <a href="#35101" title="java.lang.String">path</a><span class="delimiter">}</span>&gt;<span class="delimiter">{</span><a href="#35100" title="java.lang.String">action</a><span class="delimiter">}</span>&lt;/a&gt;&lt;/span&gt;
+                  <span class="delimiter">}</span>                
+                <span class="delimiter">}</span>
+                &lt;/p&gt;
+              <span class="delimiter">}</span>
+            <span class="delimiter">}</span>
+          <span class="delimiter">}</span>
+          &lt;<a title="scala.xml.Elem" id="37538">p</a>&gt;&lt;<a title="scala.xml.MetaData" id="37544">a</a> href=<span title="scala.xml.Text" class="string">&quot;/watches?method=post&quot;</span>&gt;<span title="scala.xml.Text">Create</span> <span class="keyword">new</span> watch&lt;/a&gt;&lt;/p&gt;
+        &lt;/body&gt;
+      &lt;/html&gt;
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+  
+  <span class="comment">/**
+   * Marshaller for a single StopWatch
+   */</span>
+  <span class="keyword">implicit</span> <span class="keyword">object</span> <a title="object StopWatchMarshallers.this.StopWatchMarshaller" id="14979">StopWatchMarshaller</a> <span title="ScalaObject" class="keyword">extends</span> <span title="cc.spray.typeconversion.MarshallerBase[StopWatchMarshallers.this.StopWatch]">MarshallerBase</span><span class="delimiter">[</span>StopWatch<span class="delimiter">]</span> <span class="delimiter">{</span>
+    <span class="keyword">val</span> <a title="List[cc.spray.http.ContentType]" id="19215">canMarshalTo</a> = <span title="(mediaType: cc.spray.http.MediaType)cc.spray.http.ContentType">ContentType</span><span class="delimiter">(</span><span title="=&gt; cc.spray.http.MediaType">`text/html`</span><span class="delimiter">)</span> <a href="#37589" title="(x: cc.spray.http.ContentType)List[cc.spray.http.ContentType]">::</a> <span title="object Nil">Nil</span>
+
+    <span class="keyword">def</span> <a title="(value: StopWatchMarshallers.this.StopWatch, contentType: cc.spray.http.ContentType)cc.spray.http.HttpContent" id="19217">marshal</a><span class="delimiter">(</span><a title="StopWatchMarshallers.this.StopWatch" id="37599">value</a>: <a href="StopWatchService.scala.html#14282" title="StopWatchMarshallers.this.StopWatch">StopWatch</a>, <a title="cc.spray.http.ContentType" id="37600">contentType</a>: <span title="cc.spray.http.ContentType">ContentType</span><span class="delimiter">)</span> = <a href="#37600" title="cc.spray.http.ContentType">contentType</a> <span title="cc.spray.http.HttpContent" class="keyword">match</span> <span class="delimiter">{</span>
+      <span class="keyword">case</span> <a title="cc.spray.http.HttpContent" id="37605">x</a>@ ContentType<span class="delimiter">(</span><span title="=&gt; cc.spray.http.MediaType">`text/html`</span>, _<span class="delimiter">)</span> =&gt; <a href="#9911" title="=&gt; cc.spray.typeconversion.MarshallerBase[scala.xml.NodeSeq]">NodeSeqMarshaller</a>.<span title="(value: scala.xml.NodeSeq, contentType: cc.spray.http.ContentType)cc.spray.http.HttpContent">marshal</span><span class="delimiter">(</span><a href="#19218" title="(value: StopWatchMarshallers.this.StopWatch)scala.xml.Elem">marshalToHtml</a><span class="delimiter">(</span><a href="#37599" title="StopWatchMarshallers.this.StopWatch">value</a><span class="delimiter">)</span>, <a href="#37605" title="cc.spray.http.ContentType">x</a><span class="delimiter">)</span>    
+      <span class="keyword">case</span> <span title="Nothing">_</span> =&gt; <span title="Nothing" class="keyword">throw</span> <span title="java.lang.IllegalArgumentException" class="keyword">new</span> <span title="java.lang.IllegalArgumentException">IllegalArgumentException</span>
+    <span class="delimiter">}</span>
+    
+    <span class="keyword">def</span> <a title="(value: StopWatchMarshallers.this.StopWatch)scala.xml.Elem" id="19218">marshalToHtml</a><span class="delimiter">(</span><a title="StopWatchMarshallers.this.StopWatch" id="37608">value</a>: <a href="StopWatchService.scala.html#14282" title="StopWatchMarshallers.this.StopWatch">StopWatch</a><span class="delimiter">)</span> = <span class="delimiter">{</span>
+      &lt;<a title="scala.xml.Elem" id="37611">html</a>&gt;
+        &lt;<a title="scala.xml.Elem" id="37612">body</a>&gt;
+          &lt;<a title="scala.xml.Elem" id="37613">table</a>&gt;
+            &lt;<a title="scala.xml.Elem" id="37614">tr</a>&gt;&lt;<a title="scala.xml.Elem" id="37615">td</a>&gt;<span title="scala.xml.Text">State</span>:&lt;/td&gt;&lt;<a title="scala.xml.Elem" id="37616">td</a>&gt;<span class="delimiter">{</span><a href="#37608" title="StopWatchMarshallers.this.StopWatch">value</a>.<a href="StopWatchService.scala.html#33023" title="=&gt; String">state</a><span class="delimiter">}</span>&lt;/td&gt;&lt;/tr&gt;
+            &lt;<a title="scala.xml.Elem" id="37617">tr</a>&gt;&lt;<a title="scala.xml.Elem" id="37618">td</a>&gt;<span title="scala.xml.Text">Time</span>:&lt;/td&gt;&lt;<a title="scala.xml.Elem" id="37619">td</a>&gt;<span class="delimiter">{</span><a href="#37608" title="StopWatchMarshallers.this.StopWatch">value</a>.<a href="StopWatchService.scala.html#33020" title="=&gt; Long">time</a> <span title="(x: Int)Long">/</span> <span title="Int(1000)" class="int">1000</span><span class="delimiter">}</span> sec&lt;/td&gt;&lt;/tr&gt;
+          &lt;/table&gt;
+        &lt;/body&gt;
+      &lt;/html&gt;
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+  
+<span class="delimiter">}</span>
+        </pre>
+    </body>
+</html>

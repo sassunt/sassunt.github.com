@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/typeconversion/Deserializer.scala</title>
+        <script type="text/javascript" src="../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray
+<span class="keyword">package</span> typeconversion
+
+<span class="keyword">trait</span> <a title="trait Deserializer[A, B] extends java.lang.Object with A =&gt; Either[cc.spray.typeconversion.DeserializationError,B]" id="9873">Deserializer</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="9874">A</a>, <a title="&gt;: Nothing &lt;: Any" id="9875">B</a><span class="delimiter">]</span> <span class="keyword">extends</span> <span class="delimiter">(</span>A =&gt; Either<span class="delimiter">[</span>DeserializationError, B<span class="delimiter">]</span><span class="delimiter">)</span>
+
+<span class="keyword">object</span> <a title="object cc.spray.typeconversion.Deserializer" id="9876">Deserializer</a> <span title="ScalaObject" class="keyword">extends</span> <a href="#9878" title="cc.spray.typeconversion.DeserializerLowerPriorityImplicits">DeserializerLowerPriorityImplicits</a> <span class="keyword">with</span> <a href="CaseClassDeserializers.scala.html#9840" title="cc.spray.typeconversion.CaseClassDeserializers">CaseClassDeserializers</a> <span class="delimiter">{</span>
+  <span class="keyword">implicit</span> <span class="keyword">def</span> <a title="[A, B](implicit f: A =&gt; B)java.lang.Object with cc.spray.typeconversion.Deserializer[A,B]" id="39087">fromFunction2Converter</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="39090">A</a>, <a title="&gt;: Nothing &lt;: Any" id="39091">B</a><span class="delimiter">]</span><span class="delimiter">(</span><span class="keyword">implicit</span> <a title="A =&gt; B" id="39358">f</a>: A =&gt; B<span class="delimiter">)</span> = <span class="delimiter">{</span>
+    <a href="#39361" title="java.lang.Object with cc.spray.typeconversion.Deserializer[A,B]" class="keyword">new</a> <a title="anonymous class $anon extends java.lang.Object with cc.spray.typeconversion.Deserializer[A,B]" id="39361">Deserializer</a><span class="delimiter">[</span>A, B<span class="delimiter">]</span> <span class="delimiter">{</span>
+      <span class="keyword">def</span> <a title="(a: A)Either[cc.spray.typeconversion.DeserializationError,B]" id="39363">apply</a><span class="delimiter">(</span><a title="A" id="39364">a</a>: <a href="#39090" title="A">A</a><span class="delimiter">)</span> = <span class="delimiter">{</span>
+        <span class="keyword">try</span> <span class="delimiter">{</span>
+          <span title="(b: B)Right[Nothing,B]">Right</span><span class="delimiter">(</span><a href="#39358" title="(v1: A)B">f</a><span class="delimiter">(</span><a href="#39364" title="A">a</a><span class="delimiter">)</span><span class="delimiter">)</span>
+        <span class="delimiter">}</span> <span class="keyword">catch</span> <span class="delimiter">{</span>
+          <span class="keyword">case</span> <a title="Left[cc.spray.typeconversion.MalformedContent,Nothing]" id="39373">ex</a> =&gt; <span title="(a: cc.spray.typeconversion.MalformedContent)Left[cc.spray.typeconversion.MalformedContent,Nothing]">Left</span><span class="delimiter">(</span><a href="#88503" title="(errorMessage: String)cc.spray.typeconversion.MalformedContent">MalformedContent</a><span class="delimiter">(</span><a href="#39373" title="java.lang.Throwable">ex</a>.<span title="()java.lang.String">toString</span><span class="delimiter">)</span><span class="delimiter">)</span>
+        <span class="delimiter">}</span>
+      <span class="delimiter">}</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">implicit</span> <span class="keyword">def</span> <a title="[A, B](implicit converter: cc.spray.typeconversion.Deserializer[A,B])java.lang.Object with cc.spray.typeconversion.Deserializer[A,Option[B]]" id="39092">liftToTargetOption</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="39095">A</a>, <a title="&gt;: Nothing &lt;: Any" id="39096">B</a><span class="delimiter">]</span><span class="delimiter">(</span><span class="keyword">implicit</span> <a title="cc.spray.typeconversion.Deserializer[A,B]" id="39309">converter</a>: <a href="#9873" title="cc.spray.typeconversion.Deserializer[A,B]">Deserializer</a><span class="delimiter">[</span>A, B<span class="delimiter">]</span><span class="delimiter">)</span> = <span class="delimiter">{</span>
+    <a href="#39312" title="java.lang.Object with cc.spray.typeconversion.Deserializer[A,Option[B]]" class="keyword">new</a> <a title="anonymous class $anon extends java.lang.Object with cc.spray.typeconversion.Deserializer[A,Option[B]]" id="39312">Deserializer</a><span class="delimiter">[</span>A, Option<span class="delimiter">[</span>B<span class="delimiter">]</span><span class="delimiter">]</span> <span class="delimiter">{</span>
+      <span class="keyword">def</span> <a title="(value: A)Either[cc.spray.typeconversion.DeserializationError,Option[B]]" id="39314">apply</a><span class="delimiter">(</span><a title="A" id="39315">value</a>: <a href="#39095" title="A">A</a><span class="delimiter">)</span> = <a href="#39309" title="(v1: A)Either[cc.spray.typeconversion.DeserializationError,B]">converter</a><span class="delimiter">(</span><a href="#39315" title="A">value</a><span class="delimiter">)</span> <span title="Either[cc.spray.typeconversion.DeserializationError,Option[B]]" class="keyword">match</span> <span class="delimiter">{</span>
+        <span class="keyword">case</span> <span title="Right[Nothing,Some[B]]">Right</span><span class="delimiter">(</span><a title="B" id="39321">a</a><span class="delimiter">)</span> =&gt; <span title="(b: Some[B])Right[Nothing,Some[B]]">Right</span><span class="delimiter">(</span><span title="(x: B)Some[B]">Some</span><span class="delimiter">(</span><a href="#39321" title="B">a</a><span class="delimiter">)</span><span class="delimiter">)</span>
+        <span class="keyword">case</span> <span title="Right[Nothing,None.type]">Left</span><span class="delimiter">(</span><a href="#88409" title="object cc.spray.typeconversion.ContentExpected">ContentExpected</a><span class="delimiter">)</span> =&gt; <span title="(b: None.type)Right[Nothing,None.type]">Right</span><span class="delimiter">(</span><span title="object None">None</span><span class="delimiter">)</span>
+        <span class="keyword">case</span> <span title="Left[cc.spray.typeconversion.DeserializationError,Nothing]">Left</span><span class="delimiter">(</span><a title="cc.spray.typeconversion.DeserializationError" id="39336">error</a><span class="delimiter">)</span> =&gt; <span title="(a: cc.spray.typeconversion.DeserializationError)Left[cc.spray.typeconversion.DeserializationError,Nothing]">Left</span><span class="delimiter">(</span><a href="#39336" title="cc.spray.typeconversion.DeserializationError">error</a><span class="delimiter">)</span>
+      <span class="delimiter">}</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+<span class="delimiter">}</span>
+
+<span class="keyword">private</span><span class="delimiter">[</span>typeconversion<span class="delimiter">]</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <a title="class DeserializerLowerPriorityImplicits extends java.lang.Object with ScalaObject" id="9878">DeserializerLowerPriorityImplicits</a> <a href="#9878" title="ScalaObject" class="delimiter">{</a>
+  <span class="keyword">implicit</span> <span class="keyword">def</span> <a title="[A, B](converter: cc.spray.typeconversion.Deserializer[A,B])java.lang.Object with cc.spray.typeconversion.Deserializer[Option[A],B]" id="39076">lift2SourceOption</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="39079">A</a>, <a title="&gt;: Nothing &lt;: Any" id="39080">B</a><span class="delimiter">]</span><span class="delimiter">(</span><a title="cc.spray.typeconversion.Deserializer[A,B]" id="40696">converter</a>: <a href="#9873" title="cc.spray.typeconversion.Deserializer[A,B]">Deserializer</a><span class="delimiter">[</span>A, B<span class="delimiter">]</span><span class="delimiter">)</span> = <a href="#39081" title="(implicit converter: cc.spray.typeconversion.Deserializer[A,B])java.lang.Object with cc.spray.typeconversion.Deserializer[Option[A],B]">liftToSourceOption</a><span class="delimiter">(</span><a href="#40696" title="cc.spray.typeconversion.Deserializer[A,B]">converter</a><span class="delimiter">)</span>
+  <span class="keyword">implicit</span> <span class="keyword">def</span> <a title="[A, B](implicit converter: cc.spray.typeconversion.Deserializer[A,B])java.lang.Object with cc.spray.typeconversion.Deserializer[Option[A],B]" id="39081">liftToSourceOption</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="39084">A</a>, <a title="&gt;: Nothing &lt;: Any" id="39085">B</a><span class="delimiter">]</span><span class="delimiter">(</span><span class="keyword">implicit</span> <a title="cc.spray.typeconversion.Deserializer[A,B]" id="40662">converter</a>: <a href="#9873" title="cc.spray.typeconversion.Deserializer[A,B]">Deserializer</a><span class="delimiter">[</span>A, B<span class="delimiter">]</span><span class="delimiter">)</span> = <span class="delimiter">{</span>
+    <a href="#40665" title="java.lang.Object with cc.spray.typeconversion.Deserializer[Option[A],B]" class="keyword">new</a> <a title="anonymous class $anon extends java.lang.Object with cc.spray.typeconversion.Deserializer[Option[A],B]" id="40665">Deserializer</a><span class="delimiter">[</span>Option<span class="delimiter">[</span>A<span class="delimiter">]</span>, B<span class="delimiter">]</span> <span class="delimiter">{</span>
+      <span class="keyword">def</span> <a title="(value: Option[A])Either[cc.spray.typeconversion.DeserializationError,B]" id="40667">apply</a><span class="delimiter">(</span><a title="Option[A]" id="40668">value</a>: <span title="Option[A]">Option</span><span class="delimiter">[</span>A<span class="delimiter">]</span><span class="delimiter">)</span> = <a href="#40668" title="Option[A]">value</a> <span title="Either[cc.spray.typeconversion.DeserializationError,B]" class="keyword">match</span> <span class="delimiter">{</span>
+        <span class="keyword">case</span> <span title="Either[cc.spray.typeconversion.DeserializationError,B]">Some</span><span class="delimiter">(</span><a title="A" id="40673">a</a><span class="delimiter">)</span> =&gt; <a href="#40662" title="(v1: A)Either[cc.spray.typeconversion.DeserializationError,B]">converter</a><span class="delimiter">(</span><a href="#40673" title="A">a</a><span class="delimiter">)</span>
+        <span class="keyword">case</span> <span title="Left[cc.spray.typeconversion.ContentExpected.type,Nothing]">None</span> =&gt; <span title="(a: cc.spray.typeconversion.ContentExpected.type)Left[cc.spray.typeconversion.ContentExpected.type,Nothing]">Left</span><span class="delimiter">(</span><a href="#88409" title="object cc.spray.typeconversion.ContentExpected">ContentExpected</a><span class="delimiter">)</span>
+      <span class="delimiter">}</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+<span class="delimiter">}</span>
+
+<span class="keyword">sealed</span> <span class="keyword">trait</span> <a title="trait DeserializationError extends java.lang.Object" id="9879">DeserializationError</a>
+case <span class="keyword">object</span> <a href="#88404" title="object cc.spray.typeconversion.ContentExpected" id="88409">ContentExpected</a> <span title="ScalaObject" class="keyword">extends</span> <a href="#9879" title="cc.spray.typeconversion.DeserializationError">DeserializationError</a>
+case <span class="keyword">class</span> <a title="class MalformedContent extends java.lang.Object with cc.spray.typeconversion.DeserializationError with ScalaObject with Product with Serializable" id="88503">MalformedContent</a><a href="#88503" title="ScalaObject" class="delimiter">(</a><a title="String" id="35596">errorMessage</a>: <span title="String">String</span><span class="delimiter">)</span> <span class="keyword">extends</span> <a href="#9879" title="cc.spray.typeconversion.DeserializationError">DeserializationError</a>
+case <span class="keyword">class</span> <a title="class UnsupportedContentType extends java.lang.Object with cc.spray.typeconversion.DeserializationError with ScalaObject with Product with Serializable" id="88499">UnsupportedContentType</a><a href="#88499" title="ScalaObject" class="delimiter">(</a><a title="String" id="37518">errorMessage</a>: <span title="String">String</span><span class="delimiter">)</span> <span class="keyword">extends</span> <a href="#9879" title="cc.spray.typeconversion.DeserializationError">DeserializationErro</a>r
+        </pre>
+    </body>
+</html>

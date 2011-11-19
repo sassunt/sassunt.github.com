@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/http/package.scala</title>
+        <script type="text/javascript" src="../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray
+
+<span class="keyword">package</span> <span class="keyword">object</span> <a title="object cc.spray.http.package" id="9713">http</a> <span title="ScalaObject" class="delimiter">{</span>
+
+  <span class="comment">/**
+   * Warms up the cc.spray.http module by triggering the loading of most classes in this package,
+   * so as to increase the speed of the first usage.
+   */</span>
+  <span class="keyword">def</span> <a title="()Unit" id="10053">warmUp</a><span class="delimiter">(</span><span class="delimiter">)</span> <span class="delimiter">{</span>
+    <a href="HttpRequest.scala.html#24936" title="(method: cc.spray.http.HttpMethod, uri: String, headers: List[cc.spray.http.HttpHeader], content: Option[cc.spray.http.HttpContent], protocol: cc.spray.http.HttpProtocol)cc.spray.http.HttpRequest">HttpRequest</a><span class="delimiter">(</span>
+      method = <a href="HttpMethod.scala.html#9625" title="object cc.spray.http.HttpMethods">HttpMethods</a>.<a href="HttpMethod.scala.html#22981" title="=&gt; cc.spray.http.HttpMethod">GET</a>,
+      uri = <span title="java.lang.String(&quot;&quot;)" class="string">&quot;&quot;</span>,
+      headers = <span title="(xs: cc.spray.http.HttpHeader*)List[cc.spray.http.HttpHeader]">List</span><span class="delimiter">(</span>
+        <a href="HttpHeader.scala.html#23308" title="(name: String, value: String)cc.spray.http.HttpHeader">HttpHeader</a><span class="delimiter">(</span><span title="java.lang.String(&quot;Accept&quot;)" class="string">&quot;Accept&quot;</span>, <span title="java.lang.String(&quot;*/*,text/plain,custom/custom&quot;)" class="string">&quot;*/*,text/plain,custom/custom&quot;</span><span class="delimiter">)</span>,
+        <a href="HttpHeader.scala.html#23308" title="(name: String, value: String)cc.spray.http.HttpHeader">HttpHeader</a><span class="delimiter">(</span><span title="java.lang.String(&quot;Accept-Charset&quot;)" class="string">&quot;Accept-Charset&quot;</span>, <span title="java.lang.String(&quot;*,UTF-8,custom&quot;)" class="string">&quot;*,UTF-8,custom&quot;</span><span class="delimiter">)</span>,
+        <a href="HttpHeader.scala.html#23308" title="(name: String, value: String)cc.spray.http.HttpHeader">HttpHeader</a><span class="delimiter">(</span><span title="java.lang.String(&quot;Accept-Encoding&quot;)" class="string">&quot;Accept-Encoding&quot;</span>, <span title="java.lang.String(&quot;gzip,custom&quot;)" class="string">&quot;gzip,custom&quot;</span><span class="delimiter">)</span>,
+        <a href="HttpHeader.scala.html#23308" title="(name: String, value: String)cc.spray.http.HttpHeader">HttpHeader</a><span class="delimiter">(</span><span title="java.lang.String(&quot;Accept-Language&quot;)" class="string">&quot;Accept-Language&quot;</span>, <span title="java.lang.String(&quot;*,de-de,custom&quot;)" class="string">&quot;*,de-de,custom&quot;</span><span class="delimiter">)</span>,
+        <a href="HttpHeader.scala.html#23308" title="(name: String, value: String)cc.spray.http.HttpHeader">HttpHeader</a><span class="delimiter">(</span><span title="java.lang.String(&quot;Cache-Control&quot;)" class="string">&quot;Cache-Control&quot;</span>, <span title="java.lang.String(&quot;no-cache&quot;)" class="string">&quot;no-cache&quot;</span><span class="delimiter">)</span>,
+        <a href="HttpHeader.scala.html#23308" title="(name: String, value: String)cc.spray.http.HttpHeader">HttpHeader</a><span class="delimiter">(</span><span title="java.lang.String(&quot;Connection&quot;)" class="string">&quot;Connection&quot;</span>, <span title="java.lang.String(&quot;close&quot;)" class="string">&quot;close&quot;</span><span class="delimiter">)</span>,
+        <a href="HttpHeader.scala.html#23308" title="(name: String, value: String)cc.spray.http.HttpHeader">HttpHeader</a><span class="delimiter">(</span><span title="java.lang.String(&quot;Cookie&quot;)" class="string">&quot;Cookie&quot;</span>, <span title="java.lang.String(&quot;spray=cool&quot;)" class="string">&quot;spray=cool&quot;</span><span class="delimiter">)</span>,
+        <a href="HttpHeader.scala.html#23308" title="(name: String, value: String)cc.spray.http.HttpHeader">HttpHeader</a><span class="delimiter">(</span><span title="java.lang.String(&quot;Content-Encoding&quot;)" class="string">&quot;Content-Encoding&quot;</span>, <span title="java.lang.String(&quot;deflate&quot;)" class="string">&quot;deflate&quot;</span><span class="delimiter">)</span>,
+        <a href="HttpHeader.scala.html#23308" title="(name: String, value: String)cc.spray.http.HttpHeader">HttpHeader</a><span class="delimiter">(</span><span title="java.lang.String(&quot;Content-Length&quot;)" class="string">&quot;Content-Length&quot;</span>, <span title="java.lang.String(&quot;42&quot;)" class="string">&quot;42&quot;</span><span class="delimiter">)</span>,
+        <a href="HttpHeader.scala.html#23308" title="(name: String, value: String)cc.spray.http.HttpHeader">HttpHeader</a><span class="delimiter">(</span><span title="java.lang.String(&quot;Content-Type&quot;)" class="string">&quot;Content-Type&quot;</span>, <span title="java.lang.String(&quot;application/json&quot;)" class="string">&quot;application/json&quot;</span><span class="delimiter">)</span>,
+        <a href="HttpHeader.scala.html#23308" title="(name: String, value: String)cc.spray.http.HttpHeader">HttpHeader</a><span class="delimiter">(</span><span title="java.lang.String(&quot;Fancy-Custom-Header&quot;)" class="string">&quot;Fancy-Custom-Header&quot;</span>, <span title="java.lang.String(&quot;yeah&quot;)" class="string">&quot;yeah&quot;</span><span class="delimiter">)</span>
+      <span class="delimiter">)</span>,
+      content = <span title="(x: cc.spray.http.HttpContent)Some[cc.spray.http.HttpContent]">Some</span><span class="delimiter">(</span><a href="HttpContent.scala.html#25369" title="(string: String)cc.spray.http.HttpContent">HttpContent</a><span class="delimiter">(</span><span title="java.lang.String(&quot;spray rocks!&quot;)" class="string">&quot;spray rocks!&quot;</span><span class="delimiter">)</span><span class="delimiter">)</span>
+    <span class="delimiter">)</span>
+    <a href="HttpResponse.scala.html#46355" title="(status: cc.spray.http.StatusCode)cc.spray.http.HttpResponse">HttpResponse</a><span class="delimiter">(</span>status = <a href="StatusCode.scala.html#27923" title="implicit cc.spray.http.StatusCode.int2StatusCode : (code: Int)cc.spray.http.StatusCode" class="int">200</a><span class="delimiter">)</span>
+    <a href="HttpIp.scala.html#9613" title="object cc.spray.http.HttpIp">HttpIp</a>.<a href="HttpIp.scala.html#44769" title="implicit cc.spray.http.HttpIp.fromString : (s: String)cc.spray.http.HttpIp">fromString</a><span title="Unit" class="delimiter">(</span><span title="java.lang.String(&quot;127.0.0.1&quot;)" class="string">&quot;127.0.0.1&quot;</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+
+<span class="delimiter">}</span>
+        </pre>
+    </body>
+</html>

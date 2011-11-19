@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/typeconversion/MarshallerBase.scala</title>
+        <script type="text/javascript" src="../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray
+<span class="keyword">package</span> typeconversion
+
+<span class="keyword">import</span> http._
+<span class="keyword">import</span> utils._
+
+<span class="keyword">abstract</span> <span class="keyword">class</span> <a title="class MarshallerBase[A] extends java.lang.Object with cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[A] with ScalaObject" id="9907">MarshallerBase</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="9908">A</a><span class="delimiter">]</span> <a href="#9907" title="ScalaObject" class="keyword">extends</a> <span title="cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[A]">Marshaller</span><span class="delimiter">[</span>A<span class="delimiter">]</span> <span class="delimiter">{</span>
+
+  <span class="keyword">def</span> <a title="(accept: cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType])cc.spray.typeconversion.Marshalling[A]" id="87721">apply</a><span class="delimiter">(</span><a title="cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType]" id="89058">accept</a>: ContentType =&gt; Option<span class="delimiter">[</span>ContentType<span class="delimiter">]</span><span class="delimiter">)</span> = <span class="delimiter">{</span>
+    <a href="../utils/package.scala.html#10097" title="(seq: scala.collection.immutable.LinearSeq[cc.spray.http.ContentType])cc.spray.utils.PimpedLinearSeq[cc.spray.http.ContentType]">canMarshalTo</a>.<a href="../utils/PimpedLinearSeq.scala.html#13183" title="(f: cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType])Option[cc.spray.http.ContentType]">mapFind</a><span class="delimiter">(</span><a href="#89058" title="cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType]">accept</a><span class="delimiter">)</span> <span title="cc.spray.typeconversion.Marshalling[A]" class="keyword">match</span> <span class="delimiter">{</span>
+      <span class="keyword">case</span> <span title="cc.spray.typeconversion.MarshalWith[A]">Some</span><span class="delimiter">(</span><a title="cc.spray.http.ContentType" id="89103">contentType</a><span class="delimiter">)</span> =&gt; <a href="Marshalling.scala.html#88343" title="(f: A =&gt; cc.spray.http.HttpContent)cc.spray.typeconversion.MarshalWith[A]">MarshalWith</a><span class="delimiter">(</span><a href="#87723" title="(value: A, contentType: cc.spray.http.ContentType)cc.spray.http.HttpContent">marshal</a><span class="delimiter">(</span><a href="#89107" title="A">_</a>, <a href="#89103" title="cc.spray.http.ContentType">contentType</a><span class="delimiter">)</span><span class="delimiter">)</span>
+      <span class="keyword">case</span> <span title="cc.spray.typeconversion.CantMarshal">None</span> =&gt; <a href="Marshalling.scala.html#89111" title="(onlyTo: List[cc.spray.http.ContentType])cc.spray.typeconversion.CantMarshal">CantMarshal</a><span class="delimiter">(</span><a href="#87722" title="=&gt; List[cc.spray.http.ContentType]">canMarshalTo</a><span class="delimiter">)</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">def</span> <a title="=&gt; List[cc.spray.http.ContentType]" id="87722">canMarshalTo</a>: <span title="List[cc.spray.http.ContentType]">List</span><span class="delimiter">[</span>ContentType<span class="delimiter">]</span>
+
+  <span class="keyword">def</span> <a title="(value: A, contentType: cc.spray.http.ContentType)cc.spray.http.HttpContent" id="87723">marshal</a><span class="delimiter">(</span><a title="A" id="87744">value</a>: <a href="#9908" title="A">A</a>, <a title="cc.spray.http.ContentType" id="87745">contentType</a>: <a href="../http/ContentType.scala.html#9532" title="cc.spray.http.ContentType">ContentType</a><span class="delimiter">)</span>: <a href="../http/HttpContent.scala.html#9562" title="cc.spray.http.HttpContent">HttpContent</a>
+  
+<span class="delimiter">}</span> 
+        </pre>
+    </body>
+</html>

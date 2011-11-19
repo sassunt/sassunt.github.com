@@ -1,0 +1,18 @@
+[cc/spray/examples/calculator/Boot.scala]
+ 11338 term cc.spray.examples.calculator.Boot.mainModule(6a2dda74a7f6e05398f08fcd5eea1d386a4537ae)
+ 9903 type cc.spray.examples.calculator.Boot
+ 11342 term cc.spray.examples.calculator.Boot.rootService
+ 11342 term cc.spray.examples.calculator.Boot.rootService(00a172aff4be2664340310b8f0cfa4b3f8d78239)
+ 11340 term cc.spray.examples.calculator.Boot.httpService(00a172aff4be2664340310b8f0cfa4b3f8d78239)
+ 11340 term cc.spray.examples.calculator.Boot.httpService
+ 11338 term cc.spray.examples.calculator.Boot.mainModule
+[cc/spray/examples/calculator/CalculatorService.scala]
+ 9908 type cc.spray.examples.calculator.CalculatorService
+ 12401 term cc.spray.examples.calculator.CalculatorService.calculatorService(60291177823a1effd55573b5f69703eccd7f9787)
+ 12401 term cc.spray.examples.calculator.CalculatorService.calculatorService
+[cc/spray/examples/calculator/CustomMarshallers.scala]
+ 9915 type cc.spray.examples.calculator.CustomMarshallers
+ 18545 term cc.spray.examples.calculator.CustomMarshallers.DoubleMarshaller.marshal(3ce1a50ebfdea3a19b51f8492c1f04efde2887ef)
+ 13082 term cc.spray.examples.calculator.CustomMarshallers.DoubleMarshaller
+ 18543 term cc.spray.examples.calculator.CustomMarshallers.DoubleMarshaller.canMarshalTo(38054882d4d4d256e611a426e65efcf277a95d00)
+ 18543 term cc.spray.examples.calculator.CustomMarshallers.DoubleMarshaller.canMarshalTo

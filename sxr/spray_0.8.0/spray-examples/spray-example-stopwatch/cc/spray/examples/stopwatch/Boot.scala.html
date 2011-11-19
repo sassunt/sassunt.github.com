@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/examples/stopwatch/Boot.scala</title>
+        <script type="text/javascript" src="../../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="keyword">package</span> cc.spray
+<span class="keyword">package</span> examples.stopwatch
+
+<span class="keyword">import</span> akka.config.<span title="object akka.config.Supervision">Supervision</span>._
+<span class="keyword">import</span> akka.actor.Supervisor
+<span class="keyword">import</span> akka.actor.<span title="object akka.actor.Actor">Actor</span>._
+
+<span class="keyword">class</span> <a title="class Boot extends java.lang.Object with ScalaObject" id="9903">Boot</a> <a href="#9903" title="ScalaObject" class="delimiter">{</a>
+  
+  <span class="keyword">val</span> <a title="mainModule extends java.lang.Object with cc.spray.examples.stopwatch.StopWatchService" id="11344">mainModule</a> = <a href="#11352" title="java.lang.Object with cc.spray.examples.stopwatch.StopWatchService" class="keyword">new</a> <a title="anonymous class $anon extends java.lang.Object with cc.spray.examples.stopwatch.StopWatchService" id="11352">StopWatchService</a> <span class="delimiter">{</span>
+    <span class="comment">// bake your module cake here</span>
+  <span class="delimiter">}</span>
+  
+  <span class="keyword">val</span> <a title="akka.actor.ActorRef" id="11346">httpService</a> = <span title="(factory: =&gt; akka.actor.Actor)akka.actor.ActorRef">actorOf</span><span class="delimiter">(</span><span title="cc.spray.HttpService" class="keyword">new</span> <span title="cc.spray.HttpService">HttpService</span><span class="delimiter">(</span><a href="#11344" title="=&gt; java.lang.Object with cc.spray.examples.stopwatch.StopWatchService">mainModule</a>.<a href="StopWatchService.scala.html#14292" title="=&gt; cc.spray.RequestContext =&gt; Unit">stopWatchService</a><span class="delimiter">)</span><span class="delimiter">)</span>
+  <span class="keyword">val</span> <a title="akka.actor.ActorRef" id="11348">rootService</a> = <span title="(factory: =&gt; akka.actor.Actor)akka.actor.ActorRef">actorOf</span><span class="delimiter">(</span><span title="cc.spray.RootService" class="keyword">new</span> <span title="cc.spray.RootService">RootService</span><span class="delimiter">(</span><a href="#11346" title="=&gt; akka.actor.ActorRef">httpService</a><span class="delimiter">)</span><span class="delimiter">)</span>
+
+  <span class="comment">// start and supervise the created actors</span>
+  <span title="(config: akka.config.Supervision.SupervisorConfig)akka.actor.Supervisor">Supervisor</span><span class="delimiter">(</span>
+    <span title="(restartStrategy: akka.config.Supervision.FaultHandlingStrategy, worker: List[akka.config.Supervision.Server], maxRestartsHandler: (akka.actor.ActorRef, akka.actor.MaximumNumberOfRestartsWithinTimeRangeReached) =&gt; Unit)akka.config.Supervision.SupervisorConfig">SupervisorConfig</span><span class="delimiter">(</span>
+      <span title="(trapExit: List[Class[_ &lt;: Throwable]], maxNrOfRetries: Int, withinTimeRange: Int)akka.config.Supervision.OneForOneStrategy">OneForOneStrategy</span><span class="delimiter">(</span><span title="(xs: java.lang.Class[Exception]*)List[java.lang.Class[Exception]]">List</span><span class="delimiter">(</span>classOf<span title="java.lang.Class[Exception](classOf[java.lang.Exception])" class="delimiter">[</span>Exception<span class="delimiter">]</span><span class="delimiter">)</span>, <span title="Int(3)" class="int">3</span>, <span title="Int(100)" class="int">100</span><span class="delimiter">)</span>,
+      <span title="(xs: akka.config.Supervision.Supervise*)List[akka.config.Supervision.Supervise]">List</span><span class="delimiter">(</span>
+        <span title="(actorRef: akka.actor.ActorRef, lifeCycle: akka.config.Supervision.LifeCycle)akka.config.Supervision.Supervise">Supervise</span><span class="delimiter">(</span><a href="#11346" title="=&gt; akka.actor.ActorRef">httpService</a>, <span title="object akka.config.Supervision.Permanent">Permanent</span><span class="delimiter">)</span>,
+        <span title="(actorRef: akka.actor.ActorRef, lifeCycle: akka.config.Supervision.LifeCycle)akka.config.Supervision.Supervise">Supervise</span><span class="delimiter">(</span><a href="#11348" title="=&gt; akka.actor.ActorRef">rootService</a>, <span title="object akka.config.Supervision.Permanent">Permanent</span><span class="delimiter">)</span>
+      <span class="delimiter">)</span>
+    <span class="delimiter">)</span>
+  <span class="delimiter">)</span>
+<span class="delimiter">}</span>
+        </pre>
+    </body>
+</html>

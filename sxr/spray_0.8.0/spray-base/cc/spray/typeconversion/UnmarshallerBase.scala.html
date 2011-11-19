@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/typeconversion/UnmarshallerBase.scala</title>
+        <script type="text/javascript" src="../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray
+<span class="keyword">package</span> typeconversion
+
+<span class="keyword">import</span> http._
+
+<span class="keyword">abstract</span> <span class="keyword">class</span> <a title="class UnmarshallerBase[A] extends java.lang.Object with cc.spray.typeconversion.Deserializer[cc.spray.http.HttpContent,A] with ScalaObject" id="9964">UnmarshallerBase</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="9965">A</a><span class="delimiter">]</span> <a href="#9964" title="ScalaObject" class="keyword">extends</a> <a href="Deserializer.scala.html#9873" title="cc.spray.typeconversion.Deserializer[cc.spray.http.HttpContent,A]">Deserializer</a><span class="delimiter">[</span>HttpContent, A<span class="delimiter">]</span> <span class="delimiter">{</span>
+  <span class="keyword">val</span> <a title="=&gt; List[cc.spray.http.ContentTypeRange]" id="34660">canUnmarshalFrom</a>: <span title="List[cc.spray.http.ContentTypeRange]">List</span><span class="delimiter">[</span>ContentTypeRange<span class="delimiter">]</span>
+
+  <span class="keyword">def</span> <a title="(content: cc.spray.http.HttpContent)Either[cc.spray.typeconversion.DeserializationError,A]" id="34661">apply</a><span class="delimiter">(</span><a title="cc.spray.http.HttpContent" id="37495">content</a>: <a href="../http/HttpContent.scala.html#9562" title="cc.spray.http.HttpContent">HttpContent</a><span class="delimiter">)</span> = <span class="delimiter">{</span>
+    <span title="Either[cc.spray.typeconversion.DeserializationError,A]" class="keyword">if</span> <span class="delimiter">(</span><a href="#34660" title="=&gt; List[cc.spray.http.ContentTypeRange]">canUnmarshalFrom</a>.<span title="(p: cc.spray.http.ContentTypeRange =&gt; Boolean)Boolean">exists</span><span class="delimiter">(</span><a href="#37505" title="cc.spray.http.ContentTypeRange">_</a>.<a href="../http/ContentType.scala.html#29920" title="(contentType: cc.spray.http.ContentType)Boolean">matches</a><span class="delimiter">(</span><a href="#37495" title="cc.spray.http.HttpContent">content</a>.<a href="../http/HttpContent.scala.html#25394" title="=&gt; cc.spray.http.ContentType">contentType</a><span class="delimiter">)</span><span class="delimiter">)</span><span class="delimiter">)</span> <a href="#34662" title="(content: cc.spray.http.HttpContent)Either[cc.spray.typeconversion.DeserializationError,A]">unmarshal</a><span class="delimiter">(</span><a href="#37495" title="cc.spray.http.HttpContent">content</a><span class="delimiter">)</span>
+    <span class="keyword">else</span> <span title="(a: cc.spray.typeconversion.UnsupportedContentType)Left[cc.spray.typeconversion.UnsupportedContentType,Nothing]">Left</span><span class="delimiter">(</span><a href="Deserializer.scala.html#37511" title="(errorMessage: String)cc.spray.typeconversion.UnsupportedContentType">UnsupportedContentType</a><span class="delimiter">(</span><a href="#34660" title="=&gt; List[cc.spray.http.ContentTypeRange]">canUnmarshalFrom</a>.<span title="(f: cc.spray.http.ContentTypeRange =&gt; String)(implicit bf: scala.collection.generic.CanBuildFrom[List[cc.spray.http.ContentTypeRange],String,List[String]])List[String]">map</span><span title="scala.collection.generic.CanBuildFrom[scala.collection.immutable.List.Coll,String,List[String]]" class="delimiter">(</span><a href="#37538" title="cc.spray.http.ContentTypeRange">_</a>.<a href="../http/ContentType.scala.html#29919" title="=&gt; String">value</a><span class="delimiter">)</span>.<span title="(start: String, sep: String, end: String)String">mkString</span><span class="delimiter">(</span><span title="java.lang.String(&quot;Expected \'&quot;)" class="string">&quot;Expected '&quot;</span>, <span title="java.lang.String(&quot;\' or \'&quot;)" class="string">&quot;' or '&quot;</span>, <span title="java.lang.String(&quot;\'&quot;)" class="string">&quot;'&quot;</span><span class="delimiter">)</span><span class="delimiter">)</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">protected</span> <span class="keyword">def</span> <a title="(content: cc.spray.http.HttpContent)Either[cc.spray.typeconversion.DeserializationError,A]" id="34662">unmarshal</a><span class="delimiter">(</span><a title="cc.spray.http.HttpContent" id="34683">content</a>: <a href="../http/HttpContent.scala.html#9562" title="cc.spray.http.HttpContent">HttpContent</a><span class="delimiter">)</span>: <span title="Either[cc.spray.typeconversion.DeserializationError,A]">Either</span><span class="delimiter">[</span>DeserializationError, A<span class="delimiter">]</span>
+
+  <span class="comment">/**
+   * Helper method for turning exceptions occuring during evaluation of the named parameter into
+   * [[cc.spray.typeconversion.MalformedContent]] instances.
+   */</span>
+  <span class="keyword">protected</span> <span class="keyword">def</span> <a title="(f: =&gt; A)Either[cc.spray.typeconversion.DeserializationError,A]" id="34663">protect</a><span class="delimiter">(</span><a title="=&gt; A" id="34685">f</a>: =&gt; A<span class="delimiter">)</span>: <span title="Either[cc.spray.typeconversion.DeserializationError,A]">Either</span><span class="delimiter">[</span>DeserializationError, A<span class="delimiter">]</span> = <span class="delimiter">{</span>
+    <span class="keyword">try</span> <span class="delimiter">{</span>
+      <span title="(b: A)Right[Nothing,A]">Right</span><span class="delimiter">(</span><a href="#34685" title="=&gt; A">f</a><span class="delimiter">)</span>
+    <span class="delimiter">}</span> <span class="keyword">catch</span> <span class="delimiter">{</span>
+      <span class="keyword">case</span> <a title="Left[cc.spray.typeconversion.MalformedContent,Nothing]" id="90094">e</a>: <span title="Exception">Exception</span> =&gt; <span title="(a: cc.spray.typeconversion.MalformedContent)Left[cc.spray.typeconversion.MalformedContent,Nothing]">Left</span><span class="delimiter">(</span><a href="Deserializer.scala.html#35589" title="(errorMessage: String)cc.spray.typeconversion.MalformedContent">MalformedContent</a><span class="delimiter">(</span><a href="#90094" title="Exception">e</a>.<span title="()java.lang.String">getMessage</span><span class="delimiter">)</span><span class="delimiter">)</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>   
+<span class="delimiter">}</span> 
+        </pre>
+    </body>
+</html>

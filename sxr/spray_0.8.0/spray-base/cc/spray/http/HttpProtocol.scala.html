@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/http/HttpProtocol.scala</title>
+        <script type="text/javascript" src="../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ * Based on code copyright (C) 2010-2011 by the BlueEyes Web Framework Team (http://github.com/jdegoes/blueeyes)
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray.http
+
+<span class="keyword">class</span> <a title="class HttpProtocol extends java.lang.Object with ScalaObject" id="9630">HttpProtocol</a> <a href="#9630" title="ScalaObject" class="keyword">private</a><span class="delimiter">[</span>http<span class="delimiter">]</span> <span class="delimiter">(</span><a title="String" id="25434">value</a>: <span title="String">String</span><span class="delimiter">)</span> <span class="delimiter">{</span>
+  <span class="keyword">override</span> <span class="keyword">def</span> <a title="()String" id="25433">toString</a> = <a href="#25434" title="String">value</a>
+  <a href="#9631" title="object cc.spray.http.HttpProtocols">HttpProtocols</a>.<a href="ObjectRegistry.scala.html#22871" title="(obj: cc.spray.http.HttpProtocol, key: String)Unit">register</a><span class="delimiter">(</span><a href="#9630" title="cc.spray.http.HttpProtocol" class="keyword">this</a>, <a href="#25434" title="String">value</a><span class="delimiter">)</span>
+<span class="delimiter">}</span>
+
+<span class="keyword">object</span> <a title="object cc.spray.http.HttpProtocols" id="9631">HttpProtocols</a> <span title="ScalaObject" class="keyword">extends</span> <a href="ObjectRegistry.scala.html#9688" title="cc.spray.http.ObjectRegistry[String,cc.spray.http.HttpProtocol]">ObjectRegistry</a><span class="delimiter">[</span>String, HttpProtocol<span class="delimiter">]</span> <span class="delimiter">{</span>
+  <span class="keyword">val</span> <a title="cc.spray.http.HttpProtocol" id="23061">`HTTP/1.0`</a> = <span title="cc.spray.http.HttpProtocol" class="keyword">new</span> <a href="#9630" title="cc.spray.http.HttpProtocol">HttpProtocol</a><span class="delimiter">(</span><span title="java.lang.String(&quot;HTTP/1.0&quot;)" class="string">&quot;HTTP/1.0&quot;</span><span class="delimiter">)</span>
+  <span class="keyword">val</span> <a title="cc.spray.http.HttpProtocol" id="23063">`HTTP/1.1`</a> = <span title="cc.spray.http.HttpProtocol" class="keyword">new</span> <a href="#9630" title="cc.spray.http.HttpProtocol">HttpProtocol</a><span class="delimiter">(</span><span title="java.lang.String(&quot;HTTP/1.1&quot;)" class="string">&quot;HTTP/1.1&quot;</span><span class="delimiter">)</span>
+<span class="delimiter">}</span>
+
+        </pre>
+    </body>
+</html>

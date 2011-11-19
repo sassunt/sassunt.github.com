@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/http/parser/CommonActions.scala</title>
+        <script type="text/javascript" src="../../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray.http
+<span class="keyword">package</span> parser
+
+<span class="keyword">import</span> cc.spray.http.<a href="../MediaType.scala.html#9667" title="object cc.spray.http.MediaTypes">MediaTypes</a>._
+
+<span class="keyword">private</span><span class="delimiter">[</span>parser<span class="delimiter">]</span> <span class="keyword">trait</span> <a title="trait CommonActions extends java.lang.Object with ScalaObject" id="9778">CommonActions</a> <span title="ScalaObject" class="delimiter">{</span>
+  
+  <span class="keyword">def</span> <a title="(mainType: String, subType: String, boundary: Option[String])cc.spray.http.MediaType" id="42503">getMediaType</a><span class="delimiter">(</span><a title="String" id="58160">mainType</a>: <span title="String">String</span>, <a title="String" id="58161">subType</a>: <span title="String">String</span>, <a title="Option[String]" id="58164">boundary</a>: <span title="Option[String]">Option</span><span class="delimiter">[</span>String<span class="delimiter">]</span> = <span title="object None">None</span><span class="delimiter">)</span>: <a href="../MediaType.scala.html#9664" title="cc.spray.http.MediaType">MediaType</a> = <span class="delimiter">{</span>
+    <a href="#58160" title="String">mainType</a>.<span title="()java.lang.String">toLowerCase</span> <span title="cc.spray.http.MediaType" class="keyword">match</span> <span class="delimiter">{</span>
+      <span class="keyword">case</span> <span title="cc.spray.http.MediaType" class="string">&quot;multipart&quot;</span> =&gt; <a href="#58161" title="String">subType</a>.<span title="()java.lang.String">toLowerCase</span> <span title="cc.spray.http.MediaType" class="keyword">match</span> <span class="delimiter">{</span>
+        <span class="keyword">case</span> <span title="cc.spray.http.MediaTypes.multipart/mixed" class="string">&quot;mixed&quot;</span>       =&gt; <span title="cc.spray.http.MediaTypes.multipart/mixed" class="keyword">new</span> <a href="../MediaType.scala.html#22937" title="cc.spray.http.MediaTypes.multipart/mixed">`multipart/mixed`</a>      <span class="delimiter">(</span><a href="#58164" title="Option[String]">boundary</a><span class="delimiter">)</span>
+        <span class="keyword">case</span> <span title="cc.spray.http.MediaTypes.multipart/alternative" class="string">&quot;alternative&quot;</span> =&gt; <span title="cc.spray.http.MediaTypes.multipart/alternative" class="keyword">new</span> <a href="../MediaType.scala.html#22940" title="cc.spray.http.MediaTypes.multipart/alternative">`multipart/alternative`</a><span class="delimiter">(</span><a href="#58164" title="Option[String]">boundary</a><span class="delimiter">)</span>
+        <span class="keyword">case</span> <span title="cc.spray.http.MediaTypes.multipart/related" class="string">&quot;related&quot;</span>     =&gt; <span title="cc.spray.http.MediaTypes.multipart/related" class="keyword">new</span> <a href="../MediaType.scala.html#22943" title="cc.spray.http.MediaTypes.multipart/related">`multipart/related`</a>    <span class="delimiter">(</span><a href="#58164" title="Option[String]">boundary</a><span class="delimiter">)</span>
+        <span class="keyword">case</span> <span title="cc.spray.http.MediaTypes.multipart/form-data" class="string">&quot;form-data&quot;</span>   =&gt; <span title="cc.spray.http.MediaTypes.multipart/form-data" class="keyword">new</span> <a href="../MediaType.scala.html#22946" title="cc.spray.http.MediaTypes.multipart/form-data">`multipart/form-data`</a>  <span class="delimiter">(</span><a href="#58164" title="Option[String]">boundary</a><span class="delimiter">)</span>
+        <span class="keyword">case</span> <span title="cc.spray.http.MediaTypes.multipart/signed" class="string">&quot;signed&quot;</span>      =&gt; <span title="cc.spray.http.MediaTypes.multipart/signed" class="keyword">new</span> <a href="../MediaType.scala.html#22949" title="cc.spray.http.MediaTypes.multipart/signed">`multipart/signed`</a>     <span class="delimiter">(</span><a href="#58164" title="Option[String]">boundary</a><span class="delimiter">)</span>
+        <span class="keyword">case</span> <span title="cc.spray.http.MediaTypes.multipart/encrypted" class="string">&quot;encrypted&quot;</span>   =&gt; <span title="cc.spray.http.MediaTypes.multipart/encrypted" class="keyword">new</span> <a href="../MediaType.scala.html#22952" title="cc.spray.http.MediaTypes.multipart/encrypted">`multipart/encrypted`</a>  <span class="delimiter">(</span><a href="#58164" title="Option[String]">boundary</a><span class="delimiter">)</span>
+        <span class="keyword">case</span> <a title="cc.spray.http.MediaTypes.MultipartMediaType" id="69307">custom</a>        =&gt; <span title="cc.spray.http.MediaTypes.MultipartMediaType" class="keyword">new</span> <a href="../MediaType.scala.html#22880" title="cc.spray.http.MediaTypes.MultipartMediaType">MultipartMediaType</a><span class="delimiter">(</span><a href="#69307" title="java.lang.String">custom</a>, <a href="#58164" title="Option[String]">boundary</a><span class="delimiter">)</span>
+      <span class="delimiter">}</span>
+      <span class="keyword">case</span> <a title="cc.spray.http.MediaType" id="69308">main</a> =&gt;
+        <span class="keyword">val</span> <a title="java.lang.String" id="69309">value</a> = <a href="#69308" title="java.lang.String">main</a> <span title="(x$1: Any)java.lang.String">+</span> <span title="java.lang.String(&quot;/&quot;)" class="string">&quot;/&quot;</span> <span title="(x$1: Any)java.lang.String">+</span> <a href="#58161" title="String">subType</a>.<span title="()java.lang.String">toLowerCase</span>
+        <a href="../MediaType.scala.html#9667" title="object cc.spray.http.MediaTypes">MediaTypes</a>.<a href="../ObjectRegistry.scala.html#22872" title="(key: String)Option[cc.spray.http.MediaType]">getForKey</a><span class="delimiter">(</span><a href="#69309" title="java.lang.String">value</a><span class="delimiter">)</span>.<span title="(default: =&gt; cc.spray.http.MediaType)cc.spray.http.MediaType">getOrElse</span><span class="delimiter">(</span><a href="../MediaType.scala.html#9667" title="object cc.spray.http.MediaTypes">MediaTypes</a>.<a href="../MediaType.scala.html#47254" title="(value: String, fileExtensions: String*)cc.spray.http.MediaTypes.CustomMediaType">CustomMediaType</a><span class="delimiter">(</span><a href="#69309" title="java.lang.String">value</a><span class="delimiter">)</span><span class="delimiter">)</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+  
+<span class="delimiter">}</span>
+        </pre>
+    </body>
+</html>

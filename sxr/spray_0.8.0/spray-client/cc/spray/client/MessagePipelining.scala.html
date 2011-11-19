@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/client/MessagePipelining.scala</title>
+        <script type="text/javascript" src="../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray
+<span class="keyword">package</span> client
+
+<span class="keyword">import</span> http._
+<span class="keyword">import</span> typeconversion._
+<span class="keyword">import</span> akka.dispatch.Future
+<span class="keyword">import</span> encoding.<span class="delimiter">{</span>Decoder, Encoder<span class="delimiter">}</span>
+
+<span class="keyword">trait</span> <a title="trait MessagePipelining extends java.lang.Object with ScalaObject" id="9522">MessagePipelining</a> <span title="ScalaObject" class="delimiter">{</span>
+
+  <span class="keyword">type</span> <a title="cc.spray.http.HttpRequest =&gt; akka.dispatch.Future[cc.spray.http.HttpResponse]" id="25714">SendReceive</a> = HttpRequest =&gt; Future<span class="delimiter">[</span>HttpResponse<span class="delimiter">]</span>
+
+  <span class="keyword">def</span> <a title="=&gt; cc.spray.client.SimpleRequest[Nothing] =&gt; cc.spray.http.HttpRequest" id="25715">simpleRequest</a>: SimpleRequest<span class="delimiter">[</span>Nothing<span class="delimiter">]</span> =&gt; HttpRequest = <span class="delimiter">{</span> <a title="cc.spray.client.SimpleRequest[Nothing]" id="30197">simpleRequest</a> =&gt;
+    <span title="(method: cc.spray.http.HttpMethod, uri: String, headers: List[cc.spray.http.HttpHeader], content: Option[cc.spray.http.HttpContent], protocol: cc.spray.http.HttpProtocol)cc.spray.http.HttpRequest">HttpRequest</span><span class="delimiter">(</span>
+      method = <a href="#30197" title="cc.spray.client.SimpleRequest[Nothing]">simpleRequest</a>.<a href="SimpleRequest.scala.html#30193" title="=&gt; cc.spray.http.HttpMethod">method</a>,
+      uri = <a href="#30197" title="cc.spray.client.SimpleRequest[Nothing]">simpleRequest</a>.<a href="SimpleRequest.scala.html#30194" title="=&gt; String">uri</a>
+    <span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">def</span> <a title="[T](implicit evidence$1: cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[T])cc.spray.client.SimpleRequest[T] =&gt; cc.spray.http.HttpRequest" id="30249">simpleRequest</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="25718">T</a> :Marshaller<span class="delimiter">]</span>: SimpleRequest<span class="delimiter">[</span>T<span class="delimiter">]</span> =&gt; HttpRequest = <span class="delimiter">{</span>
+    <a title="cc.spray.client.SimpleRequest[T]" id="30254">simpleRequest</a> =&gt; <a title="List[cc.spray.http.HttpHeader]" id="30469">HttpRequest</a><span class="delimiter">(</span>
+      method = <a href="#30254" title="cc.spray.client.SimpleRequest[T]">simpleRequest</a>.<a href="SimpleRequest.scala.html#30193" title="cc.spray.http.HttpMethod" id="30465">method</a>,
+      uri = <a href="#30254" title="cc.spray.client.SimpleRequest[T]">simpleRequest</a>.<a href="SimpleRequest.scala.html#30194" title="String" id="30466">uri</a>,
+      content = <a href="#30254" title="cc.spray.client.SimpleRequest[T]">simpleRequest</a>.<a href="SimpleRequest.scala.html#30195" title="=&gt; Option[T]">content</a>.<span title="(f: T =&gt; cc.spray.http.HttpContent)Option[cc.spray.http.HttpContent]">map</span><a title="Option[cc.spray.http.HttpContent]" id="30467" class="delimiter">(</a><a href="#30307" title="(obj: T)(implicit evidence$1: cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[T])cc.spray.typeconversion.package.ToHttpContentPimp[T]">_</a>.<span title="=&gt; cc.spray.http.HttpContent">toHttpContent</span><span class="delimiter">)</span>
+    <span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">def</span> <a title="(encoder: cc.spray.encoding.Encoder)cc.spray.http.HttpRequest =&gt; cc.spray.http.HttpRequest" id="25719">encode</a><span class="delimiter">(</span><a title="cc.spray.encoding.Encoder" id="30470">encoder</a>: <span title="cc.spray.encoding.Encoder">Encoder</span><span class="delimiter">)</span>: HttpRequest =&gt; HttpRequest = <a href="#30470" title="cc.spray.encoding.Encoder">encoder</a>.<span title="(message: cc.spray.http.HttpRequest)cc.spray.http.HttpRequest">encode</span><span class="delimiter">(</span><a href="#30483" title="cc.spray.http.HttpRequest">_</a><span class="delimiter">)</span>
+
+  <span class="keyword">def</span> <a title="(header: cc.spray.http.HttpHeader)cc.spray.http.HttpRequest =&gt; cc.spray.http.HttpRequest" id="25720">addHeader</a><span class="delimiter">(</span><a title="cc.spray.http.HttpHeader" id="30487">header</a>: <span title="cc.spray.http.HttpHeader">HttpHeader</span><span class="delimiter">)</span>: HttpRequest =&gt; HttpRequest = <a title="cc.spray.http.HttpRequest" id="30490">req</a> =&gt; <a href="#30490" title="cc.spray.http.HttpRequest">req</a>.<span title="(headers: List[cc.spray.http.HttpHeader])cc.spray.http.HttpRequest">withHeaders</span><span class="delimiter">(</span><a href="#30487" title="cc.spray.http.HttpHeader">header</a> <a href="#30491" title="(x: cc.spray.http.HttpHeader)List[cc.spray.http.HttpHeader]">::</a> <a href="#30490" title="cc.spray.http.HttpRequest">req</a>.<span title="=&gt; List[cc.spray.http.HttpHeader]">headers</span><span class="delimiter">)</span>
+
+  <span class="keyword">def</span> <a title="(first: cc.spray.http.HttpHeader, more: cc.spray.http.HttpHeader*)cc.spray.http.HttpRequest =&gt; cc.spray.http.HttpRequest" id="25721">addHeaders</a><span class="delimiter">(</span><a title="cc.spray.http.HttpHeader" id="30497">first</a>: <span title="cc.spray.http.HttpHeader">HttpHeader</span>, <a title="cc.spray.http.HttpHeader*" id="30498">more</a>: <span title="cc.spray.http.HttpHeader*">HttpHeader</span>*<span class="delimiter">)</span>: HttpRequest =&gt; HttpRequest = <a href="#25722" title="(headers: List[cc.spray.http.HttpHeader])cc.spray.http.HttpRequest =&gt; cc.spray.http.HttpRequest">addHeaders</a><span class="delimiter">(</span><a href="#30497" title="cc.spray.http.HttpHeader">first</a> <a href="#30517" title="(x: cc.spray.http.HttpHeader)List[cc.spray.http.HttpHeader]">::</a> <a href="#30498" title="cc.spray.http.HttpHeader*">more</a>.<span title="=&gt; List[cc.spray.http.HttpHeader]">toList</span><span class="delimiter">)</span>
+
+  <span class="keyword">def</span> <a title="(headers: List[cc.spray.http.HttpHeader])cc.spray.http.HttpRequest =&gt; cc.spray.http.HttpRequest" id="25722">addHeaders</a><span class="delimiter">(</span><a title="List[cc.spray.http.HttpHeader]" id="30504">headers</a>: <span title="List[cc.spray.http.HttpHeader]">List</span><span class="delimiter">[</span>HttpHeader<span class="delimiter">]</span><span class="delimiter">)</span>: HttpRequest =&gt; HttpRequest = <a title="cc.spray.http.HttpRequest" id="30524">req</a> =&gt; <a href="#30524" title="cc.spray.http.HttpRequest">req</a>.<span title="(headers: List[cc.spray.http.HttpHeader])cc.spray.http.HttpRequest">withHeaders</span><span class="delimiter">(</span><a href="#30504" title="List[cc.spray.http.HttpHeader]">headers</a> <a href="#30525" title="(prefix: List[cc.spray.http.HttpHeader])List[cc.spray.http.HttpHeader]">:::</a> <a href="#30524" title="cc.spray.http.HttpRequest">req</a>.<span title="=&gt; List[cc.spray.http.HttpHeader]">headers</span><span class="delimiter">)</span>
+
+  <span class="keyword">def</span> <a title="(credentials: cc.spray.http.BasicHttpCredentials)cc.spray.http.HttpRequest =&gt; cc.spray.http.HttpRequest" id="25723">authenticate</a><span class="delimiter">(</span><a title="cc.spray.http.BasicHttpCredentials" id="30549">credentials</a>: <span title="cc.spray.http.BasicHttpCredentials">BasicHttpCredentials</span><span class="delimiter">)</span> = <a href="#25720" title="(header: cc.spray.http.HttpHeader)cc.spray.http.HttpRequest =&gt; cc.spray.http.HttpRequest">addHeader</a><span class="delimiter">(</span><span title="object cc.spray.http.HttpHeaders">HttpHeaders</span>.<span title="(credentials: cc.spray.http.HttpCredentials)cc.spray.http.HttpHeaders.Authorization">Authorization</span><span class="delimiter">(</span><a href="#30549" title="cc.spray.http.BasicHttpCredentials">credentials</a><span class="delimiter">)</span><span class="delimiter">)</span>
+
+  <span class="keyword">def</span> <a title="(decoder: cc.spray.encoding.Decoder)akka.dispatch.Future[cc.spray.http.HttpResponse] =&gt; akka.dispatch.Future[cc.spray.http.HttpResponse]" id="25724">decode</a><span class="delimiter">(</span><a title="cc.spray.encoding.Decoder" id="30591">decoder</a>: <span title="cc.spray.encoding.Decoder">Decoder</span><span class="delimiter">)</span> = <a href="#25728" title="(f: cc.spray.http.HttpResponse =&gt; cc.spray.http.HttpResponse)akka.dispatch.Future[cc.spray.http.HttpResponse] =&gt; akka.dispatch.Future[cc.spray.http.HttpResponse]">transformResponse</a> <span class="delimiter">{</span> response: <span title="cc.spray.http.HttpResponse">HttpResponse</span> =&gt;
+    <span title="cc.spray.http.HttpResponse" class="keyword">if</span> <span class="delimiter">(</span><a href="#30601" title="cc.spray.http.HttpResponse">response</a>.<span title="=&gt; cc.spray.http.HttpEncoding">encoding</span> <span title="(x$1: AnyRef)Boolean">==</span> <a href="#30591" title="cc.spray.encoding.Decoder">decoder</a>.<span title="=&gt; cc.spray.http.HttpEncoding">encoding</span><span class="delimiter">)</span> <a href="#30591" title="cc.spray.encoding.Decoder">decoder</a>.<span title="[T &lt;: cc.spray.http.HttpMessage[T]](message: T)T">decode</span><span title="(message: cc.spray.http.HttpResponse)cc.spray.http.HttpResponse" class="delimiter">[</span><span title="cc.spray.http.HttpResponse">HttpResponse</span><span class="delimiter">]</span><span class="delimiter">(</span><a href="#30601" title="cc.spray.http.HttpResponse">response</a><span class="delimiter">)</span>
+    <span class="keyword">else</span> <a href="#30601" title="cc.spray.http.HttpResponse">response</a>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">def</span> <a title="[T](implicit evidence$2: cc.spray.typeconversion.package.Unmarshaller[T])akka.dispatch.Future[cc.spray.http.HttpResponse] =&gt; akka.dispatch.Future[T]" id="30661">unmarshal</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="25727">T</a> :Unmarshaller<span class="delimiter">]</span> = <a href="#25728" title="(f: cc.spray.http.HttpResponse =&gt; T)akka.dispatch.Future[cc.spray.http.HttpResponse] =&gt; akka.dispatch.Future[T]">transformResponse</a> <span class="delimiter">{</span> response: <span title="cc.spray.http.HttpResponse">HttpResponse</span> =&gt;
+    <span title="[T](implicit um: cc.spray.typeconversion.package.Unmarshaller[T])cc.spray.typeconversion.package.Unmarshaller[T]">unmarshaller</span><a href="#30661" title="(implicit um: cc.spray.typeconversion.package.Unmarshaller[T])cc.spray.typeconversion.package.Unmarshaller[T]" class="delimiter">[</a><a href="#25727" title="T">T</a><span class="delimiter">]</span>.<span title="(v1: Option[cc.spray.http.HttpContent])Either[cc.spray.typeconversion.DeserializationError,T]">apply</span><span class="delimiter">(</span><a href="#30668" title="cc.spray.http.HttpResponse">response</a>.<span title="=&gt; Option[cc.spray.http.HttpContent]">content</span><span class="delimiter">)</span> <span title="T" class="keyword">match</span> <span class="delimiter">{</span>
+      <span class="keyword">case</span> <span title="T">Right</span><span class="delimiter">(</span><a title="T" id="30685">value</a><span class="delimiter">)</span> =&gt; <a href="#30685" title="T">value</a>
+      <span class="keyword">case</span> <span title="Nothing">Left</span><span class="delimiter">(</span><a title="cc.spray.typeconversion.DeserializationError" id="30687">error</a><span class="delimiter">)</span> =&gt; <span title="Nothing" class="keyword">throw</span> <a href="PipelineException.scala.html#29588" title="cc.spray.client.PipelineException" class="keyword">new</a> <a href="PipelineException.scala.html#9528" title="cc.spray.client.PipelineException">PipelineException</a><span class="delimiter">(</span><a href="#30687" title="cc.spray.typeconversion.DeserializationError">error</a>.<span title="()java.lang.String">toString</span><span class="delimiter">)</span> <span class="comment">// &quot;unwrap&quot; the error into the future</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">def</span> <a title="[A, B](f: A =&gt; B)akka.dispatch.Future[A] =&gt; akka.dispatch.Future[B]" id="25728">transformResponse</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="25731">A</a>, <a title="&gt;: Nothing &lt;: Any" id="25732">B</a><span class="delimiter">]</span><span class="delimiter">(</span><a title="A =&gt; B" id="30594">f</a>: A =&gt; B<span class="delimiter">)</span>: Future<span class="delimiter">[</span>A<span class="delimiter">]</span> =&gt; Future<span class="delimiter">[</span>B<span class="delimiter">]</span> = <a href="#30693" title="akka.dispatch.Future[A]">_</a>.<span title="(f: A =&gt; B)akka.dispatch.Future[B]">map</span><span class="delimiter">(</span><a href="#30594" title="A =&gt; B">f</a><span class="delimiter">)</span>
+
+  <span class="keyword">implicit</span> <span class="keyword">def</span> <a title="[A, B](f: A =&gt; B)MessagePipelining.this.PimpedFunction[A,B]" id="25733">pimpFunction</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="25736">A</a>, <a title="&gt;: Nothing &lt;: Any" id="25737">B</a><span class="delimiter">]</span><span class="delimiter">(</span><a title="A =&gt; B" id="27430">f</a>: A =&gt; B<span class="delimiter">)</span> = <span title="MessagePipelining.this.PimpedFunction[A,B]" class="keyword">new</span> <a href="#25738" title="MessagePipelining.this.PimpedFunction[A,B]">PimpedFunction</a><span class="delimiter">(</span><a href="#27430" title="A =&gt; B">f</a><span class="delimiter">)</span>
+  <span class="keyword">class</span> <a title="class PimpedFunction[A, B] extends java.lang.Object with A =&gt; B with ScalaObject" id="25738">PimpedFunction</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="25739">A</a>, <a title="&gt;: Nothing &lt;: Any" id="25740">B</a><span class="delimiter">]</span><a href="#25738" title="ScalaObject" class="delimiter">(</a><a title="A =&gt; B" id="27442">f</a>: A =&gt; B<span class="delimiter">)</span> <span class="keyword">extends</span> <span class="delimiter">(</span>A =&gt; B<span class="delimiter">)</span> <span class="delimiter">{</span>
+    <span class="keyword">def</span> <a title="(a: A)B" id="27436">apply</a><span class="delimiter">(</span><a title="A" id="30708">a</a>: <a href="#25739" title="A">A</a><span class="delimiter">)</span> = <a href="#27442" title="(v1: A)B">f</a><span class="delimiter">(</span><a href="#30708" title="A">a</a><span class="delimiter">)</span>
+    <span class="keyword">def</span> <a title="[C](g: B =&gt; C)A =&gt; C" id="27437">~&gt;</a> <span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="27439">C</a><span class="delimiter">]</span><span class="delimiter">(</span><a title="B =&gt; C" id="30713">g</a>: B =&gt; C<span class="delimiter">)</span>: A =&gt; C = <a href="#30713" title="B =&gt; C">g</a> <span title="(g: A =&gt; B)A =&gt; C">compose</span> <a href="#27442" title="A =&gt; B">f</a>
+  <span class="delimiter">}</span>
+<span class="delimiter">}</span>
+
+<span class="keyword">object</span> <a title="object cc.spray.client.MessagePipelining" id="9523">MessagePipelining</a> <span title="ScalaObject" class="keyword">extends</span> <a href="#9522" title="cc.spray.client.MessagePipelining">MessagePipelining</a>
+
+        </pre>
+    </body>
+</html>

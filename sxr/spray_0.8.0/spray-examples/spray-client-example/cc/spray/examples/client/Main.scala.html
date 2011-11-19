@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/examples/client/Main.scala</title>
+        <script type="text/javascript" src="../../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="keyword">package</span> cc.spray
+<span class="keyword">package</span> examples.client
+
+<span class="keyword">import</span> http._
+<span class="keyword">import</span> <span title="object cc.spray.http.HttpMethods">HttpMethods</span>._
+<span class="keyword">import</span> can.HttpClient
+<span class="keyword">import</span> akka.config.<span title="object akka.config.Supervision">Supervision</span>._
+<span class="keyword">import</span> akka.actor.<span class="delimiter">{</span>PoisonPill, Actor, Supervisor<span class="delimiter">}</span>
+<span class="keyword">import</span> client.<span class="delimiter">{</span>Get, HttpConduit<span class="delimiter">}</span>
+<span class="keyword">import</span> typeconversion.<span class="delimiter">{</span>SprayJsonSupport, DefaultMarshallers<span class="delimiter">}</span>
+<span class="keyword">import</span> utils.Logging
+
+<span class="keyword">object</span> <a title="object cc.spray.examples.client.Main" id="9517">Main</a> <span title="ScalaObject" class="keyword">extends</span> <span title="App">App</span> <span class="keyword">with</span> <span title="cc.spray.utils.Logging">Logging</span> <span class="delimiter">{</span>
+
+  <span class="comment">// start and supervise the spray-can HttpClient actor</span>
+  <span title="(config: akka.config.Supervision.SupervisorConfig)akka.actor.Supervisor">Supervisor</span><span class="delimiter">(</span>
+    <span title="(restartStrategy: akka.config.Supervision.FaultHandlingStrategy, worker: List[akka.config.Supervision.Server], maxRestartsHandler: (akka.actor.ActorRef, akka.actor.MaximumNumberOfRestartsWithinTimeRangeReached) =&gt; Unit)akka.config.Supervision.SupervisorConfig">SupervisorConfig</span><span class="delimiter">(</span>
+      <span title="(trapExit: List[Class[_ &lt;: Throwable]], maxNrOfRetries: Int, withinTimeRange: Int)akka.config.Supervision.OneForOneStrategy">OneForOneStrategy</span><span class="delimiter">(</span><span title="(xs: java.lang.Class[Exception]*)List[java.lang.Class[Exception]]">List</span><span class="delimiter">(</span>classOf<span title="java.lang.Class[Exception](classOf[java.lang.Exception])" class="delimiter">[</span>Exception<span class="delimiter">]</span><span class="delimiter">)</span>, <span title="Int(3)" class="int">3</span>, <span title="Int(100)" class="int">100</span><span class="delimiter">)</span>,
+      <span title="(xs: akka.config.Supervision.Supervise*)List[akka.config.Supervision.Supervise]">List</span><span class="delimiter">(</span><span title="(actorRef: akka.actor.ActorRef, lifeCycle: akka.config.Supervision.LifeCycle)akka.config.Supervision.Supervise">Supervise</span><span class="delimiter">(</span><span title="object akka.actor.Actor">Actor</span>.<span title="(factory: =&gt; akka.actor.Actor)akka.actor.ActorRef">actorOf</span><span class="delimiter">(</span><span title="cc.spray.can.HttpClient" class="keyword">new</span> <span title="cc.spray.can.HttpClient">HttpClient</span><span class="delimiter">(</span><span class="delimiter">)</span><span class="delimiter">)</span>, <span title="object akka.config.Supervision.Permanent">Permanent</span><span class="delimiter">)</span><span class="delimiter">)</span>
+    <span class="delimiter">)</span>
+  <span class="delimiter">)</span>
+
+  <a href="#29746" title="()Unit">fetchAndShowGithubDotCom</a><span class="delimiter">(</span><span class="delimiter">)</span>
+
+  <a href="#29747" title="()Unit">fetchAndShowHeightOfMtEverest</a><span class="delimiter">(</span><span class="delimiter">)</span>
+
+  <span title="object akka.actor.Actor">Actor</span>.<span title="=&gt; akka.actor.ActorRegistry">registry</span>.<span title="(xs: Array[akka.actor.ActorRef])scala.collection.mutable.ArrayOps[akka.actor.ActorRef]">actors</span>.<span title="(f: akka.actor.ActorRef =&gt; Unit)Unit">foreach</span><span class="delimiter">(</span><a href="#33798" title="akka.actor.ActorRef">_</a> <span title="(msg: Any)(implicit sender: akka.actor.UntypedChannel)Unit">!</span> <span title="object akka.actor.PoisonPill">PoisonPill</span><span class="delimiter">)</span>
+
+  <span class="comment">///////////////////////////////////////////////////</span>
+
+  <span class="keyword">def</span> <a title="()Unit" id="29746">fetchAndShowGithubDotCom</a><span class="delimiter">(</span><span class="delimiter">)</span> <span class="delimiter">{</span>
+    <span class="comment">// the HttpConduit gives us access to an HTTP server, it manages a pool of connections</span>
+    <span class="keyword">val</span> <a title="cc.spray.client.HttpConduit" id="33814">conduit</a> = <span title="cc.spray.client.HttpConduit" class="keyword">new</span> <span title="cc.spray.client.HttpConduit">HttpConduit</span><span class="delimiter">(</span><span title="java.lang.String(&quot;github.com&quot;)" class="string">&quot;github.com&quot;</span><span class="delimiter">)</span>
+
+    <span class="comment">// send a simple request</span>
+    <span class="keyword">val</span> <a title="akka.dispatch.Future[cc.spray.http.HttpResponse]" id="33815">responseFuture</a> = <a href="#33814" title="cc.spray.client.HttpConduit">conduit</a>.<span title="(v1: cc.spray.http.HttpRequest)akka.dispatch.Future[cc.spray.http.HttpResponse]">sendReceive</span><span class="delimiter">(</span><span title="(method: cc.spray.http.HttpMethod, uri: String, headers: List[cc.spray.http.HttpHeader], content: Option[cc.spray.http.HttpContent], protocol: cc.spray.http.HttpProtocol)cc.spray.http.HttpRequest">HttpRequest</span><span class="delimiter">(</span>method = <span title="=&gt; cc.spray.http.HttpMethod">GET</span>, uri = <span title="java.lang.String(&quot;/&quot;)" class="string">&quot;/&quot;</span><span class="delimiter">)</span><span class="delimiter">)</span>
+    <span class="keyword">val</span> <a title="cc.spray.http.HttpResponse" id="33816">response</a> = <a href="#33815" title="akka.dispatch.Future[cc.spray.http.HttpResponse]">responseFuture</a>.<span title="=&gt; cc.spray.http.HttpResponse">get</span>
+    <span title="=&gt; cc.spray.utils.Log">log</span>.<span title="(msgFmt: String, a: =&gt; Any, b: =&gt; Any, c: =&gt; Any)Unit">info</span><span class="delimiter">(</span>
+      <span title="implicit scala.Predef.augmentString : (x: String)scala.collection.immutable.StringOps" class="string">&quot;&quot;&quot;|Response for GET request to github.com:
+         |status : %s
+         |headers: %s
+         |body   : %s&quot;&quot;&quot;</span>.<span title="=&gt; String">stripMargin</span>,
+      <a href="#33816" title="cc.spray.http.HttpResponse">response</a>.<span title="=&gt; cc.spray.http.StatusCode">status</span>.<span title="=&gt; Int">value</span>, <a href="#33816" title="cc.spray.http.HttpResponse">response</a>.<span title="=&gt; List[cc.spray.http.HttpHeader]">headers</span>, <a href="#33816" title="cc.spray.http.HttpResponse">response</a>.<span title="=&gt; Option[cc.spray.http.HttpContent]">content</span>
+    <span class="delimiter">)</span>
+    <a href="#33814" title="cc.spray.client.HttpConduit">conduit</a>.<span title="()Unit">close</span><span class="delimiter">(</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">def</span> <a title="()Unit" id="29747">fetchAndShowHeightOfMtEverest</a><span class="delimiter">(</span><span class="delimiter">)</span> <span class="delimiter">{</span>
+    <span title="=&gt; cc.spray.utils.Log">log</span>.<span title="(msg: =&gt; String)Unit">info</span><span class="delimiter">(</span><span title="java.lang.String(&quot;Requesting the elevation of Mt. Everest from Googles Elevation API...&quot;)" class="string">&quot;Requesting the elevation of Mt. Everest from Googles Elevation API...&quot;</span><span class="delimiter">)</span>
+    <span class="keyword">val</span> <a title="conduit extends cc.spray.client.HttpConduit with cc.spray.typeconversion.SprayJsonSupport with cc.spray.examples.client.ElevationJsonProtocol" id="35094">conduit</a> = <a href="#35098" title="cc.spray.client.HttpConduit with cc.spray.typeconversion.SprayJsonSupport with cc.spray.examples.client.ElevationJsonProtocol{val elevationPipeline: cc.spray.client.SimpleRequest[Nothing] =&gt; akka.dispatch.Future[cc.spray.examples.client.GoogleApiResult[cc.spray.examples.client.Elevation]]}" class="keyword">new</a> <a title="anonymous class $anon extends cc.spray.client.HttpConduit with cc.spray.typeconversion.SprayJsonSupport with cc.spray.examples.client.ElevationJsonProtocol" id="35098">HttpConduit</a><span class="delimiter">(</span><span title="java.lang.String(&quot;maps.googleapis.com&quot;)" class="string">&quot;maps.googleapis.com&quot;</span><span class="delimiter">)</span>
+      <span class="keyword">with</span> <span title="cc.spray.typeconversion.SprayJsonSupport">SprayJsonSupport</span>
+      <span class="keyword">with</span> <a href="Elevation.scala.html#9505" title="cc.spray.examples.client.ElevationJsonProtocol">ElevationJsonProtocol</a> <span class="delimiter">{</span>
+      <span class="keyword">val</span> <a title="cc.spray.client.SimpleRequest[Nothing] =&gt; akka.dispatch.Future[cc.spray.examples.client.GoogleApiResult[cc.spray.examples.client.Elevation]]" id="35110">elevationPipeline</a> = <a href="#35098" title="(f: cc.spray.client.SimpleRequest[Nothing] =&gt; cc.spray.http.HttpRequest)this.PimpedFunction[cc.spray.client.SimpleRequest[Nothing],cc.spray.http.HttpRequest]">simpleRequest</a> <a href="#35098" title="(f: cc.spray.client.SimpleRequest[Nothing] =&gt; akka.dispatch.Future[cc.spray.http.HttpResponse])this.PimpedFunction[cc.spray.client.SimpleRequest[Nothing],akka.dispatch.Future[cc.spray.http.HttpResponse]]">~&gt;</a> <a href="#35098" title="=&gt; cc.spray.http.HttpRequest =&gt; akka.dispatch.Future[cc.spray.http.HttpResponse]">sendReceive</a> <span title="(g: akka.dispatch.Future[cc.spray.http.HttpResponse] =&gt; akka.dispatch.Future[cc.spray.examples.client.GoogleApiResult[cc.spray.examples.client.Elevation]])cc.spray.client.SimpleRequest[Nothing] =&gt; akka.dispatch.Future[cc.spray.examples.client.GoogleApiResult[cc.spray.examples.client.Elevation]]">~&gt;</span> <a href="#35098" title="[T](implicit evidence$2: cc.spray.typeconversion.package.Unmarshaller[T])akka.dispatch.Future[cc.spray.http.HttpResponse] =&gt; akka.dispatch.Future[T]">unmarshal</a><a href="#35098" title="(implicit evidence$2: cc.spray.typeconversion.package.Unmarshaller[cc.spray.examples.client.GoogleApiResult[cc.spray.examples.client.Elevation]])akka.dispatch.Future[cc.spray.http.HttpResponse] =&gt; akka.dispatch.Future[cc.spray.examples.client.GoogleApiResult[cc.spray.examples.client.Elevation]]" class="delimiter">[</a><a href="Elevation.scala.html#9501" title="cc.spray.examples.client.GoogleApiResult[cc.spray.examples.client.Elevation]">GoogleApiResult</a><span class="delimiter">[</span>Elevation<span class="delimiter">]</span><span class="delimiter">]</span>
+    <span class="delimiter">}</span>
+    <span class="keyword">val</span> <a title="akka.dispatch.Future[cc.spray.examples.client.GoogleApiResult[cc.spray.examples.client.Elevation]]" id="35095">responseFuture</a> = <a href="#35094" title="conduit extends cc.spray.client.HttpConduit with cc.spray.typeconversion.SprayJsonSupport with cc.spray.examples.client.ElevationJsonProtocol">conduit</a>.<a href="#36848" title="(v1: cc.spray.client.SimpleRequest[Nothing])akka.dispatch.Future[cc.spray.examples.client.GoogleApiResult[cc.spray.examples.client.Elevation]]">elevationPipeline</a><span class="delimiter">(</span><span title="(uri: String)cc.spray.client.Get[Nothing]">Get</span><span class="delimiter">(</span><span title="java.lang.String(&quot;/maps/api/elevation/json?locations=27.988056,86.925278&amp;sensor=false&quot;)" class="string">&quot;/maps/api/elevation/json?locations=27.988056,86.925278&amp;sensor=false&quot;</span><span class="delimiter">)</span><span class="delimiter">)</span>
+    <span title="=&gt; cc.spray.utils.Log">log</span>.<span title="(msgFmt: String, a: =&gt; Any)Unit">info</span><span class="delimiter">(</span><span title="java.lang.String(&quot;The elevation of Mt. Everest is: %s m&quot;)" class="string">&quot;The elevation of Mt. Everest is: %s m&quot;</span>, <a href="#35095" title="akka.dispatch.Future[cc.spray.examples.client.GoogleApiResult[cc.spray.examples.client.Elevation]]">responseFuture</a>.<span title="=&gt; cc.spray.examples.client.GoogleApiResult[cc.spray.examples.client.Elevation]">get</span>.<a href="Elevation.scala.html#14319" title="=&gt; List[cc.spray.examples.client.Elevation]">results</a>.<span title="=&gt; cc.spray.examples.client.Elevation">head</span>.<a href="Elevation.scala.html#10098" title="=&gt; Double">elevation</a><span class="delimiter">)</span>
+    <a href="#35094" title="conduit extends cc.spray.client.HttpConduit with cc.spray.typeconversion.SprayJsonSupport with cc.spray.examples.client.ElevationJsonProtocol">conduit</a>.<span title="()Unit">close</span><span class="delimiter">(</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+<span class="delimiter">}</span>
+        </pre>
+    </body>
+</html>

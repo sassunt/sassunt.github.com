@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/examples/markdownserver/MarkdownService.scala</title>
+        <script type="text/javascript" src="../../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="keyword">package</span> cc.spray
+<span class="keyword">package</span> examples.markdownserver
+
+<span class="keyword">import</span> cc.spray._
+<span class="keyword">import</span> http._
+<span class="keyword">import</span> http.<span title="object cc.spray.http.MediaTypes">MediaTypes</span>._
+<span class="keyword">import</span> org.pegdown.<span class="delimiter">{</span>Extensions, PegDownProcessor<span class="delimiter">}</span>
+
+<span class="keyword">trait</span> <a title="trait MarkdownService extends java.lang.Object with cc.spray.Directives with ScalaObject" id="9910">MarkdownService</a> <span title="ScalaObject" class="keyword">extends</span> <span title="cc.spray.Directives">Directives</span> <span class="delimiter">{</span>
+  
+  <span class="keyword">val</span> <a title="cc.spray.http.MediaTypes.CustomMediaType" id="13491">MarkdownType</a> = <span title="(value: String, fileExtensions: String*)cc.spray.http.MediaTypes.CustomMediaType">CustomMediaType</span><span class="delimiter">(</span><span title="java.lang.String(&quot;text/x-markdown&quot;)" class="string">&quot;text/x-markdown&quot;</span>, <span title="java.lang.String(&quot;markdown&quot;)" class="string">&quot;markdown&quot;</span>, <span title="java.lang.String(&quot;mdown&quot;)" class="string">&quot;mdown&quot;</span>, <span title="java.lang.String(&quot;md&quot;)" class="string">&quot;md&quot;</span><span class="delimiter">)</span>
+  <span title="object cc.spray.http.MediaTypes">MediaTypes</span>.<span title="(mediaType: cc.spray.http.MediaType)cc.spray.http.MediaType">register</span><span class="delimiter">(</span><a href="#13491" title="=&gt; cc.spray.http.MediaTypes.CustomMediaType">MarkdownType</a><span class="delimiter">)</span>
+  
+  <span class="keyword">val</span> <a title="cc.spray.RequestContext =&gt; Unit" id="13493">markdownService</a> = <span class="delimiter">{</span>
+    <a href="#9910" title="(pattern: cc.spray.directives.PathMatcher0)cc.spray.directives.SprayRoute0">pathPrefix</a><span title="(route: cc.spray.RequestContext =&gt; Unit)cc.spray.RequestContext =&gt; Unit" class="delimiter">(</span><a href="#9910" title="implicit cc.spray.directives.PathDirectives.string2Matcher : (s: String)cc.spray.directives.PathMatcher0" class="string">&quot;doc&quot;</a><span class="delimiter">)</span> <span class="delimiter">{</span>
+      <a href="#9910" title="(route: cc.spray.RequestContext =&gt; Unit)cc.spray.RequestContext =&gt; Unit">cache</a> <span class="delimiter">{</span>
+        <a href="#9910" title="(f: cc.spray.http.HttpResponse =&gt; cc.spray.http.HttpResponse)cc.spray.directives.SprayRoute0">transformResponse</a><span title="(route: cc.spray.RequestContext =&gt; Unit)cc.spray.RequestContext =&gt; Unit" class="delimiter">(</span><a href="#27911" title="cc.spray.http.HttpResponse">_</a>.<span title="(f: cc.spray.http.HttpContent =&gt; cc.spray.http.HttpContent)cc.spray.http.HttpResponse">withContentTransformed</span><span class="delimiter">(</span><a href="#13496" title="(content: cc.spray.http.HttpContent)cc.spray.http.HttpContent">markdown2Html</a><span class="delimiter">)</span><span class="delimiter">)</span> <span class="delimiter">{</span>
+          <a href="#9910" title="Option[cc.spray.http.HttpCharset]" id="30118">getFromResourceDirectory</a><span class="delimiter">(</span><a title="java.lang.String(&quot;www&quot;)" id="30115" class="string">&quot;www&quot;</a>, pathRewriter = <a href="#13495" title="String =&gt; java.lang.String" id="30116">rewritePath</a><span class="delimiter">)</span>
+        <span class="delimiter">}</span>
+      <span class="delimiter">}</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+  
+  <span class="keyword">def</span> <a title="(path: String)java.lang.String" id="13495">rewritePath</a><span class="delimiter">(</span><a title="String" id="30110">path</a>: <span title="String">String</span><span class="delimiter">)</span> = <span class="delimiter">(</span><span title="java.lang.String" class="keyword">if</span> <span class="delimiter">(</span><a href="#30110" title="String">path</a>.<span title="()Boolean">isEmpty</span><span class="delimiter">)</span> <span title="java.lang.String(&quot;index&quot;)" class="string">&quot;index&quot;</span> <span class="keyword">else</span> <a href="#30110" title="String">path</a><span class="delimiter">)</span> <span title="(x$1: Any)java.lang.String">+</span> <span title="java.lang.String(&quot;.markdown&quot;)" class="string">&quot;.markdown&quot;</span>
+  
+  <span class="keyword">def</span> <a title="(content: cc.spray.http.HttpContent)cc.spray.http.HttpContent" id="13496">markdown2Html</a><span class="delimiter">(</span><a title="cc.spray.http.HttpContent" id="27995">content</a>: <span title="cc.spray.http.HttpContent">HttpContent</span><span class="delimiter">)</span> = <a href="#27995" title="cc.spray.http.HttpContent">content</a>.<span title="=&gt; cc.spray.http.ContentType">contentType</span> <span title="cc.spray.http.HttpContent" class="keyword">match</span> <span class="delimiter">{</span>
+    <span class="keyword">case</span> <span title="cc.spray.http.HttpContent">ContentType</span><span class="delimiter">(</span><a href="#13491" title="=&gt; cc.spray.http.MediaTypes.CustomMediaType">MarkdownType</a>, _<span class="delimiter">)</span> =&gt; <span class="delimiter">{</span>
+      <span class="keyword">val</span> <a title="java.lang.String" id="28121">html</a> = <span title="(x$1: Int)org.pegdown.PegDownProcessor" class="keyword">new</span> <span title="org.pegdown.PegDownProcessor">PegDownProcessor</span><span class="delimiter">(</span>Extensions.<span title="Int(65535)">ALL</span><span class="delimiter">)</span>.<span title="(x$1: java.lang.String)java.lang.String">markdownToHtml</span><span class="delimiter">(</span><a href="#27995" title="implicit cc.spray.http.HttpContent.pimpHttpContentWithAs1 : (c: cc.spray.http.HttpContent)cc.spray.http.HttpContent.HttpContentExtractor">content</a>.<span title="[A](implicit unmarshaller: cc.spray.typeconversion.package.Unmarshaller[A])Either[cc.spray.typeconversion.DeserializationError,A]">as</span><a href="#9910" title="(implicit unmarshaller: cc.spray.typeconversion.package.Unmarshaller[String])Either[cc.spray.typeconversion.DeserializationError,String]" class="delimiter">[</a><span title="String">String</span><span class="delimiter">]</span>.<span title="=&gt; Either.RightProjection[cc.spray.typeconversion.DeserializationError,String]">right</span>.<span title="=&gt; String">get</span><span class="delimiter">)</span> 
+      <span title="(contentType: cc.spray.http.ContentType, string: String)cc.spray.http.HttpContent">HttpContent</span><span class="delimiter">(</span><span title="(mediaType: cc.spray.http.MediaType)cc.spray.http.ContentType">ContentType</span><span class="delimiter">(</span><span title="=&gt; cc.spray.http.MediaType">`text/html`</span><span class="delimiter">)</span>, <a href="#28121" title="java.lang.String">html</a><span class="delimiter">)</span> 
+    <span class="delimiter">}</span>
+    <span class="keyword">case</span> <span title="cc.spray.http.HttpContent">_</span> =&gt; <a href="#27995" title="cc.spray.http.HttpContent">content</a>
+  <span class="delimiter">}</span>
+  
+<span class="delimiter">}</span>
+        </pre>
+    </body>
+</html>

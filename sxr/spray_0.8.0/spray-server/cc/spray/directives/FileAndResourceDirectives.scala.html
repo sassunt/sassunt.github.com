@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/directives/FileAndResourceDirectives.scala</title>
+        <script type="text/javascript" src="../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray
+<span class="keyword">package</span> directives
+
+<span class="keyword">import</span> http._
+<span class="keyword">import</span> org.parboiled.common.FileUtils
+<span class="keyword">import</span> java.io.File
+<span class="keyword">import</span> <span title="object cc.spray.http.StatusCodes">StatusCodes</span>._
+<span class="keyword">import</span> <span title="object cc.spray.http.HttpHeaders">HttpHeaders</span>._
+<span class="keyword">import</span> java.net.<span class="delimiter">{</span>URL, URLConnection<span class="delimiter">}</span>
+
+<span class="keyword">private</span><span class="delimiter">[</span>spray<span class="delimiter">]</span> <span class="keyword">trait</span> <a title="trait FileAndResourceDirectives extends java.lang.Object with ScalaObject" id="9808">FileAndResourceDirectives</a> <span title="ScalaObject" class="delimiter">{</span>
+  <span class="keyword">this</span>: SimpleDirectives <span class="keyword">with</span> DetachDirectives =&gt;
+
+  <span class="comment">/**
+   * Returns a Route that completes GET requests with the content of the given file. The actual I/O operation is
+   * running detached in the context of a newly spawned actor, so it doesn't block the current thread.
+   * If the file cannot be read the Route completes the request with a &quot;404 NotFound&quot; error.
+   */</span>
+  <span class="keyword">def</span> <a title="(fileName: String, charset: Option[cc.spray.http.HttpCharset], resolver: (String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType)cc.spray.RequestContext =&gt; Unit" id="10561">getFromFileName</a><span class="delimiter">(</span><a title="String" id="45723">fileName</a>: <span title="String">String</span>, <a title="Option[cc.spray.http.HttpCharset]" id="45727">charset</a>: <span title="Option[cc.spray.http.HttpCharset]">Option</span><span class="delimiter">[</span>HttpCharset<span class="delimiter">]</span> = <span title="object None">None</span>,
+                  <a title="(String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType" id="45728">resolver</a>: <span title="(String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType">ContentTypeResolver</span> = <a href="#9809" title="object cc.spray.directives.DefaultContentTypeResolver">DefaultContentTypeResolver</a><span class="delimiter">)</span>: <span title="cc.spray.RequestContext =&gt; Unit">Route</span> = <span class="delimiter">{</span>
+    <a href="#10562" title="(file: java.io.File, charset: Option[cc.spray.http.HttpCharset], resolver: (String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType)cc.spray.RequestContext =&gt; Unit">getFromFile</a><span class="delimiter">(</span><span title="java.io.File" class="keyword">new</span> <span title="java.io.File">File</span><span class="delimiter">(</span><a href="#45723" title="String">fileName</a><span class="delimiter">)</span>, <a href="#45727" title="Option[cc.spray.http.HttpCharset]">charset</a>, <a href="#45728" title="(String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType">resolver</a><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Returns a Route that completes GET requests with the content of the given file. The actual I/O operation is
+   * running detached in the context of a newly spawned actor, so it doesn't block the current thread.
+   * If the file cannot be read the Route completes the request with a &quot;404 NotFound&quot; error.
+   */</span>
+  <span class="keyword">def</span> <a title="(file: java.io.File, charset: Option[cc.spray.http.HttpCharset], resolver: (String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType)cc.spray.RequestContext =&gt; Unit" id="10562">getFromFile</a><span class="delimiter">(</span><a title="java.io.File" id="45810">file</a>: <span title="java.io.File">File</span>, <a title="Option[cc.spray.http.HttpCharset]" id="45814">charset</a>: <span title="Option[cc.spray.http.HttpCharset]">Option</span><span class="delimiter">[</span>HttpCharset<span class="delimiter">]</span> = <span title="object None">None</span>,
+                  <a title="(String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType" id="45815">resolver</a>: <span title="(String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType">ContentTypeResolver</span> = <a href="#9809" title="object cc.spray.directives.DefaultContentTypeResolver">DefaultContentTypeResolver</a><span class="delimiter">)</span>: <span title="cc.spray.RequestContext =&gt; Unit">Route</span> = <span class="delimiter">{</span>
+    <a href="BasicDirectives.scala.html#43989" title="(route: cc.spray.RequestContext =&gt; Unit)cc.spray.RequestContext =&gt; Unit">detach</a> <span class="delimiter">{</span>
+      <a href="BasicDirectives.scala.html#42900" title="(route: cc.spray.RequestContext =&gt; Unit)cc.spray.RequestContext =&gt; Unit">get</a> <span class="delimiter">{</span> <a title="cc.spray.RequestContext" id="46057">ctx</a> =&gt;
+        <a href="#10563" title="(file: java.io.File, charset: Option[cc.spray.http.HttpCharset], resolver: (String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType)Option[cc.spray.http.HttpResponse]">responseFromFile</a><span class="delimiter">(</span><a href="#45810" title="java.io.File">file</a>, <a href="#45814" title="Option[cc.spray.http.HttpCharset]">charset</a>, <a href="#45815" title="(String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType">resolver</a><span class="delimiter">)</span> <span title="Unit" class="keyword">match</span> <span class="delimiter">{</span>
+          <span class="keyword">case</span> <span title="Unit">Some</span><span class="delimiter">(</span><a title="cc.spray.http.HttpResponse" id="46065">response</a><span class="delimiter">)</span> =&gt; <a href="#46057" title="cc.spray.RequestContext">ctx</a>.<a href="../RequestContext.scala.html#23769" title="(response: cc.spray.http.HttpResponse)Unit">complete</a><span class="delimiter">(</span><a href="#46065" title="cc.spray.http.HttpResponse">response</a><span class="delimiter">)</span>
+          <span class="keyword">case</span> <span title="Unit">None</span> =&gt; <a href="#46057" title="cc.spray.RequestContext">ctx</a>.<a href="../RequestContext.scala.html#23755" title="(rejections: cc.spray.Rejection*)Unit">reject</a><span class="delimiter">(</span><span class="delimiter">)</span> <span class="comment">// reject without specific rejection =&gt; same as unmatched &quot;path&quot; directive</span>
+        <span class="delimiter">}</span>
+      <span class="delimiter">}</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Builds an HttpResponse from the content of the given file. If the file cannot be read a &quot;404 NotFound&quot;
+   * response is returned. Note that this method is using disk IO which may block the current thread.
+   */</span>
+  <span class="keyword">def</span> <a title="(file: java.io.File, charset: Option[cc.spray.http.HttpCharset], resolver: (String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType)Option[cc.spray.http.HttpResponse]" id="10563">responseFromFile</a><span class="delimiter">(</span><a title="java.io.File" id="46058">file</a>: <span title="java.io.File">File</span>, <a title="Option[cc.spray.http.HttpCharset]" id="46062">charset</a>: <span title="Option[cc.spray.http.HttpCharset]">Option</span><span class="delimiter">[</span>HttpCharset<span class="delimiter">]</span> = <span title="object None">None</span>,
+                       <a title="(String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType" id="46063">resolver</a>: <span title="(String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType">ContentTypeResolver</span> = <a href="#9809" title="object cc.spray.directives.DefaultContentTypeResolver">DefaultContentTypeResolver</a><span class="delimiter">)</span>: <span title="Option[cc.spray.http.HttpResponse]">Option</span><span class="delimiter">[</span>HttpResponse<span class="delimiter">]</span> = <span class="delimiter">{</span>
+    <a href="#10566" title="(lastModified: cc.spray.http.DateTime, buffer: Array[Byte], contentType: =&gt; cc.spray.http.ContentType)Option[cc.spray.http.HttpResponse]">responseFromBuffer</a><span class="delimiter">(</span>
+      lastModified = <span title="(clicks_: Long)cc.spray.http.DateTime">DateTime</span><span class="delimiter">(</span>math.<span title="(x: Long, y: Long)Long">min</span><span class="delimiter">(</span><a href="#46058" title="java.io.File">file</a>.<span title="()Long">lastModified</span>, <span title="object java.lang.System">System</span>.<span title="()Long">currentTimeMillis</span><span class="delimiter">(</span><span class="delimiter">)</span><span class="delimiter">)</span><span class="delimiter">)</span>,
+      buffer = <span title="object org.parboiled.common.FileUtils">FileUtils</span>.<span title="(x$1: java.io.File)Array[Byte]">readAllBytes</span><span class="delimiter">(</span><a href="#46058" title="java.io.File">file</a><span class="delimiter">)</span>,
+      contentType = <a href="#46063" title="(v1: String, v2: Option[cc.spray.http.HttpCharset])cc.spray.http.ContentType">resolver</a><span class="delimiter">(</span><a href="#46058" title="java.io.File">file</a>.<span title="()java.lang.String">getName</span>, <a href="#46062" title="Option[cc.spray.http.HttpCharset]">charset</a><span class="delimiter">)</span>
+    <span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Returns a Route that completes GET requests with the content of the given resource. The actual I/O operation is
+   * running detached in the context of a newly spawned actor, so it doesn't block the current thread.
+   * If the resource cannot be read the Route completes the request with a &quot;404 NotFound&quot; error.
+   */</span>
+  <span class="keyword">def</span> <a title="(resourceName: String, charset: Option[cc.spray.http.HttpCharset], resolver: (String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType)cc.spray.RequestContext =&gt; Unit" id="10564">getFromResource</a><span class="delimiter">(</span><a title="String" id="46296">resourceName</a>: <span title="String">String</span>, <a title="Option[cc.spray.http.HttpCharset]" id="46300">charset</a>: <span title="Option[cc.spray.http.HttpCharset]">Option</span><span class="delimiter">[</span>HttpCharset<span class="delimiter">]</span> = <span title="object None">None</span>,
+                      <a title="(String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType" id="46301">resolver</a>: <span title="(String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType">ContentTypeResolver</span> = <a href="#9809" title="object cc.spray.directives.DefaultContentTypeResolver">DefaultContentTypeResolver</a><span class="delimiter">)</span>: <span title="cc.spray.RequestContext =&gt; Unit">Route</span> = <span class="delimiter">{</span>
+    <a href="BasicDirectives.scala.html#43989" title="(route: cc.spray.RequestContext =&gt; Unit)cc.spray.RequestContext =&gt; Unit">detach</a> <span class="delimiter">{</span>
+      <a href="BasicDirectives.scala.html#42900" title="(route: cc.spray.RequestContext =&gt; Unit)cc.spray.RequestContext =&gt; Unit">get</a> <span class="delimiter">{</span> <a title="cc.spray.RequestContext" id="46318">ctx</a> =&gt;
+        <a href="#10565" title="(resourceName: String, charset: Option[cc.spray.http.HttpCharset], resolver: (String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType)Option[cc.spray.http.HttpResponse]">responseFromResource</a><span class="delimiter">(</span><a href="#46296" title="String">resourceName</a>, <a href="#46300" title="Option[cc.spray.http.HttpCharset]">charset</a><span class="delimiter">)</span> <span title="Unit" class="keyword">match</span> <span class="delimiter">{</span>
+          <span class="keyword">case</span> <span title="Unit">Some</span><span class="delimiter">(</span><a title="cc.spray.http.HttpResponse" id="46328">response</a><span class="delimiter">)</span> =&gt; <a href="#46318" title="cc.spray.RequestContext">ctx</a>.<a href="../RequestContext.scala.html#23769" title="(response: cc.spray.http.HttpResponse)Unit">complete</a><span class="delimiter">(</span><a href="#46328" title="cc.spray.http.HttpResponse">response</a><span class="delimiter">)</span>
+          <span class="keyword">case</span> <span title="Unit">None</span> =&gt; <a href="#46318" title="cc.spray.RequestContext">ctx</a>.<a href="../RequestContext.scala.html#23755" title="(rejections: cc.spray.Rejection*)Unit">reject</a><span class="delimiter">(</span><span class="delimiter">)</span> <span class="comment">// reject without specific rejection =&gt; same as unmatched &quot;path&quot; directive</span>
+        <span class="delimiter">}</span>
+      <span class="delimiter">}</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+  
+  <span class="comment">/**
+   * Builds an HttpResponse from the content of the given classpath resource. If the resource cannot be read a
+   * &quot;404 NotFound&quot; response is returned. Note that this method is using disk IO which may block the current thread.
+   */</span>
+  <span class="keyword">def</span> <a title="(resourceName: String, charset: Option[cc.spray.http.HttpCharset], resolver: (String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType)Option[cc.spray.http.HttpResponse]" id="10565">responseFromResource</a><span class="delimiter">(</span><a title="String" id="46319">resourceName</a>: <span title="String">String</span>, <a title="Option[cc.spray.http.HttpCharset]" id="46323">charset</a>: <span title="Option[cc.spray.http.HttpCharset]">Option</span><span class="delimiter">[</span>HttpCharset<span class="delimiter">]</span> = <span title="object None">None</span>,
+                           <a title="(String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType" id="46324">resolver</a>: <span title="(String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType">ContentTypeResolver</span> = <a href="#9809" title="object cc.spray.directives.DefaultContentTypeResolver">DefaultContentTypeResolver</a><span class="delimiter">)</span>: <span title="Option[cc.spray.http.HttpResponse]">Option</span><span class="delimiter">[</span>HttpResponse<span class="delimiter">]</span> = <span class="delimiter">{</span>
+    <span title="(x: java.net.URL)Option[java.net.URL]">Option</span><span class="delimiter">(</span><a href="#9808" title="()java.lang.Class[_]">getClass</a>.<span title="()java.lang.ClassLoader">getClassLoader</span>.<span title="(x$1: java.lang.String)java.net.URL">getResource</span><span class="delimiter">(</span><a href="#46319" title="String">resourceName</a><span class="delimiter">)</span><span class="delimiter">)</span>.<span title="(f: java.net.URL =&gt; Option[cc.spray.http.HttpResponse])Option[cc.spray.http.HttpResponse]">flatMap</span> <span class="delimiter">{</span> <a title="java.net.URL" id="47206">resource</a> =&gt;
+      <span class="keyword">val</span> <a title="java.net.URLConnection" id="47207">urlConn</a> = <a href="#47206" title="java.net.URL">resource</a>.<span title="()java.net.URLConnection">openConnection</span><span class="delimiter">(</span><span class="delimiter">)</span>
+      <span class="keyword">val</span> <a title="java.io.InputStream" id="47208">inputStream</a> = <a href="#47207" title="java.net.URLConnection">urlConn</a>.<span title="()java.io.InputStream">getInputStream</span>
+      <span class="keyword">val</span> <a title="Option[cc.spray.http.HttpResponse]" id="47209">response</a> = <a href="#10566" title="(lastModified: cc.spray.http.DateTime, buffer: Array[Byte], contentType: =&gt; cc.spray.http.ContentType)Option[cc.spray.http.HttpResponse]">responseFromBuffer</a><span class="delimiter">(</span>
+        lastModified = <span title="(clicks_: Long)cc.spray.http.DateTime">DateTime</span><span class="delimiter">(</span>math.<span title="(x: Long, y: Long)Long">min</span><span class="delimiter">(</span><a href="#47207" title="java.net.URLConnection">urlConn</a>.<span title="()Long">getLastModified</span>, <span title="object java.lang.System">System</span>.<span title="()Long">currentTimeMillis</span><span class="delimiter">(</span><span class="delimiter">)</span><span class="delimiter">)</span><span class="delimiter">)</span>,
+        buffer = <span title="object org.parboiled.common.FileUtils">FileUtils</span>.<span title="(x$1: java.io.InputStream)Array[Byte]">readAllBytes</span><span class="delimiter">(</span><a href="#47208" title="java.io.InputStream">inputStream</a><span class="delimiter">)</span>,
+        contentType = <a href="#46324" title="(v1: String, v2: Option[cc.spray.http.HttpCharset])cc.spray.http.ContentType">resolver</a><span class="delimiter">(</span><a href="#46319" title="String">resourceName</a>, <a href="#46323" title="Option[cc.spray.http.HttpCharset]">charset</a><span class="delimiter">)</span>
+      <span class="delimiter">)</span>
+      <a href="#47208" title="java.io.InputStream">inputStream</a>.<span title="()Unit">close</span><span class="delimiter">(</span><span class="delimiter">)</span>
+      <a href="#47209" title="Option[cc.spray.http.HttpResponse]">response</a>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+  
+  <span class="keyword">private</span> <span class="keyword">def</span> <a title="(lastModified: cc.spray.http.DateTime, buffer: Array[Byte], contentType: =&gt; cc.spray.http.ContentType)Option[cc.spray.http.HttpResponse]" id="10566">responseFromBuffer</a><span class="delimiter">(</span><a title="cc.spray.http.DateTime" id="46111">lastModified</a>: <span title="cc.spray.http.DateTime">DateTime</span>, <a title="Array[Byte]" id="46112">buffer</a>: <span title="Array[Byte]">Array</span><span class="delimiter">[</span>Byte<span class="delimiter">]</span>,
+                                 <a title="=&gt; cc.spray.http.ContentType" id="46113">contentType</a>: =&gt; ContentType<span class="delimiter">)</span>: <span title="Option[cc.spray.http.HttpResponse]">Option</span><span class="delimiter">[</span>HttpResponse<span class="delimiter">]</span> = <span class="delimiter">{</span>
+    <span title="(x: Array[Byte])Option[Array[Byte]]">Option</span><span class="delimiter">(</span><a href="#46112" title="Array[Byte]">buffer</a><span class="delimiter">)</span>.<span title="(f: Array[Byte] =&gt; cc.spray.http.HttpResponse)Option[cc.spray.http.HttpResponse]">map</span> <span class="delimiter">{</span> <a title="Array[Byte]" id="47350">buffer</a> =&gt;
+      <span title="(status: cc.spray.http.StatusCode, headers: List[cc.spray.http.HttpHeader], content: cc.spray.http.HttpContent)cc.spray.http.HttpResponse">HttpResponse</span><span class="delimiter">(</span><span title="=&gt; cc.spray.http.StatusCodes.Success">OK</span>, <span title="(xs: cc.spray.http.HttpHeaders.Last-Modified*)List[cc.spray.http.HttpHeaders.Last-Modified]">List</span><span class="delimiter">(</span><span title="(date: cc.spray.http.DateTime)cc.spray.http.HttpHeaders.Last-Modified">`Last-Modified`</span><span class="delimiter">(</span><a href="#46111" title="cc.spray.http.DateTime">lastModified</a><span class="delimiter">)</span><span class="delimiter">)</span>, <span title="(contentType: cc.spray.http.ContentType, buffer: Array[Byte])cc.spray.http.HttpContent">HttpContent</span><span class="delimiter">(</span><a href="#46113" title="=&gt; cc.spray.http.ContentType">contentType</a>, <a href="#47350" title="Array[Byte]">buffer</a><span class="delimiter">)</span><span class="delimiter">)</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Returns a Route that completes GET requests with the content of a file underneath the given directory.
+   * The unmatchedPath of the [[cc.spray.RequestContext]] is first transformed by the given pathRewriter function before
+   * being appended to the given directoryName to build the final fileName. 
+   * The actual I/O operation is running detached in the context of a newly spawned actor, so it doesn't block the
+   * current thread. If the file cannot be read the Route completes the request with a &quot;404 NotFound&quot; error.
+   */</span>
+  <span class="keyword">def</span> <a title="(directoryName: String, charset: Option[cc.spray.http.HttpCharset], pathRewriter: String =&gt; String, resolver: (String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType)cc.spray.RequestContext =&gt; Unit" id="10567">getFromDirectory</a><span class="delimiter">(</span><a title="String" id="47376">directoryName</a>: <span title="String">String</span>, <a title="Option[cc.spray.http.HttpCharset]" id="47381">charset</a>: <span title="Option[cc.spray.http.HttpCharset]">Option</span><span class="delimiter">[</span>HttpCharset<span class="delimiter">]</span> = <span title="object None">None</span>,
+                       <a title="String =&gt; String" id="47382">pathRewriter</a>: String =&gt; String = <a href="#47389" title="(x: String)String">identity</a>,
+                       <a title="(String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType" id="47383">resolver</a>: <span title="(String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType">ContentTypeResolver</span> = <a href="#9809" title="object cc.spray.directives.DefaultContentTypeResolver">DefaultContentTypeResolver</a><span class="delimiter">)</span>: <span title="cc.spray.RequestContext =&gt; Unit">Route</span> = <span class="delimiter">{</span>
+    <span class="keyword">val</span> <a title="String" id="47391">base</a> = <span title="String" class="keyword">if</span> <span class="delimiter">(</span><a href="#47376" title="String">directoryName</a>.<span title="(x$1: java.lang.String)Boolean">endsWith</span><span class="delimiter">(</span><span title="java.lang.String(&quot;/&quot;)" class="string">&quot;/&quot;</span><span class="delimiter">)</span><span class="delimiter">)</span> <a href="#47376" title="String">directoryName</a> <span class="keyword">else</span> <a href="#47376" title="String">directoryName</a> <span title="(x$1: Any)java.lang.String">+</span> <span title="java.lang.String(&quot;/&quot;)" class="string">&quot;/&quot;</span>;
+    <span class="delimiter">{</span> <a title="cc.spray.RequestContext" id="47393">ctx</a> =&gt;
+      <span class="keyword">val</span> <a title="java.lang.String" id="47394">subPath</a> = <span title="java.lang.String" class="keyword">if</span> <span class="delimiter">(</span><a href="#47393" title="cc.spray.RequestContext">ctx</a>.<a href="../RequestContext.scala.html#23748" title="=&gt; String">unmatchedPath</a>.<span title="(x$1: java.lang.String)Boolean">startsWith</span><span class="delimiter">(</span><span title="java.lang.String(&quot;/&quot;)" class="string">&quot;/&quot;</span><span class="delimiter">)</span><span class="delimiter">)</span> <a href="#47393" title="cc.spray.RequestContext">ctx</a>.<a href="../RequestContext.scala.html#23748" title="=&gt; String">unmatchedPath</a>.<span title="(x$1: Int)java.lang.String">substring</span><span class="delimiter">(</span><span title="Int(1)" class="int">1</span><span class="delimiter">)</span> <span class="keyword">else</span> <a href="#47393" title="cc.spray.RequestContext">ctx</a>.<a href="../RequestContext.scala.html#23748" title="=&gt; String">unmatchedPath</a>
+      <a href="#10561" title="(fileName: String, charset: Option[cc.spray.http.HttpCharset], resolver: (String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType)cc.spray.RequestContext =&gt; Unit">getFromFileName</a><span class="delimiter">(</span><a href="#47391" title="String">base</a> <span title="(x$1: Any)java.lang.String">+</span> <a href="#47382" title="(v1: String)String">pathRewriter</a><span class="delimiter">(</span><a href="#47394" title="java.lang.String">subPath</a><span class="delimiter">)</span>, <a href="#47381" title="Option[cc.spray.http.HttpCharset]">charset</a>, <a href="#47383" title="(String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType">resolver</a><span class="delimiter">)</span>.<span title="(v1: cc.spray.RequestContext)Unit">apply</span><span class="delimiter">(</span><a href="#47393" title="cc.spray.RequestContext">ctx</a><span class="delimiter">)</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Same as &quot;getFromDirectory&quot; except that the file is not fetched from the file system but rather from a
+   * &quot;resource directory&quot;. 
+   */</span>
+  <span class="keyword">def</span> <a title="(directoryName: String, charset: Option[cc.spray.http.HttpCharset], pathRewriter: String =&gt; String, resolver: (String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType)cc.spray.RequestContext =&gt; Unit" id="10568">getFromResourceDirectory</a><span class="delimiter">(</span><a title="String" id="47401">directoryName</a>: <span title="String">String</span>, <a title="Option[cc.spray.http.HttpCharset]" id="47406">charset</a>: <span title="Option[cc.spray.http.HttpCharset]">Option</span><span class="delimiter">[</span>HttpCharset<span class="delimiter">]</span> = <span title="object None">None</span>,
+                               <a title="String =&gt; String" id="47407">pathRewriter</a>: String =&gt; String = <a href="#47414" title="(x: String)String">identity</a>,
+                               <a title="(String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType" id="47408">resolver</a>: <span title="(String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType">ContentTypeResolver</span> = <a href="#9809" title="object cc.spray.directives.DefaultContentTypeResolver">DefaultContentTypeResolver</a><span class="delimiter">)</span>: <span title="cc.spray.RequestContext =&gt; Unit">Route</span> = <span class="delimiter">{</span>
+    <span class="keyword">val</span> <a title="java.lang.String" id="47416">base</a> = <span title="java.lang.String" class="keyword">if</span> <span class="delimiter">(</span><a href="#47401" title="String">directoryName</a>.<span title="()Boolean">isEmpty</span><span class="delimiter">)</span> <span title="java.lang.String(&quot;&quot;)" class="string">&quot;&quot;</span> <span class="keyword">else</span> <a href="#47401" title="String">directoryName</a> <span title="(x$1: Any)java.lang.String">+</span> <span title="java.lang.String(&quot;/&quot;)" class="string">&quot;/&quot;</span>;
+    <span class="delimiter">{</span> <a title="cc.spray.RequestContext" id="47418">ctx</a> =&gt;
+      <span class="keyword">val</span> <a title="java.lang.String" id="47419">subPath</a> = <span title="java.lang.String" class="keyword">if</span> <span class="delimiter">(</span><a href="#47418" title="cc.spray.RequestContext">ctx</a>.<a href="../RequestContext.scala.html#23748" title="=&gt; String">unmatchedPath</a>.<span title="(x$1: java.lang.String)Boolean">startsWith</span><span class="delimiter">(</span><span title="java.lang.String(&quot;/&quot;)" class="string">&quot;/&quot;</span><span class="delimiter">)</span><span class="delimiter">)</span> <a href="#47418" title="cc.spray.RequestContext">ctx</a>.<a href="../RequestContext.scala.html#23748" title="=&gt; String">unmatchedPath</a>.<span title="(x$1: Int)java.lang.String">substring</span><span class="delimiter">(</span><span title="Int(1)" class="int">1</span><span class="delimiter">)</span> <span class="keyword">else</span> <a href="#47418" title="cc.spray.RequestContext">ctx</a>.<a href="../RequestContext.scala.html#23748" title="=&gt; String">unmatchedPath</a>
+      <a href="#10564" title="(resourceName: String, charset: Option[cc.spray.http.HttpCharset], resolver: (String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType)cc.spray.RequestContext =&gt; Unit">getFromResource</a><span class="delimiter">(</span><a href="#47416" title="java.lang.String">base</a> <span title="(x$1: Any)java.lang.String">+</span> <a href="#47407" title="(v1: String)String">pathRewriter</a><span class="delimiter">(</span><a href="#47419" title="java.lang.String">subPath</a><span class="delimiter">)</span>, <a href="#47406" title="Option[cc.spray.http.HttpCharset]">charset</a>, <a href="#47408" title="(String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType">resolver</a><span class="delimiter">)</span>.<span title="(v1: cc.spray.RequestContext)Unit">apply</span><span class="delimiter">(</span><a href="#47418" title="cc.spray.RequestContext">ctx</a><span class="delimiter">)</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+<span class="delimiter">}</span>
+
+<span class="keyword">object</span> <a title="object cc.spray.directives.DefaultContentTypeResolver" id="9809">DefaultContentTypeResolver</a> <span title="ScalaObject" class="keyword">extends</span> <span title="(String, Option[cc.spray.http.HttpCharset]) =&gt; cc.spray.http.ContentType">ContentTypeResolver</span> <span class="delimiter">{</span>
+  <span class="keyword">def</span> <a title="(fileName: String, charset: Option[cc.spray.http.HttpCharset])cc.spray.http.ContentType" id="45808">apply</a><span class="delimiter">(</span><a title="String" id="47471">fileName</a>: <span title="String">String</span>, <a title="Option[cc.spray.http.HttpCharset]" id="47472">charset</a>: <span title="Option[cc.spray.http.HttpCharset]">Option</span><span class="delimiter">[</span>HttpCharset<span class="delimiter">]</span><span class="delimiter">)</span>: <span title="cc.spray.http.ContentType">ContentType</span> = <span class="delimiter">{</span>
+    <span class="keyword">val</span> <a title="cc.spray.http.MediaType" id="47476">mimeType</a> = <span title="object cc.spray.http.MediaTypes">MediaTypes</span>.<span title="(ext: String)Option[cc.spray.http.MediaType]">forExtension</span><span class="delimiter">(</span><a href="#45809" title="(fileName: String)java.lang.String">extension</a><span class="delimiter">(</span><a href="#47471" title="String">fileName</a><span class="delimiter">)</span><span class="delimiter">)</span>.<span title="(default: =&gt; cc.spray.http.MediaType)cc.spray.http.MediaType">getOrElse</span><span class="delimiter">(</span><span title="object cc.spray.http.MediaTypes">MediaTypes</span>.<span title="=&gt; cc.spray.http.MediaType">`application/octet-stream`</span><span class="delimiter">)</span>
+    <a href="#47472" title="Option[cc.spray.http.HttpCharset]">charset</a> <span title="cc.spray.http.ContentType" class="keyword">match</span> <span class="delimiter">{</span>
+      <span class="keyword">case</span> <span title="cc.spray.http.ContentType">Some</span><span class="delimiter">(</span><a title="cc.spray.http.HttpCharset" id="47498">cs</a><span class="delimiter">)</span> =&gt; <span title="(mediaType: cc.spray.http.MediaType, charset: cc.spray.http.HttpCharset)cc.spray.http.ContentType">ContentType</span><span class="delimiter">(</span><a href="#47476" title="cc.spray.http.MediaType">mimeType</a>, <a href="#47498" title="cc.spray.http.HttpCharset">cs</a><span class="delimiter">)</span>
+      <span class="keyword">case</span> <span title="cc.spray.http.ContentType">None</span> =&gt; <span title="(mediaType: cc.spray.http.MediaType)cc.spray.http.ContentType">ContentType</span><span class="delimiter">(</span><a href="#47476" title="cc.spray.http.MediaType">mimeType</a><span class="delimiter">)</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">def</span> <a title="(fileName: String)java.lang.String" id="45809">extension</a><span class="delimiter">(</span><a title="String" id="47477">fileName</a>: <span title="String">String</span><span class="delimiter">)</span> = <a href="#47477" title="String">fileName</a>.<span title="(x$1: Int)Int">lastIndexOf</span><span class="delimiter">(</span><span title="Int(46)" class="char">'.'</span><span class="delimiter">)</span> <span title="java.lang.String" class="keyword">match</span> <span class="delimiter">{</span>
+    <span class="keyword">case</span> <span title="java.lang.String(&quot;&quot;)">-</span><span class="int">1</span> =&gt; <span title="java.lang.String(&quot;&quot;)" class="string">&quot;&quot;</span>
+    <span class="keyword">case</span> <a title="java.lang.String" id="47484">x</a> =&gt; <a href="#47477" title="String">fileName</a>.<span title="(x$1: Int)java.lang.String">substring</span><span class="delimiter">(</span><a href="#47484" title="Int">x</a> <span title="(x: Int)Int">+</span> <span title="Int(1)" class="int">1</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+<span class="delimiter">}</span>
+        </pre>
+    </body>
+</html>

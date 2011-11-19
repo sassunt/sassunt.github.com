@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/test/SprayTest.scala</title>
+        <script type="text/javascript" src="../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray
+<span class="keyword">package</span> test
+
+<span class="keyword">import</span> cc.spray.RequestContext
+<span class="keyword">import</span> http._
+<span class="keyword">import</span> java.util.concurrent.<span class="delimiter">{</span>CountDownLatch, TimeUnit<span class="delimiter">}</span>
+<span class="keyword">import</span> akka.util.Duration
+<span class="keyword">import</span> akka.util.duration._
+<span class="keyword">import</span> utils._
+
+<span class="comment">/**
+ * Mix this trait into the class or trait containing your route and service tests.
+ * Use the {{test}} and {{testService}} methods to test the behavior of your routes and services for different HTTP
+ * request examples.
+ */</span>
+<span class="keyword">trait</span> <a title="trait SprayTest extends java.lang.Object with ScalaObject" id="9964">SprayTest</a> <span title="ScalaObject" class="delimiter">{</span>
+
+  <span class="keyword">def</span> <a title="(request: cc.spray.http.HttpRequest, timeout: akka.util.Duration)(route: cc.spray.RequestContext =&gt; Unit)SprayTest.this.RoutingResultWrapper" id="62175">test</a><span class="delimiter">(</span><a title="cc.spray.http.HttpRequest" id="62185">request</a>: <span title="cc.spray.http.HttpRequest">HttpRequest</span>, <a title="akka.util.Duration" id="62189">timeout</a>: <span title="akka.util.Duration">Duration</span> = <span title="implicit akka.util.duration.package.intToDurationInt : (n: Int)akka.util.DurationInt" class="int">1000</span>.<span title="=&gt; akka.util.Duration">millis</span><span class="delimiter">)</span><span class="delimiter">(</span><a title="cc.spray.RequestContext =&gt; Unit" id="62187">route</a>: <span title="cc.spray.RequestContext =&gt; Unit">Route</span><span class="delimiter">)</span>: <a href="#62176" title="SprayTest.this.RoutingResultWrapper">RoutingResultWrapper</a> = <span class="delimiter">{</span>
+    <span class="keyword">var</span> <a title="Option[cc.spray.RoutingResult]" id="62208">result</a>: <span title="Option[cc.spray.RoutingResult]">Option</span><span class="delimiter">[</span>RoutingResult<span class="delimiter">]</span> = <span title="object None">None</span>
+    <span class="keyword">val</span> <a title="java.util.concurrent.CountDownLatch" id="62209">latch</a> = <span title="java.util.concurrent.CountDownLatch" class="keyword">new</span> <span title="java.util.concurrent.CountDownLatch">CountDownLatch</span><span class="delimiter">(</span><span title="Int(1)" class="int">1</span><span class="delimiter">)</span>
+    <span class="keyword">val</span> <a title="cc.spray.RoutingResult =&gt; Unit" id="62210">responder</a> = <span class="delimiter">{</span> <span class="delimiter">(</span>rr: <a href="../RoutingResult.scala.html#9621" title="cc.spray.RoutingResult">RoutingResult</a><span class="delimiter">)</span> =&gt;
+      <a href="#62208" title="Option[cc.spray.RoutingResult]">result</a> = <span title="(x: cc.spray.RoutingResult)Some[cc.spray.RoutingResult]">Some</span><span class="delimiter">(</span><a href="#62212" title="cc.spray.RoutingResult">rr</a><span class="delimiter">)</span>
+      <a href="#62209" title="java.util.concurrent.CountDownLatch">latch</a>.<span title="()Unit">countDown</span><span class="delimiter">(</span><span class="delimiter">)</span>
+    <span class="delimiter">}</span>
+    <a href="#62187" title="(v1: cc.spray.RequestContext)Unit">route</a><span class="delimiter">(</span><a href="../RequestContext.scala.html#34267" title="cc.spray.http.HttpIp" id="62228">RequestContext</a><span class="delimiter">(</span>request = <a href="#62185" title="cc.spray.http.HttpRequest" id="62225">request</a>, responder = <a href="#62210" title="cc.spray.RoutingResult =&gt; Unit" id="62226">responder</a>, unmatchedPath = <a href="#62185" title="cc.spray.http.HttpRequest">request</a>.<a title="java.lang.String" id="62227">path</a><span class="delimiter">)</span><span class="delimiter">)</span>
+    <span class="comment">// since the route might detach we block until the route actually completes or times out</span>
+    <a href="#62209" title="java.util.concurrent.CountDownLatch">latch</a>.<span title="(x$1: Long, x$2: java.util.concurrent.TimeUnit)Boolean">await</span><span class="delimiter">(</span><a href="#62189" title="akka.util.Duration">timeout</a>.<span title="=&gt; Long">toMillis</span>, TimeUnit.<span title="java.util.concurrent.TimeUnit(value MILLISECONDS)">MILLISECONDS</span><span class="delimiter">)</span>
+    <span title="SprayTest.this.RoutingResultWrapper" class="keyword">new</span> <a href="#62176" title="SprayTest.this.RoutingResultWrapper">RoutingResultWrapper</a><span class="delimiter">(</span><a href="#62208" title="Option[cc.spray.RoutingResult]">result</a>.<span title="(default: =&gt; cc.spray.RoutingResult)cc.spray.RoutingResult">getOrElse</span><span class="delimiter">(</span><a href="#62182" title="(msg: String)Nothing">doFail</a><span class="delimiter">(</span><span title="java.lang.String(&quot;No response received&quot;)" class="string">&quot;No response received&quot;</span><span class="delimiter">)</span><span class="delimiter">)</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">class</span> <a title="class RoutingResultWrapper extends java.lang.Object with ScalaObject" id="62176">RoutingResultWrapper</a><a href="#62176" title="ScalaObject" class="delimiter">(</a><a title="cc.spray.RoutingResult" id="62231">rr</a>: <a href="../RoutingResult.scala.html#9621" title="cc.spray.RoutingResult">RoutingResult</a><span class="delimiter">)</span> <span class="delimiter">{</span>
+    <span class="keyword">def</span> <a title="=&gt; Boolean" id="62204">handled</a>: <span title="Boolean">Boolean</span> = <a href="#62231" title="cc.spray.RoutingResult">rr</a>.<span title="[T0]=&gt; Boolean">isInstanceOf</span><span title="Boolean" class="delimiter">[</span><a href="../RoutingResult.scala.html#9622" title="cc.spray.Respond">Respond</a><span class="delimiter">]</span>
+    <span class="keyword">def</span> <a title="=&gt; cc.spray.http.HttpResponse" id="62205">response</a>: <span title="cc.spray.http.HttpResponse">HttpResponse</span> = <a href="#62231" title="cc.spray.RoutingResult">rr</a> <span title="cc.spray.http.HttpResponse" class="keyword">match</span> <span class="delimiter">{</span>
+      <span class="keyword">case</span> <span title="cc.spray.http.HttpResponse">Respond</span><span class="delimiter">(</span><a title="cc.spray.http.HttpResponse" id="62245">response</a><span class="delimiter">)</span> =&gt; <a href="#62245" title="cc.spray.http.HttpResponse">response</a>
+      <span class="keyword">case</span> <span title="Nothing">Reject</span><span class="delimiter">(</span><a title="Set[cc.spray.Rejection]" id="62246">rejections</a><span class="delimiter">)</span> =&gt; <a href="#62182" title="(msg: String)Nothing">doFail</a><span class="delimiter">(</span><span title="java.lang.String(&quot;Request was rejected with &quot;)" class="string">&quot;Request was rejected with &quot;</span> <span title="(x$1: Any)java.lang.String">+</span> <a href="#62246" title="Set[cc.spray.Rejection]">rejections</a><span class="delimiter">)</span>
+    <span class="delimiter">}</span>
+    <span class="keyword">def</span> <a title="=&gt; Set[cc.spray.Rejection]" id="62206">rawRejections</a>: <span title="Set[cc.spray.Rejection]">Set</span><span class="delimiter">[</span>Rejection<span class="delimiter">]</span> = <a href="#62231" title="cc.spray.RoutingResult">rr</a> <span title="Set[cc.spray.Rejection]" class="keyword">match</span> <span class="delimiter">{</span>
+      <span class="keyword">case</span> <span title="Nothing">Respond</span><span class="delimiter">(</span><a title="cc.spray.http.HttpResponse" id="62249">response</a><span class="delimiter">)</span> =&gt; <a href="#62182" title="(msg: String)Nothing">doFail</a><span class="delimiter">(</span><span title="java.lang.String(&quot;Request was not rejected, response was &quot;)" class="string">&quot;Request was not rejected, response was &quot;</span> <span title="(x$1: Any)java.lang.String">+</span> <a href="#62249" title="cc.spray.http.HttpResponse">response</a><span class="delimiter">)</span>
+      <span class="keyword">case</span> <span title="Set[cc.spray.Rejection]">Reject</span><span class="delimiter">(</span><a title="Set[cc.spray.Rejection]" id="62250">rejections</a><span class="delimiter">)</span> =&gt; <a href="#62250" title="Set[cc.spray.Rejection]">rejections</a> 
+    <span class="delimiter">}</span>
+    <span class="keyword">def</span> <a title="=&gt; Set[cc.spray.Rejection]" id="62207">rejections</a>: <span title="Set[cc.spray.Rejection]">Set</span><span class="delimiter">[</span>Rejection<span class="delimiter">]</span> = <a href="../Rejection.scala.html#9591" title="object cc.spray.Rejections">Rejections</a>.<a href="../Rejection.scala.html#28735" title="(rejections: Set[cc.spray.Rejection])Set[cc.spray.Rejection]">applyCancellations</a><span class="delimiter">(</span><a href="#62206" title="=&gt; Set[cc.spray.Rejection]">rawRejections</a><span class="delimiter">)</span>   
+  <span class="delimiter">}</span>
+
+  <span class="keyword">trait</span> <a title="trait ServiceTest extends java.lang.Object with cc.spray.HttpServiceLogic with cc.spray.utils.Logging with ScalaObject" id="62177">ServiceTest</a> <span title="ScalaObject" class="keyword">extends</span> <a href="../HttpServiceLogic.scala.html#9536" title="cc.spray.HttpServiceLogic">HttpServiceLogic</a> <span class="keyword">with</span> <span title="cc.spray.utils.Logging">Logging</span> <span class="delimiter">{</span>
+    <span class="keyword">override</span> <span class="keyword">lazy</span> <span class="keyword">val</span> <a title="cc.spray.utils.Log" id="62255">log</a>: <span title="cc.spray.utils.Log">Log</span> = <span title="object cc.spray.utils.NoLog">NoLog</span> <span class="comment">// in the tests we don't log</span>
+    <span class="keyword">val</span> <a title="PartialFunction[Any,Nothing]" id="62256">customRejectionHandler</a> = <span title="PartialFunction[Any,Nothing]">emptyPartialFunc</span>
+  <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * The default implicit service wrapper using the HttpServiceLogic for testing.
+   * If you have derived your own CustomHttpServiceLogic that you would like to test, create an implicit conversion
+   * similar to this:
+   * {{{
+   * implicit def customWrapRootRoute(rootRoute: Route): ServiceTest = new CustomHttpServiceLogic with ServiceTest {
+   *   val route = rootRoute
+   * }
+   * }}}
+   */</span>
+  <span class="keyword">implicit</span> <span class="keyword">def</span> <a title="implicit cc.spray.test.SprayTest.wrapRootRoute : (rootRoute: cc.spray.RequestContext =&gt; Unit)SprayTest.this.ServiceTest" id="62178">wrapRootRoute</a><span class="delimiter">(</span><a title="cc.spray.RequestContext =&gt; Unit" id="62193">rootRoute</a>: <span title="cc.spray.RequestContext =&gt; Unit">Route</span><span class="delimiter">)</span>: <a href="#62177" title="SprayTest.this.ServiceTest">ServiceTest</a> = <a href="#62337" title="java.lang.Object with SprayTest.this.ServiceTest{}" class="keyword">new</a> <a title="anonymous class $anon extends java.lang.Object with SprayTest.this.ServiceTest" id="62337">ServiceTest</a> <span class="delimiter">{</span>
+    <span class="keyword">val</span> <a title="cc.spray.RequestContext =&gt; Unit" id="62341">route</a> = <a href="#62193" title="cc.spray.RequestContext =&gt; Unit">rootRoute</a>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">def</span> <a title="(request: cc.spray.http.HttpRequest, timeout: akka.util.Duration)(service: SprayTest.this.ServiceTest)SprayTest.this.ServiceResultWrapper" id="62179">testService</a><span class="delimiter">(</span><a title="cc.spray.http.HttpRequest" id="62345">request</a>: <span title="cc.spray.http.HttpRequest">HttpRequest</span>, <a title="akka.util.Duration" id="62349">timeout</a>: <span title="akka.util.Duration">Duration</span> = <span title="implicit akka.util.duration.package.intToDurationInt : (n: Int)akka.util.DurationInt" class="int">1000</span>.<span title="=&gt; akka.util.Duration">millis</span><span class="delimiter">)</span><span class="delimiter">(</span><a title="SprayTest.this.ServiceTest" id="62347">service</a>: <a href="#62177" title="SprayTest.this.ServiceTest">ServiceTest</a><span class="delimiter">)</span>: <a href="#62180" title="SprayTest.this.ServiceResultWrapper">ServiceResultWrapper</a> = <span class="delimiter">{</span>
+    <span class="keyword">var</span> <a title="Option[cc.spray.RoutingResult]" id="62359">result</a>: <span title="Option[cc.spray.RoutingResult]">Option</span><span class="delimiter">[</span>RoutingResult<span class="delimiter">]</span> = <span title="object None">None</span>
+    <span class="keyword">val</span> <a title="java.util.concurrent.CountDownLatch" id="62360">latch</a> = <span title="java.util.concurrent.CountDownLatch" class="keyword">new</span> <span title="java.util.concurrent.CountDownLatch">CountDownLatch</span><span class="delimiter">(</span><span title="Int(1)" class="int">1</span><span class="delimiter">)</span>
+    <span class="keyword">val</span> <a title="cc.spray.RoutingResult =&gt; Unit" id="62361">responder</a> = <span class="delimiter">{</span> <span class="delimiter">(</span>rr: <a href="../RoutingResult.scala.html#9621" title="cc.spray.RoutingResult">RoutingResult</a><span class="delimiter">)</span> =&gt;
+      <a href="#62359" title="Option[cc.spray.RoutingResult]">result</a> = <span title="(x: cc.spray.RoutingResult)Some[cc.spray.RoutingResult]">Some</span><span class="delimiter">(</span><a href="#62363" title="cc.spray.RoutingResult">rr</a><span class="delimiter">)</span>
+      <a href="#62360" title="java.util.concurrent.CountDownLatch">latch</a>.<span title="()Unit">countDown</span><span class="delimiter">(</span><span class="delimiter">)</span>
+    <span class="delimiter">}</span>
+    <a href="#62347" title="SprayTest.this.ServiceTest">service</a>.<a href="../HttpServiceLogic.scala.html#27291" title="(context: cc.spray.RequestContext)Unit">handle</a><span class="delimiter">(</span><a href="../RequestContext.scala.html#34267" title="cc.spray.http.HttpIp" id="62378">RequestContext</a><span class="delimiter">(</span>request = <a href="#62345" title="cc.spray.http.HttpRequest" id="62375">request</a>, responder = <a href="#62361" title="cc.spray.RoutingResult =&gt; Unit" id="62376">responder</a>, unmatchedPath = <a href="#62345" title="cc.spray.http.HttpRequest">request</a>.<a title="java.lang.String" id="62377">path</a><span class="delimiter">)</span><span class="delimiter">)</span>
+    <span class="comment">// since the route might detach we block until the route actually completes or times out</span>
+    <a href="#62360" title="java.util.concurrent.CountDownLatch">latch</a>.<span title="(x$1: Long, x$2: java.util.concurrent.TimeUnit)Boolean">await</span><span class="delimiter">(</span><a href="#62349" title="akka.util.Duration">timeout</a>.<span title="=&gt; Long">toMillis</span>, TimeUnit.<span title="java.util.concurrent.TimeUnit(value MILLISECONDS)">MILLISECONDS</span><span class="delimiter">)</span>
+    <a href="#62359" title="Option[cc.spray.RoutingResult]">result</a> <span title="SprayTest.this.ServiceResultWrapper" class="keyword">match</span> <span class="delimiter">{</span>
+      <span class="keyword">case</span> <span title="SprayTest.this.ServiceResultWrapper">Some</span><span class="delimiter">(</span>Respond<span class="delimiter">(</span><a title="cc.spray.http.HttpResponse" id="62382">response</a><span class="delimiter">)</span><span class="delimiter">)</span> =&gt; <span title="SprayTest.this.ServiceResultWrapper" class="keyword">new</span> <a href="#62180" title="SprayTest.this.ServiceResultWrapper">ServiceResultWrapper</a><span class="delimiter">(</span><span title="(x: cc.spray.http.HttpResponse)Some[cc.spray.http.HttpResponse]">Some</span><span class="delimiter">(</span><a href="#62382" title="cc.spray.http.HttpResponse">response</a><span class="delimiter">)</span><span class="delimiter">)</span>
+      <span class="keyword">case</span> <span title="SprayTest.this.ServiceResultWrapper">Some</span><span class="delimiter">(</span>_: <a href="../RoutingResult.scala.html#9627" title="cc.spray.Reject">Reject</a><span class="delimiter">)</span> =&gt; <span title="SprayTest.this.ServiceResultWrapper" class="keyword">new</span> <a href="#62180" title="SprayTest.this.ServiceResultWrapper">ServiceResultWrapper</a><span class="delimiter">(</span><span title="object None">None</span><span class="delimiter">)</span>
+      <span class="keyword">case</span> <span title="Nothing">None</span> =&gt; <a href="#62182" title="(msg: String)Nothing">doFail</a><span class="delimiter">(</span><span title="java.lang.String(&quot;No response received&quot;)" class="string">&quot;No response received&quot;</span><span class="delimiter">)</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">class</span> <a title="class ServiceResultWrapper extends java.lang.Object with ScalaObject" id="62180">ServiceResultWrapper</a><a href="#62180" title="ScalaObject" class="delimiter">(</a><a title="Option[cc.spray.http.HttpResponse]" id="62383">responseOption</a>: <span title="Option[cc.spray.http.HttpResponse]">Option</span><span class="delimiter">[</span>HttpResponse<span class="delimiter">]</span><span class="delimiter">)</span> <span class="delimiter">{</span>
+    <span class="keyword">def</span> <a title="=&gt; Boolean" id="62357">handled</a>: <span title="Boolean">Boolean</span> = <a href="#62383" title="Option[cc.spray.http.HttpResponse]">responseOption</a>.<span title="=&gt; Boolean">isDefined</span>
+    <span class="keyword">def</span> <a title="=&gt; cc.spray.http.HttpResponse" id="62358">response</a>: <span title="cc.spray.http.HttpResponse">HttpResponse</span> = <a href="#62383" title="Option[cc.spray.http.HttpResponse]">responseOption</a>.<span title="(default: =&gt; cc.spray.http.HttpResponse)cc.spray.http.HttpResponse">getOrElse</span><span class="delimiter">(</span><a href="#62182" title="(msg: String)Nothing">doFail</a><span class="delimiter">(</span><span title="java.lang.String(&quot;Request was not handled&quot;)" class="string">&quot;Request was not handled&quot;</span><span class="delimiter">)</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">def</span> <a title="(route: cc.spray.RequestContext =&gt; Unit =&gt; cc.spray.RequestContext =&gt; Unit =&gt; Unit)cc.spray.RequestContext" id="62181">captureRequestContext</a><span class="delimiter">(</span><a title="cc.spray.RequestContext =&gt; Unit =&gt; cc.spray.RequestContext =&gt; Unit =&gt; Unit" id="62399">route</a>: <span class="delimiter">(</span>Route =&gt; Route<span class="delimiter">)</span> =&gt; Unit<span class="delimiter">)</span>: <a href="../RequestContext.scala.html#9602" title="cc.spray.RequestContext">RequestContext</a> = <span class="delimiter">{</span>
+    <span class="keyword">var</span> <a title="Option[cc.spray.RequestContext]" id="62401">result</a>: <span title="Option[cc.spray.RequestContext]">Option</span><span class="delimiter">[</span>RequestContext<span class="delimiter">]</span> = <span title="object None">None</span>;
+    <a href="#62399" title="(v1: cc.spray.RequestContext =&gt; Unit =&gt; cc.spray.RequestContext =&gt; Unit)Unit">route</a> <span class="delimiter">{</span> <a title="cc.spray.RequestContext =&gt; Unit" id="62404">inner</a> =&gt; <span class="delimiter">{</span> <a title="cc.spray.RequestContext" id="62406">ctx</a> =&gt; <span class="delimiter">{</span> <a href="#62401" title="Option[cc.spray.RequestContext]">result</a> = <span title="(x: cc.spray.RequestContext)Some[cc.spray.RequestContext]">Some</span><span class="delimiter">(</span><a href="#62406" title="cc.spray.RequestContext">ctx</a><span class="delimiter">)</span>; <a href="#62404" title="(v1: cc.spray.RequestContext)Unit">inner</a><span class="delimiter">(</span><a href="#62406" title="cc.spray.RequestContext">ctx</a><span class="delimiter">)</span> <span class="delimiter">}</span><span class="delimiter">}</span><span class="delimiter">}</span>
+    <a href="#62401" title="Option[cc.spray.RequestContext]">result</a>.<span title="(default: =&gt; cc.spray.RequestContext)cc.spray.RequestContext">getOrElse</span><span class="delimiter">(</span><a href="#62182" title="(msg: String)Nothing">doFail</a><span class="delimiter">(</span><span title="java.lang.String(&quot;No RequestContext received&quot;)" class="string">&quot;No RequestContext received&quot;</span><span class="delimiter">)</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">private</span> <span class="keyword">def</span> <a title="(msg: String)Nothing" id="62182">doFail</a><span class="delimiter">(</span><a title="String" id="62236">msg</a>: <span title="String">String</span><span class="delimiter">)</span>: <span title="Nothing">Nothing</span> = <span class="delimiter">{</span>
+    <span class="keyword">try</span> <span class="delimiter">{</span>
+      <a href="#9964" title="SprayTest.this.type" class="keyword">this</a>.<span title="[T0]=&gt; T0">asInstanceOf</span><span title="SprayTest extends AnyRef" class="delimiter">[</span><a href="#62416" title="SprayTest extends AnyRef" class="delimiter">{</a> <span class="keyword">def</span> fail<span class="delimiter">(</span>msg: String<span class="delimiter">)</span>: Nothing <span class="delimiter">}</span><span class="delimiter">]</span>.<a href="#62417" title="(msg: String)Nothing">fail</a><span class="delimiter">(</span><a href="#62236" title="String">msg</a><span class="delimiter">)</span>
+    <span class="delimiter">}</span> <span class="keyword">catch</span> <span class="delimiter">{</span>
+      <span class="keyword">case</span> <a title="Nothing" id="62419">e</a>: <span title="java.lang.NoSuchMethodException">NoSuchMethodException</span> =&gt; <span class="delimiter">{</span>
+        <span class="keyword">try</span> <span class="delimiter">{</span>
+          <a href="#9964" title="SprayTest.this.type" class="keyword">this</a>.<span title="[T0]=&gt; T0">asInstanceOf</span><span title="SprayTest extends AnyRef" class="delimiter">[</span><a href="#62423" title="SprayTest extends AnyRef" class="delimiter">{</a> <span class="keyword">def</span> failure<span class="delimiter">(</span>msg: String<span class="delimiter">)</span>: Nothing <span class="delimiter">}</span><span class="delimiter">]</span>.<a href="#62424" title="(msg: String)Nothing">failure</a><span class="delimiter">(</span><a href="#62236" title="String">msg</a><span class="delimiter">)</span>
+        <span class="delimiter">}</span> <span class="keyword">catch</span> <span class="delimiter">{</span>
+          <span class="keyword">case</span> <a title="Nothing" id="62426">e</a>: <span title="java.lang.NoSuchMethodException">NoSuchMethodException</span> =&gt;
+            <span title="Nothing" class="keyword">throw</span> <span title="(x$1: java.lang.String)java.lang.RuntimeException" class="keyword">new</span> <span title="java.lang.RuntimeException">RuntimeException</span><span class="delimiter">(</span><span class="string">&quot;Illegal mixin: the SprayTest trait can only be mixed into test classes that &quot;</span> <span title="java.lang.String(&quot;Illegal mixin: the SprayTest trait can only be mixed into test classes that supply a fail(String) or failure(String) method (e.g. ScalaTest, Specs or Specs2 specifications)&quot;)">+</span>
+              <span class="string">&quot;supply a fail(String) or failure(String) method (e.g. ScalaTest, Specs or Specs2 specifications)&quot;</span><span class="delimiter">)</span>
+        <span class="delimiter">}</span>
+      <span class="delimiter">}</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+<span class="delimiter">}</span>
+
+<span class="keyword">object</span> <a title="object cc.spray.test.SprayTest" id="9965">SprayTest</a> <span title="ScalaObject" class="keyword">extends</span> <a href="#9964" title="cc.spray.test.SprayTest">SprayTest</a>
+
+        </pre>
+    </body>
+</html>

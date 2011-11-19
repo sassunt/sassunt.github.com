@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/directives/SimpleDirectives.scala</title>
+        <script type="text/javascript" src="../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray
+<span class="keyword">package</span> directives
+
+<span class="keyword">import</span> utils._
+<span class="keyword">import</span> http._
+<span class="keyword">import</span> <span title="object cc.spray.http.HttpMethods">HttpMethods</span>._
+<span class="keyword">import</span> util.matching.Regex
+
+<span class="keyword">private</span><span class="delimiter">[</span>spray<span class="delimiter">]</span> <span class="keyword">trait</span> <a title="trait SimpleDirectives extends java.lang.Object with ScalaObject" id="9948">SimpleDirectives</a> <span title="ScalaObject" class="delimiter">{</span>
+  <span class="keyword">this</span>: BasicDirectives =&gt;
+  
+  <span class="comment">/**
+   * A route filter that rejects all non-DELETE requests.
+   */</span>
+  <span class="keyword">lazy</span> <span class="keyword">val</span> <a title="cc.spray.directives.SprayRoute0" id="11007">delete</a> = <a href="#11020" title="(m: cc.spray.http.HttpMethod)cc.spray.directives.SprayRoute0">method</a><span class="delimiter">(</span><span title="=&gt; cc.spray.http.HttpMethod">DELETE</span><span class="delimiter">)</span>
+
+  <span class="comment">/**
+   * A route filter that rejects all non-GET requests.
+   */</span>
+  <span class="keyword">lazy</span> <span class="keyword">val</span> <a title="cc.spray.directives.SprayRoute0" id="11009">get</a> = <a href="#11020" title="(m: cc.spray.http.HttpMethod)cc.spray.directives.SprayRoute0">method</a><span class="delimiter">(</span><span title="=&gt; cc.spray.http.HttpMethod">GET</span><span class="delimiter">)</span>
+
+  <span class="comment">/**
+   * A route filter that rejects all non-HEAD requests.
+   */</span>
+  <span class="keyword">lazy</span> <span class="keyword">val</span> <a title="cc.spray.directives.SprayRoute0" id="11011">head</a> = <a href="#11020" title="(m: cc.spray.http.HttpMethod)cc.spray.directives.SprayRoute0">method</a><span class="delimiter">(</span><span title="=&gt; cc.spray.http.HttpMethod">HEAD</span><span class="delimiter">)</span>
+
+  <span class="comment">/**
+   * A route filter that rejects all non-OPTIONS requests.
+   */</span>
+  <span class="keyword">lazy</span> <span class="keyword">val</span> <a title="cc.spray.directives.SprayRoute0" id="11013">options</a> = <a href="#11020" title="(m: cc.spray.http.HttpMethod)cc.spray.directives.SprayRoute0">method</a><span class="delimiter">(</span><span title="=&gt; cc.spray.http.HttpMethod">OPTIONS</span><span class="delimiter">)</span>
+
+  <span class="comment">/**
+   * A route filter that rejects all non-POST requests.
+   */</span>
+  <span class="keyword">lazy</span> <span class="keyword">val</span> <a title="cc.spray.directives.SprayRoute0" id="11015">post</a> = <a href="#11020" title="(m: cc.spray.http.HttpMethod)cc.spray.directives.SprayRoute0">method</a><span class="delimiter">(</span><span title="=&gt; cc.spray.http.HttpMethod">POST</span><span class="delimiter">)</span>
+
+  <span class="comment">/**
+   * A route filter that rejects all non-PUT requests.
+   */</span>
+  <span class="keyword">lazy</span> <span class="keyword">val</span> <a title="cc.spray.directives.SprayRoute0" id="11017">put</a> = <a href="#11020" title="(m: cc.spray.http.HttpMethod)cc.spray.directives.SprayRoute0">method</a><span class="delimiter">(</span><span title="=&gt; cc.spray.http.HttpMethod">PUT</span><span class="delimiter">)</span>
+
+  <span class="comment">/**
+   * A route filter that rejects all non-TRACE requests.
+   */</span>
+  <span class="keyword">lazy</span> <span class="keyword">val</span> <a title="cc.spray.directives.SprayRoute0" id="11019">trace</a> = <a href="#11020" title="(m: cc.spray.http.HttpMethod)cc.spray.directives.SprayRoute0">method</a><span class="delimiter">(</span><span title="=&gt; cc.spray.http.HttpMethod">TRACE</span><span class="delimiter">)</span>
+
+  <span class="comment">/**
+   * Returns a route filter that rejects all requests whose HTTP method does not match the given one.
+   */</span>
+  <span class="keyword">def</span> <a title="(m: cc.spray.http.HttpMethod)cc.spray.directives.SprayRoute0" id="11020">method</a><span class="delimiter">(</span><a title="cc.spray.http.HttpMethod" id="46047">m</a>: <span title="cc.spray.http.HttpMethod">HttpMethod</span><span class="delimiter">)</span>: <a href="BasicDirectives.scala.html#9726" title="cc.spray.directives.SprayRoute0">SprayRoute0</a> = <a href="BasicDirectives.scala.html#10444" title="(filter: cc.spray.RequestContext =&gt; cc.spray.FilterResult[cc.spray.utils.Product0])cc.spray.directives.SprayRoute0">filter</a> <span class="delimiter">{</span> <a title="cc.spray.RequestContext" id="61939">ctx</a> =&gt;
+    <span title="cc.spray.FilterResult[cc.spray.utils.Product0]" class="keyword">if</span> <span class="delimiter">(</span><a href="#61939" title="cc.spray.RequestContext">ctx</a>.<a href="../RequestContext.scala.html#23742" title="=&gt; cc.spray.http.HttpRequest">request</a>.<span title="=&gt; cc.spray.http.HttpMethod">method</span> <span title="(x$1: AnyRef)Boolean">==</span> <a href="#46047" title="cc.spray.http.HttpMethod">m</a><span class="delimiter">)</span> <span class="delimiter">{</span>
+      <a href="../RoutingResult.scala.html#9632" title="object cc.spray.Pass">Pass</a>.<a href="../RoutingResult.scala.html#35530" title="(transform: cc.spray.RequestContext =&gt; cc.spray.RequestContext)cc.spray.Pass[cc.spray.utils.Product0.type]">withTransform</a><span class="delimiter">(</span><a href="#61951" title="cc.spray.RequestContext">_</a>.<a href="../RequestContext.scala.html#23770" title="[R &lt;: cc.spray.Rejection](implicit evidence$5: ClassManifest[R])cc.spray.RequestContext">cancelRejectionsOfType</a><span title="(implicit evidence$5: ClassManifest[cc.spray.MethodRejection])cc.spray.RequestContext" class="delimiter">[</span><a href="../Rejection.scala.html#9542" title="cc.spray.MethodRejection">MethodRejection</a><span class="delimiter">]</span><span class="delimiter">)</span>
+    <span class="delimiter">}</span> <span class="keyword">else</span> <a href="../RoutingResult.scala.html#28345" title="(rejection: cc.spray.Rejection)cc.spray.Reject">Reject</a><span class="delimiter">(</span><a href="../Rejection.scala.html#29284" title="(supported: cc.spray.http.HttpMethod)cc.spray.MethodRejection">MethodRejection</a><span class="delimiter">(</span><a href="#46047" title="cc.spray.http.HttpMethod">m</a><span class="delimiter">)</span><span class="delimiter">)</span> 
+  <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Returns a route filter that rejects all requests with a host name different from the given one.
+   */</span>
+  <span class="keyword">def</span> <a title="(hostName: String)cc.spray.directives.SprayRoute0" id="11021">host</a><span class="delimiter">(</span><a title="String" id="61968">hostName</a>: <span title="String">String</span><span class="delimiter">)</span>: <a href="BasicDirectives.scala.html#9726" title="cc.spray.directives.SprayRoute0">SprayRoute0</a> = <a href="#11022" title="(predicate: String =&gt; Boolean)cc.spray.directives.SprayRoute0">host</a><span class="delimiter">(</span><a href="#61979" title="String">_</a> <span title="(x$1: AnyRef)Boolean">==</span> <a href="#61968" title="String">hostName</a><span class="delimiter">)</span>
+
+  <span class="comment">/**
+   * Returns a route filter that rejects all requests for whose host name the given predicate function return false.
+   */</span>
+  <span class="keyword">def</span> <a title="(predicate: String =&gt; Boolean)cc.spray.directives.SprayRoute0" id="11022">host</a><span class="delimiter">(</span><a title="String =&gt; Boolean" id="61976">predicate</a>: String =&gt; Boolean<span class="delimiter">)</span>: <a href="BasicDirectives.scala.html#9726" title="cc.spray.directives.SprayRoute0">SprayRoute0</a> = <a href="BasicDirectives.scala.html#10444" title="(filter: cc.spray.RequestContext =&gt; cc.spray.FilterResult[cc.spray.utils.Product0])cc.spray.directives.SprayRoute0">filter</a> <span class="delimiter">{</span> <a title="cc.spray.RequestContext" id="61985">ctx</a> =&gt;
+    <span title="cc.spray.FilterResult[cc.spray.utils.Product0]" class="keyword">if</span> <span class="delimiter">(</span><a href="#61976" title="(v1: String)Boolean">predicate</a><span class="delimiter">(</span><a href="#61985" title="cc.spray.RequestContext">ctx</a>.<a href="../RequestContext.scala.html#23742" title="=&gt; cc.spray.http.HttpRequest">request</a>.<span title="=&gt; String">host</span><span class="delimiter">)</span><span class="delimiter">)</span> <a href="../RoutingResult.scala.html#35466" title="()cc.spray.Pass[cc.spray.utils.Product0]">Pass</a><span class="delimiter">(</span><span class="delimiter">)</span> <span class="keyword">else</span> <a href="../RoutingResult.scala.html#28346" title="(rejections: Set[cc.spray.Rejection])cc.spray.Reject">Reject</a><span class="delimiter">(</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Returns a route filter that rejects all requests with a host name that does not have a prefix matching the given
+   * regular expression. For all matching requests the prefix string matching the regex is extracted and passed to
+   * the inner Route building function. If the regex contains a capturing group only the string matched by this group
+   * is extracted. If the regex contains more than one capturing group an IllegalArgumentException will be thrown.
+   */</span>
+  <span class="keyword">def</span> <a title="(regex: scala.util.matching.Regex)cc.spray.directives.SprayRoute1[String]" id="11023">host</a><span class="delimiter">(</span><a title="scala.util.matching.Regex" id="61974">regex</a>: <span title="scala.util.matching.Regex">Regex</span><span class="delimiter">)</span>: <a href="BasicDirectives.scala.html#9727" title="cc.spray.directives.SprayRoute1[String]">SprayRoute1</a><span class="delimiter">[</span>String<span class="delimiter">]</span> = <a href="BasicDirectives.scala.html#10445" title="(filter: cc.spray.RequestContext =&gt; cc.spray.FilterResult[(String,)])cc.spray.directives.SprayRoute1[String]">filter1</a> <span class="delimiter">{</span> <a title="cc.spray.RequestContext" id="62058">ctx</a> =&gt;
+    <span class="keyword">def</span> <a title="(regexMatch: String =&gt; Option[String])ScalaObject with cc.spray.FilterResult[(String,)]" id="62059">run</a><span class="delimiter">(</span><a title="String =&gt; Option[String]" id="62060">regexMatch</a>: String =&gt; Option<span class="delimiter">[</span>String<span class="delimiter">]</span><span class="delimiter">)</span> = <span class="delimiter">{</span>
+      <a href="#62060" title="(v1: String)Option[String]">regexMatch</a><span class="delimiter">(</span><a href="#62058" title="cc.spray.RequestContext">ctx</a>.<a href="../RequestContext.scala.html#23742" title="=&gt; cc.spray.http.HttpRequest">request</a>.<span title="=&gt; String">host</span><span class="delimiter">)</span> <span title="&lt;none&gt; extends ScalaObject with cc.spray.FilterResult[(String,)]" class="keyword">match</span> <span class="delimiter">{</span>
+        <span class="keyword">case</span> <span title="cc.spray.Pass[(String,)]">Some</span><span class="delimiter">(</span><a title="String" id="62063">matched</a><span class="delimiter">)</span> =&gt; <a href="../RoutingResult.scala.html#35467" title="(a: String)cc.spray.Pass[(String,)]">Pass</a><span class="delimiter">(</span><a href="#62063" title="String">matched</a><span class="delimiter">)</span>
+        <span class="keyword">case</span> <span title="cc.spray.Reject">None</span> =&gt; <a href="../RoutingResult.scala.html#28346" title="(rejections: Set[cc.spray.Rejection])cc.spray.Reject">Reject</a><span class="delimiter">(</span><span class="delimiter">)</span>
+      <span class="delimiter">}</span>
+    <span class="delimiter">}</span>
+    <a href="#61974" title="implicit cc.spray.utils.package.pimpRegex : (regex: scala.util.matching.Regex)cc.spray.utils.PimpedRegex">regex</a>.<span title="=&gt; Int">groupCount</span> <span title="cc.spray.FilterResult[(String,)]" class="keyword">match</span> <span class="delimiter">{</span>
+      <span class="keyword">case</span> <span title="&lt;none&gt; extends ScalaObject with cc.spray.FilterResult[(String,)]" class="int">0</span> =&gt; <a href="#62059" title="(regexMatch: String =&gt; Option[String])ScalaObject with cc.spray.FilterResult[(String,)]">run</a><span class="delimiter">(</span><a href="#61974" title="scala.util.matching.Regex">regex</a>.<span title="(source: java.lang.CharSequence)Option[String]">findPrefixOf</span><span class="delimiter">(</span><a href="#62150" title="String">_</a><span class="delimiter">)</span><span class="delimiter">)</span>
+      <span class="keyword">case</span> <span title="&lt;none&gt; extends ScalaObject with cc.spray.FilterResult[(String,)]" class="int">1</span> =&gt; <a href="#62059" title="(regexMatch: String =&gt; Option[String])ScalaObject with cc.spray.FilterResult[(String,)]">run</a><span class="delimiter">(</span><a href="#61974" title="scala.util.matching.Regex">regex</a>.<span title="(source: java.lang.CharSequence)Option[scala.util.matching.Regex.Match]">findPrefixMatchOf</span><span class="delimiter">(</span><a href="#62152" title="String">_</a><span class="delimiter">)</span>.<span title="(f: scala.util.matching.Regex.Match =&gt; String)Option[String]">map</span><span class="delimiter">(</span><a href="#62156" title="scala.util.matching.Regex.Match">_</a>.<span title="(i: Int)String">group</span><span class="delimiter">(</span><span title="Int(1)" class="int">1</span><span class="delimiter">)</span><span class="delimiter">)</span><span class="delimiter">)</span>
+      <span class="keyword">case</span> <span title="Nothing" class="int">2</span> =&gt; <span title="Nothing" class="keyword">throw</span> <span title="(x$1: java.lang.String)java.lang.IllegalArgumentException" class="keyword">new</span> <span title="java.lang.IllegalArgumentException">IllegalArgumentException</span><span class="delimiter">(</span><span title="java.lang.String(&quot;Path regex \'&quot;)" class="string">&quot;Path regex '&quot;</span> <span title="(x$1: Any)java.lang.String">+</span> <a href="#61974" title="scala.util.matching.Regex">regex</a>.<span title="=&gt; java.util.regex.Pattern">pattern</span>.<span title="()java.lang.String">pattern</span> <span title="(x$1: Any)java.lang.String">+</span>
+              <span title="java.lang.String(&quot;\' must not contain more than one capturing group&quot;)" class="string">&quot;' must not contain more than one capturing group&quot;</span><span class="delimiter">)</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+  
+<span class="delimiter">}</span>
+
+        </pre>
+    </body>
+</html>

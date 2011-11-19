@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/utils/PimpedLinearSeq.scala</title>
+        <script type="text/javascript" src="../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray.utils
+
+<span class="keyword">import</span> collection.immutable.LinearSeq
+
+<span class="keyword">class</span> <a title="class PimpedLinearSeq[+A] extends java.lang.Object with ScalaObject" id="10020">PimpedLinearSeq</a><span class="delimiter">[</span>+<a title="&gt;: Nothing &lt;: Any" id="10021">A</a><span class="delimiter">]</span><a href="#10020" title="ScalaObject" class="delimiter">(</a><a title="scala.collection.immutable.LinearSeq[A]" id="97521">underlying</a>: <span title="scala.collection.immutable.LinearSeq[A]">LinearSeq</span><span class="delimiter">[</span>A<span class="delimiter">]</span><span class="delimiter">)</span> <span class="delimiter">{</span>
+  
+  <span class="keyword">def</span> <a title="[B](f: A =&gt; Option[B])Option[B]" id="13183">mapFind</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="13185">B</a><span class="delimiter">]</span><span class="delimiter">(</span><a title="A =&gt; Option[B]" id="37955">f</a>: A =&gt; Option<span class="delimiter">[</span>B<span class="delimiter">]</span><span class="delimiter">)</span>: <span title="Option[B]">Option</span><span class="delimiter">[</span>B<span class="delimiter">]</span> = <span class="delimiter">{</span>
+    <span class="keyword">var</span> <a title="Option[B]" id="97522">res</a>: <span title="Option[B]">Option</span><span class="delimiter">[</span>B<span class="delimiter">]</span> = <span title="object None">None</span>
+    <span class="keyword">var</span> <a title="scala.collection.immutable.LinearSeq[A]" id="97523">these</a> = <a href="#97521" title="scala.collection.immutable.LinearSeq[A]">underlying</a>
+    <span title="Unit" class="keyword">while</span> <span class="delimiter">(</span><a href="#97522" title="Option[B]">res</a>.<span title="=&gt; Boolean">isEmpty</span> <span title="(x: Boolean)Boolean">&amp;&amp;</span> <span title="=&gt; Boolean">!</span><a href="#97523" title="scala.collection.immutable.LinearSeq[A]">these</a>.<span title="=&gt; Boolean">isEmpty</span><span class="delimiter">)</span> <a href="#97524" title="()Unit" class="delimiter">{</a>
+      <a href="#97522" title="Option[B]">res</a> = <a href="#37955" title="(v1: A)Option[B]">f</a><span class="delimiter">(</span><a href="#97523" title="scala.collection.immutable.LinearSeq[A]">these</a>.<span title="=&gt; A">head</span><span class="delimiter">)</span>
+      <a href="#97523" title="scala.collection.immutable.LinearSeq[A]">these</a> = <a href="#97523" title="scala.collection.immutable.LinearSeq[A]">these</a>.<span title="=&gt; scala.collection.immutable.LinearSeq[A]">tail</span>
+    <span class="delimiter">}</span>
+    <a href="#97522" title="Option[B]">res</a>
+  <span class="delimiter">}</span>
+  
+  <span class="keyword">def</span> <a title="[B](implicit evidence$1: ClassManifest[B])Option[B]" id="45571">findByType</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="13188">B</a> :ClassManifest<span class="delimiter">]</span>: <span title="Option[B]">Option</span><span class="delimiter">[</span>B<span class="delimiter">]</span> = <span class="delimiter">{</span>
+    <span class="keyword">val</span> <a title="java.lang.Class[_]" id="97564">erasure</a> = <a href="#45571" title="(implicit m: ClassManifest[B])ClassManifest[B]">classManifest</a>.<span title="=&gt; java.lang.Class[_]">erasure</span>
+    <a href="#13183" title="(f: A =&gt; Option[B])Option[B]">mapFind</a> <span class="delimiter">{</span> <a title="A" id="97577">x</a> =&gt;
+      <span title="Option[B]" class="keyword">if</span> <span class="delimiter">(</span><a href="#97564" title="java.lang.Class[_]">erasure</a>.<span title="(x$1: Any)Boolean">isInstance</span><span class="delimiter">(</span><a href="#97577" title="A">x</a><span class="delimiter">)</span><span class="delimiter">)</span> <span class="delimiter">{</span>
+        <span title="(x: B)Some[B]">Some</span><span class="delimiter">(</span><a href="#97577" title="A">x</a>.<span title="[T0]=&gt; T0">asInstanceOf</span><span title="B" class="delimiter">[</span><a href="#13188" title="B">B</a><span class="delimiter">]</span><span class="delimiter">)</span>
+      <span class="delimiter">}</span> <span class="keyword">else</span> <span title="object None">None</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+  
+<span class="delimiter">}</span>
+        </pre>
+    </body>
+</html>

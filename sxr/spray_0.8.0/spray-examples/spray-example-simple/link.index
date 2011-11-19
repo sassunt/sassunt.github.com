@@ -1,0 +1,16 @@
+[cc/spray/examples/simple/Boot.scala]
+ 11337 term cc.spray.examples.simple.Boot.httpService(00a172aff4be2664340310b8f0cfa4b3f8d78239)
+ 11341 term cc.spray.examples.simple.Boot.rootService(00a172aff4be2664340310b8f0cfa4b3f8d78239)
+ 11339 term cc.spray.examples.simple.Boot.httpService2(00a172aff4be2664340310b8f0cfa4b3f8d78239)
+ 11341 term cc.spray.examples.simple.Boot.rootService
+ 11339 term cc.spray.examples.simple.Boot.httpService2
+ 9904 type cc.spray.examples.simple.Boot
+ 11335 term cc.spray.examples.simple.Boot.mainModule(50a2451c925fd6f8664dc4149458def41bd72def)
+ 11335 term cc.spray.examples.simple.Boot.mainModule
+ 11337 term cc.spray.examples.simple.Boot.httpService
+[cc/spray/examples/simple/SimpleService.scala]
+ 9912 type cc.spray.examples.simple.SimpleService
+ 13697 term cc.spray.examples.simple.SimpleService.simpleService
+ 13699 term cc.spray.examples.simple.SimpleService.secondService
+ 13697 term cc.spray.examples.simple.SimpleService.simpleService(60291177823a1effd55573b5f69703eccd7f9787)
+ 13699 term cc.spray.examples.simple.SimpleService.secondService(60291177823a1effd55573b5f69703eccd7f9787)

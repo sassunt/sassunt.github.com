@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/examples/spraycan/HelloService.scala</title>
+        <script type="text/javascript" src="../../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="keyword">package</span> cc.spray
+<span class="keyword">package</span> examples.spraycan
+
+<span class="keyword">import</span> http.<span title="object cc.spray.http.MediaTypes">MediaTypes</span>._
+<span class="keyword">import</span> java.util.concurrent.TimeUnit
+<span class="keyword">import</span> akka.actor.<span class="delimiter">{</span>PoisonPill, Actor, Scheduler<span class="delimiter">}</span>
+
+<span class="keyword">trait</span> <a title="trait HelloService extends java.lang.Object with cc.spray.Directives with ScalaObject" id="9915">HelloService</a> <span title="ScalaObject" class="keyword">extends</span> <span title="cc.spray.Directives">Directives</span> <span class="delimiter">{</span>
+
+  <span class="keyword">val</span> <a title="cc.spray.RequestContext =&gt; Unit" id="14337">helloService</a> = <span class="delimiter">{</span>
+    <a href="#9915" title="(pattern: cc.spray.directives.PathMatcher0)cc.spray.directives.SprayRoute0">path</a><span title="(route: cc.spray.RequestContext =&gt; Unit)cc.spray.RequestContext =&gt; Unit" class="delimiter">(</span><a href="#9915" title="implicit cc.spray.directives.PathDirectives.string2Matcher : (s: String)cc.spray.directives.PathMatcher0" class="string">&quot;&quot;</a><span class="delimiter">)</span> <a href="#9915" title="implicit cc.spray.directives.MiscDirectives.pimpRouteWithConcatenation : (route: cc.spray.RequestContext =&gt; Unit)HelloService.this.RouteConcatenation" class="delimiter">{</a>
+      <a href="#9915" title="(route: cc.spray.RequestContext =&gt; Unit)cc.spray.RequestContext =&gt; Unit">get</a> <span class="delimiter">{</span>
+        <a href="#9915" title="(mediaType: cc.spray.http.MediaType)cc.spray.directives.SprayRoute0">respondWithMediaType</a><span title="(route: cc.spray.RequestContext =&gt; Unit)cc.spray.RequestContext =&gt; Unit" class="delimiter">(</span><span title="=&gt; cc.spray.http.MediaType">`text/html`</span><span class="delimiter">)</span> <span class="delimiter">{</span>
+          <a href="#29099" title="cc.spray.RequestContext">_</a>.<span title="(obj: scala.xml.Elem)(implicit evidence$1: cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[scala.xml.Elem])Unit">complete</span> <a href="#9915" title="=&gt; cc.spray.typeconversion.MarshallerBase[scala.xml.NodeSeq]" class="delimiter">{</a>
+            &lt;<a title="scala.xml.Elem" id="30638">html</a>&gt;
+              &lt;<a title="scala.xml.Elem" id="31738">p</a>&gt;<span title="scala.xml.Text">Say</span> hello to &lt;<a title="scala.xml.Elem" id="31739">i</a>&gt;<span title="scala.xml.Text">spray</span>&lt;/i&gt; on &lt;<a title="scala.xml.Elem" id="31768">b</a>&gt;<span title="scala.xml.Text">spray</span>-can&lt;/b&gt;!&lt;/p&gt;
+              &lt;<a title="scala.xml.Elem" id="31769">p</a>&gt;&lt;<a title="scala.xml.MetaData" id="31880">a</a> href=<span title="scala.xml.Text" class="string">&quot;/shutdown?method=post&quot;</span>&gt;<span title="scala.xml.Text">Shutdown</span>&lt;/a&gt; <span class="keyword">this</span> server&lt;/p&gt;
+            &lt;/html&gt;
+          <span class="delimiter">}</span>
+        <span class="delimiter">}</span>
+      <span class="delimiter">}</span>
+    <span class="delimiter">}</span> <span title="(other: cc.spray.RequestContext =&gt; Unit)cc.spray.RequestContext =&gt; Unit">~</span>
+    <a href="#9915" title="(pattern: cc.spray.directives.PathMatcher0)cc.spray.directives.SprayRoute0">path</a><span title="(route: cc.spray.RequestContext =&gt; Unit)cc.spray.RequestContext =&gt; Unit" class="delimiter">(</span><a href="#9915" title="implicit cc.spray.directives.PathDirectives.string2Matcher : (s: String)cc.spray.directives.PathMatcher0" class="string">&quot;shutdown&quot;</a><span class="delimiter">)</span> <span class="delimiter">{</span>
+      <span class="delimiter">(</span><a href="#9915" title="=&gt; cc.spray.directives.SprayRoute0">post</a> <span title="(route: cc.spray.RequestContext =&gt; Unit)cc.spray.RequestContext =&gt; Unit">|</span> <a href="#9915" title="(p: Map[String,String] =&gt; Boolean)cc.spray.directives.SprayRoute0">parameter</a><span class="delimiter">(</span><a href="#9915" title="implicit cc.spray.directives.ReceptaclePimps.fromSymbol : (name: Symbol)cc.spray.directives.NameReceptacle[String]" class="symbol">'method</a> <a href="#9915" title="(r: cc.spray.directives.RequiredValueReceptacle[java.lang.String])(implicit evidence$3: cc.spray.typeconversion.package.FromStringOptionDeserializer[java.lang.String])Map[String,String] =&gt; Boolean">!</a> <span title="java.lang.String(&quot;post&quot;)" class="string">&quot;post&quot;</span><span class="delimiter">)</span><span class="delimiter">)</span> <span class="delimiter">{</span> <a title="cc.spray.RequestContext" id="35327">ctx</a> =&gt;
+        <span title="object akka.actor.Scheduler">Scheduler</span>.<span title="(f: () =&gt; Unit, delay: Long, timeUnit: java.util.concurrent.TimeUnit)java.util.concurrent.ScheduledFuture[AnyRef]">scheduleOnce</span><span class="delimiter">(</span><span class="delimiter">(</span><span class="delimiter">)</span> =&gt; <span title="object akka.actor.Actor">Actor</span>.<span title="=&gt; akka.actor.ActorRegistry">registry</span>.<span title="(f: akka.actor.ActorRef =&gt; Unit)Unit">foreach</span><span class="delimiter">(</span><a href="#35731" title="akka.actor.ActorRef">_</a> <span title="(msg: Any)(implicit sender: akka.actor.UntypedChannel)Unit">!</span> <span title="object akka.actor.PoisonPill">PoisonPill</span><span class="delimiter">)</span>, <span title="Long(1000L)" class="int">1000</span>, TimeUnit.<span title="java.util.concurrent.TimeUnit(value MILLISECONDS)">MILLISECONDS</span><span class="delimiter">)</span>
+        <a href="#35327" title="cc.spray.RequestContext">ctx</a>.<span title="(obj: java.lang.String)(implicit evidence$1: cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[java.lang.String])Unit">complete</span><a href="#9915" title="=&gt; cc.spray.typeconversion.MarshallerBase[String]" class="delimiter">(</a><span title="java.lang.String(&quot;Will shutdown server in 1 second...&quot;)" class="string">&quot;Will shutdown server in 1 second...&quot;</span><span class="delimiter">)</span>
+      <span class="delimiter">}</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+
+<span class="delimiter">}</span>
+        </pre>
+    </body>
+</html>

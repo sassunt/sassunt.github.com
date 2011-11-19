@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/http/parser/AuthorizationHeader.scala</title>
+        <script type="text/javascript" src="../../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray.http
+<span class="keyword">package</span> parser
+
+<span class="keyword">import</span> org.parboiled.scala._
+<span class="keyword">import</span> org.parboiled.common.Base64
+<span class="keyword">import</span> <a href="BasicRules.scala.html#9765" title="object cc.spray.http.parser.BasicRules">BasicRules</a>._
+
+<span class="keyword">private</span><span class="delimiter">[</span>parser<span class="delimiter">]</span> <span class="keyword">trait</span> <a title="trait AuthorizationHeader extends java.lang.Object with ScalaObject" id="9760">AuthorizationHeader</a> <span title="ScalaObject" class="delimiter">{</span>
+  <span class="keyword">this</span>: Parser <span class="keyword">with</span> ProtocolParameterRules <span class="keyword">with</span> AdditionalRules =&gt;
+
+  <span class="keyword">def</span> <a title="=&gt; org.parboiled.scala.rules.Rule1[cc.spray.http.HttpHeaders.Authorization]" id="42536">AUTHORIZATION</a> = <a href="#9760" title="(block: =&gt; org.parboiled.scala.rules.Rule1[cc.spray.http.HttpHeaders.Authorization])(implicit creator: org.parboiled.matchers.Matcher =&gt; org.parboiled.scala.rules.Rule1[cc.spray.http.HttpHeaders.Authorization])org.parboiled.scala.rules.Rule1[cc.spray.http.HttpHeaders.Authorization]">rule</a> <a href="#63960" title="(m: org.parboiled.matchers.Matcher)org.parboiled.scala.package.Rule1[Nothing]" class="delimiter">{</a>
+    <a href="#42537" title="=&gt; org.parboiled.scala.rules.Rule1[Product with Serializable with cc.spray.http.HttpCredentials]">CredentialDef</a> <span title="(f: Product with Serializable with cc.spray.http.HttpCredentials =&gt; cc.spray.http.HttpHeaders.Authorization)org.parboiled.scala.rules.Rule1[cc.spray.http.HttpHeaders.Authorization]">~~&gt;</span> <a href="../HttpHeader.scala.html#9606" title="object cc.spray.http.HttpHeaders">HttpHeaders</a>.<a href="../HttpHeader.scala.html#23012" title="object cc.spray.http.HttpHeaders.Authorization">`Authorization`</a> 
+  <span class="delimiter">}</span>
+  
+  <span class="keyword">def</span> <a title="=&gt; org.parboiled.scala.rules.Rule1[Product with Serializable with cc.spray.http.HttpCredentials]" id="42537">CredentialDef</a> = <a href="#9760" title="(block: =&gt; org.parboiled.scala.rules.Rule1[Product with Serializable with cc.spray.http.HttpCredentials])(implicit creator: org.parboiled.matchers.Matcher =&gt; org.parboiled.scala.rules.Rule1[Product with Serializable with cc.spray.http.HttpCredentials])org.parboiled.scala.rules.Rule1[Product with Serializable with cc.spray.http.HttpCredentials]">rule</a> <a href="#63895" title="(m: org.parboiled.matchers.Matcher)org.parboiled.scala.package.Rule1[Nothing]" class="delimiter">{</a>
+    <a href="#42538" title="=&gt; org.parboiled.scala.rules.Rule1[cc.spray.http.BasicHttpCredentials]">BasicCredentialDef</a> <span title="(other: org.parboiled.scala.rules.Rule1[Product with Serializable with cc.spray.http.HttpCredentials])org.parboiled.scala.rules.Rule1[Product with Serializable with cc.spray.http.HttpCredentials]">|</span> <a href="#42540" title="=&gt; org.parboiled.scala.rules.Rule1[cc.spray.http.OtherHttpCredentials]">OtherCredentialDef</a>
+  <span class="delimiter">}</span>
+  
+  <span class="keyword">def</span> <a title="=&gt; org.parboiled.scala.rules.Rule1[cc.spray.http.BasicHttpCredentials]" id="42538">BasicCredentialDef</a> = <a href="#9760" title="(block: =&gt; org.parboiled.scala.rules.Rule1[cc.spray.http.BasicHttpCredentials])(implicit creator: org.parboiled.matchers.Matcher =&gt; org.parboiled.scala.rules.Rule1[cc.spray.http.BasicHttpCredentials])org.parboiled.scala.rules.Rule1[cc.spray.http.BasicHttpCredentials]">rule</a> <a href="#63578" title="(m: org.parboiled.matchers.Matcher)org.parboiled.scala.package.Rule1[Nothing]" class="delimiter">{</a>
+    <a href="#9760" title="implicit org.parboiled.scala.Parser.toRule : (string: String)org.parboiled.scala.package.Rule0" class="string">&quot;Basic&quot;</a> <span title="(other: org.parboiled.scala.rules.Rule0)org.parboiled.scala.rules.Rule0">~</span> <a href="#42539" title="=&gt; org.parboiled.scala.package.Rule0">BasicCookie</a> <span title="(f: java.lang.String =&gt; cc.spray.http.BasicHttpCredentials)org.parboiled.scala.rules.Rule1[cc.spray.http.BasicHttpCredentials]">~&gt;</span> <span class="delimiter">(</span><a href="../HttpCredentials.scala.html#41322" title="(credentials: String)cc.spray.http.BasicHttpCredentials">BasicHttpCredentials</a><span class="delimiter">(</span><a href="#63546" title="java.lang.String">_</a><span class="delimiter">)</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+  
+  <span class="keyword">def</span> <a title="=&gt; org.parboiled.scala.package.Rule0" id="42539">BasicCookie</a> = <a href="#9760" title="(block: =&gt; org.parboiled.scala.package.Rule0)(implicit creator: org.parboiled.matchers.Matcher =&gt; org.parboiled.scala.package.Rule0)org.parboiled.scala.package.Rule0">rule</a> <a href="#63485" title="implicit org.parboiled.scala.package.creator4Rule0 : (m: org.parboiled.matchers.Matcher)org.parboiled.scala.package.Rule0" class="delimiter">{</a>
+    <a href="#9760" title="(sub: org.parboiled.scala.package.Rule0)org.parboiled.scala.package.Rule0">oneOrMore</a><span class="delimiter">(</span><a href="#9760" title="(chars: Array[Char])org.parboiled.scala.package.Rule0">anyOf</a><span class="delimiter">(</span><span title="object org.parboiled.common.Base64">Base64</span>.<span title="()org.parboiled.common.Base64">rfc2045</span>.<span title="()Array[Char]">getAlphabet</span><span class="delimiter">)</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+  
+  <span class="keyword">def</span> <a title="=&gt; org.parboiled.scala.rules.Rule1[cc.spray.http.OtherHttpCredentials]" id="42540">OtherCredentialDef</a> = <a href="#9760" title="(block: =&gt; org.parboiled.scala.rules.Rule1[cc.spray.http.OtherHttpCredentials])(implicit creator: org.parboiled.matchers.Matcher =&gt; org.parboiled.scala.rules.Rule1[cc.spray.http.OtherHttpCredentials])org.parboiled.scala.rules.Rule1[cc.spray.http.OtherHttpCredentials]">rule</a> <a href="#63856" title="(m: org.parboiled.matchers.Matcher)org.parboiled.scala.package.Rule1[Nothing]" class="delimiter">(</a>
+    <a href="AdditionalRules.scala.html#42500" title="=&gt; org.parboiled.scala.rules.Rule1[String]">AuthScheme</a> <span title="(other: org.parboiled.scala.rules.Rule1[List[(String, String)]])org.parboiled.scala.rules.Rule2[String,List[(String, String)]]">~</span> <a href="#9760" title="(sub: org.parboiled.scala.package.Rule1[(String, String)], separator: org.parboiled.scala.package.Rule0)org.parboiled.scala.package.Rule1[List[(String, String)]]">zeroOrMore</a><span class="delimiter">(</span><a href="AdditionalRules.scala.html#42501" title="=&gt; org.parboiled.scala.rules.Rule1[(String, String)]">AuthParam</a>, separator = <a href="BasicRules.scala.html#47974" title="=&gt; org.parboiled.scala.package.Rule0">ListSep</a><span class="delimiter">)</span>
+        <span title="(f: (String, List[(String, String)]) =&gt; cc.spray.http.OtherHttpCredentials)org.parboiled.scala.rules.Rule1[cc.spray.http.OtherHttpCredentials]">~~&gt;</span> <span class="delimiter">(</span><span class="delimiter">(</span><a title="String" id="63818">scheme</a>, <a title="List[(String, String)]" id="63819">params</a><span class="delimiter">)</span> =&gt; <a href="../HttpCredentials.scala.html#41567" title="(scheme: String, params: Map[String,String])cc.spray.http.OtherHttpCredentials">OtherHttpCredentials</a><span class="delimiter">(</span><a href="#63818" title="String">scheme</a>, <a href="#63819" title="List[(String, String)]">params</a>.<span title="(implicit ev: &lt;:&lt;[(String, String),(String, String)])scala.collection.immutable.Map[String,String]">toMap</span><span class="delimiter">)</span><span class="delimiter">)</span>
+  <span class="delimiter">)</span>
+
+<span class="delimiter">}</span>
+        </pre>
+    </body>
+</html>

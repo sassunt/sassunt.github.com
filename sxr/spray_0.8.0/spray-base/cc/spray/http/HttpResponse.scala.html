@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/http/HttpResponse.scala</title>
+        <script type="text/javascript" src="../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ * Based on code copyright (C) 2010-2011 by the BlueEyes Web Framework Team (http://github.com/jdegoes/blueeyes)
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray.http
+<span class="keyword">import</span> <a href="HttpProtocol.scala.html#9631" title="object cc.spray.http.HttpProtocols">HttpProtocols</a>._
+
+<span class="comment">/**
+ * Sprays immutable model of an HTTP response.
+ */</span>
+case <span class="keyword">class</span> <a title="class HttpResponse extends cc.spray.http.HttpMessage[cc.spray.http.HttpResponse] with ScalaObject with Product with Serializable" id="46361">HttpResponse</a><a href="#46361" title="ScalaObject" class="delimiter">(</a>
+  <a title="cc.spray.http.StatusCode" id="46427">status</a>: <a href="StatusCode.scala.html#9700" title="cc.spray.http.StatusCode">StatusCode</a>,
+  <a title="List[cc.spray.http.HttpHeader]" id="46428">headers</a>: <span title="List[cc.spray.http.HttpHeader]">List</span><span class="delimiter">[</span>HttpHeader<span class="delimiter">]</span>,
+  <a title="Option[cc.spray.http.HttpContent]" id="46429">content</a>: <span title="Option[cc.spray.http.HttpContent]">Option</span><span class="delimiter">[</span>HttpContent<span class="delimiter">]</span>,
+  <a title="cc.spray.http.HttpProtocol" id="46430">protocol</a>: <a href="HttpProtocol.scala.html#9630" title="cc.spray.http.HttpProtocol">HttpProtocol</a>
+<span class="delimiter">)</span> <span class="keyword">extends</span> <a href="HttpMessage.scala.html#9619" title="cc.spray.http.HttpMessage[cc.spray.http.HttpResponse]">HttpMessage</a><span class="delimiter">[</span>HttpResponse<span class="delimiter">]</span> <span class="delimiter">{</span>
+
+  <span class="keyword">def</span> <a title="(headers: List[cc.spray.http.HttpHeader])cc.spray.http.HttpResponse" id="27913">withHeaders</a><span class="delimiter">(</span><a title="List[cc.spray.http.HttpHeader]" id="46307">headers</a>: <span title="List[cc.spray.http.HttpHeader]">List</span><span class="delimiter">[</span>HttpHeader<span class="delimiter">]</span><span class="delimiter">)</span> = <a href="#46427" title="cc.spray.http.StatusCode" id="46331">copy</a><span class="delimiter">(</span>headers = <a href="#46307" title="List[cc.spray.http.HttpHeader]" id="46328">headers</a><span class="delimiter">)</span>
+
+  <span class="keyword">def</span> <a title="(content: Option[cc.spray.http.HttpContent])cc.spray.http.HttpResponse" id="27914">withContent</a><span class="delimiter">(</span><a title="Option[cc.spray.http.HttpContent]" id="46332">content</a>: <span title="Option[cc.spray.http.HttpContent]">Option</span><span class="delimiter">[</span>HttpContent<span class="delimiter">]</span><span class="delimiter">)</span> = <a href="#46427" title="cc.spray.http.StatusCode" id="46341">copy</a><span class="delimiter">(</span>content = <a href="#46332" title="Option[cc.spray.http.HttpContent]" id="46338">content</a><span class="delimiter">)</span>
+
+  <span class="keyword">def</span> <a title="(headers: List[cc.spray.http.HttpHeader], content: Option[cc.spray.http.HttpContent])cc.spray.http.HttpResponse" id="27915">withHeadersAndContent</a><span class="delimiter">(</span><a title="List[cc.spray.http.HttpHeader]" id="46342">headers</a>: <span title="List[cc.spray.http.HttpHeader]">List</span><span class="delimiter">[</span>HttpHeader<span class="delimiter">]</span>, <a title="Option[cc.spray.http.HttpContent]" id="46343">content</a>: <span title="Option[cc.spray.http.HttpContent]">Option</span><span class="delimiter">[</span>HttpContent<span class="delimiter">]</span><span class="delimiter">)</span> =
+    <a href="#46427" title="cc.spray.http.StatusCode" id="46349">copy</a><span class="delimiter">(</span>headers = <a href="#46342" title="List[cc.spray.http.HttpHeader]" id="46346">headers</a>, content = <a href="#46343" title="Option[cc.spray.http.HttpContent]" id="46347">content</a><span class="delimiter">)</span>
+<span class="delimiter">}</span>
+
+<span class="keyword">object</span> <a title="object cc.spray.http.HttpResponse" id="46486">HttpResponse</a> <span title="ScalaObject" class="delimiter">{</span>
+  <span class="keyword">def</span> <a title="(status: cc.spray.http.StatusCode)cc.spray.http.HttpResponse" id="46355">apply</a><span class="delimiter">(</span><a title="cc.spray.http.StatusCode" id="46421">status</a>: <a href="StatusCode.scala.html#9700" title="cc.spray.http.StatusCode">StatusCode</a><span class="delimiter">)</span>: <a href="#46361" title="cc.spray.http.HttpResponse">HttpResponse</a> = <a href="#46361" title="(status: cc.spray.http.StatusCode, headers: List[cc.spray.http.HttpHeader], content: Option[cc.spray.http.HttpContent], protocol: cc.spray.http.HttpProtocol)cc.spray.http.HttpResponse">apply</a><span class="delimiter">(</span><a href="#46421" title="cc.spray.http.StatusCode">status</a>, <span title="object Nil">Nil</span>, <span title="object None">None</span>, <a href="HttpProtocol.scala.html#23063" title="=&gt; cc.spray.http.HttpProtocol">`HTTP/1.1`</a><span class="delimiter">)</span>
+  <span class="keyword">def</span> <a title="(status: cc.spray.http.StatusCode, headers: List[cc.spray.http.HttpHeader])cc.spray.http.HttpResponse" id="46356">apply</a><span class="delimiter">(</span><a title="cc.spray.http.StatusCode" id="46446">status</a>: <a href="StatusCode.scala.html#9700" title="cc.spray.http.StatusCode">StatusCode</a>, <a title="List[cc.spray.http.HttpHeader]" id="46447">headers</a>: <span title="List[cc.spray.http.HttpHeader]">List</span><span class="delimiter">[</span>HttpHeader<span class="delimiter">]</span><span class="delimiter">)</span>: <a href="#46361" title="cc.spray.http.HttpResponse">HttpResponse</a> = <a href="#46361" title="(status: cc.spray.http.StatusCode, headers: List[cc.spray.http.HttpHeader], content: Option[cc.spray.http.HttpContent], protocol: cc.spray.http.HttpProtocol)cc.spray.http.HttpResponse">apply</a><span class="delimiter">(</span><a href="#46446" title="cc.spray.http.StatusCode">status</a>, <a href="#46447" title="List[cc.spray.http.HttpHeader]">headers</a>, <span title="object None">None</span>, <a href="HttpProtocol.scala.html#23063" title="=&gt; cc.spray.http.HttpProtocol">`HTTP/1.1`</a><span class="delimiter">)</span>
+  <span class="keyword">def</span> <a title="(status: cc.spray.http.StatusCode, content: cc.spray.http.HttpContent)cc.spray.http.HttpResponse" id="46357">apply</a><span class="delimiter">(</span><a title="cc.spray.http.StatusCode" id="46443">status</a>: <a href="StatusCode.scala.html#9700" title="cc.spray.http.StatusCode">StatusCode</a>, <a title="cc.spray.http.HttpContent" id="46444">content</a>: <a href="HttpContent.scala.html#9562" title="cc.spray.http.HttpContent">HttpContent</a><span class="delimiter">)</span>: <a href="#46361" title="cc.spray.http.HttpResponse">HttpResponse</a> = <a href="#46358" title="(status: cc.spray.http.StatusCode, headers: List[cc.spray.http.HttpHeader], content: cc.spray.http.HttpContent)cc.spray.http.HttpResponse">apply</a><span class="delimiter">(</span><a href="#46443" title="cc.spray.http.StatusCode">status</a>, <span title="object Nil">Nil</span>, <a href="#46444" title="cc.spray.http.HttpContent">content</a><span class="delimiter">)</span>
+  <span class="keyword">def</span> <a title="(status: cc.spray.http.StatusCode, headers: List[cc.spray.http.HttpHeader], content: cc.spray.http.HttpContent)cc.spray.http.HttpResponse" id="46358">apply</a><span class="delimiter">(</span><a title="cc.spray.http.StatusCode" id="46439">status</a>: <a href="StatusCode.scala.html#9700" title="cc.spray.http.StatusCode">StatusCode</a>, <a title="List[cc.spray.http.HttpHeader]" id="46440">headers</a>: <span title="List[cc.spray.http.HttpHeader]">List</span><span class="delimiter">[</span>HttpHeader<span class="delimiter">]</span>, <a title="cc.spray.http.HttpContent" id="46441">content</a>: <a href="HttpContent.scala.html#9562" title="cc.spray.http.HttpContent">HttpContent</a><span class="delimiter">)</span>: <a href="#46361" title="cc.spray.http.HttpResponse">HttpResponse</a> = <span class="delimiter">{</span>
+    <a href="#46361" title="(status: cc.spray.http.StatusCode, headers: List[cc.spray.http.HttpHeader], content: Option[cc.spray.http.HttpContent], protocol: cc.spray.http.HttpProtocol)cc.spray.http.HttpResponse">apply</a><span class="delimiter">(</span><a href="#46439" title="cc.spray.http.StatusCode">status</a>, <a href="#46440" title="List[cc.spray.http.HttpHeader]">headers</a>, <span title="(x: cc.spray.http.HttpContent)Some[cc.spray.http.HttpContent]">Some</span><span class="delimiter">(</span><a href="#46441" title="cc.spray.http.HttpContent">content</a><span class="delimiter">)</span>, <a href="HttpProtocol.scala.html#23063" title="=&gt; cc.spray.http.HttpProtocol">`HTTP/1.1`</a><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+  <span class="keyword">def</span> <a title="(status: cc.spray.http.StatusCode, content: String)cc.spray.http.HttpResponse" id="46359">apply</a><span class="delimiter">(</span><a title="cc.spray.http.StatusCode" id="46436">status</a>: <a href="StatusCode.scala.html#9700" title="cc.spray.http.StatusCode">StatusCode</a>, <a title="String" id="46437">content</a>: <span title="String">String</span><span class="delimiter">)</span>: <a href="#46361" title="cc.spray.http.HttpResponse">HttpResponse</a> = <a href="#46360" title="(status: cc.spray.http.StatusCode, headers: List[cc.spray.http.HttpHeader], content: String)cc.spray.http.HttpResponse">apply</a><span class="delimiter">(</span><a href="#46436" title="cc.spray.http.StatusCode">status</a>, <span title="object Nil">Nil</span>, <a href="#46437" title="String">content</a><span class="delimiter">)</span>
+  <span class="keyword">def</span> <a title="(status: cc.spray.http.StatusCode, headers: List[cc.spray.http.HttpHeader], content: String)cc.spray.http.HttpResponse" id="46360">apply</a><span class="delimiter">(</span><a title="cc.spray.http.StatusCode" id="46432">status</a>: <a href="StatusCode.scala.html#9700" title="cc.spray.http.StatusCode">StatusCode</a>, <a title="List[cc.spray.http.HttpHeader]" id="46433">headers</a>: <span title="List[cc.spray.http.HttpHeader]">List</span><span class="delimiter">[</span>HttpHeader<span class="delimiter">]</span>, <a title="String" id="46434">content</a>: <span title="String">String</span><span class="delimiter">)</span>: <a href="#46361" title="cc.spray.http.HttpResponse">HttpResponse</a> = <span class="delimiter">{</span>
+    <a href="#46361" title="(status: cc.spray.http.StatusCode, headers: List[cc.spray.http.HttpHeader], content: Option[cc.spray.http.HttpContent], protocol: cc.spray.http.HttpProtocol)cc.spray.http.HttpResponse">apply</a><span class="delimiter">(</span><a href="#46432" title="cc.spray.http.StatusCode">status</a>, <a href="#46433" title="List[cc.spray.http.HttpHeader]">headers</a>, <span title="(x: cc.spray.http.HttpContent)Some[cc.spray.http.HttpContent]">Some</span><span class="delimiter">(</span><a href="HttpContent.scala.html#25369" title="(string: String)cc.spray.http.HttpContent">HttpContent</a><span class="delimiter">(</span><a href="#46434" title="String">content</a><span class="delimiter">)</span><span class="delimiter">)</span>, <a href="HttpProtocol.scala.html#23063" title="=&gt; cc.spray.http.HttpProtocol">`HTTP/1.1`</a><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+<span class="delimiter">}</span>
+        </pre>
+    </body>
+</html>

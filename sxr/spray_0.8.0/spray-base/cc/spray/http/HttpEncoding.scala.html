@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/http/HttpEncoding.scala</title>
+        <script type="text/javascript" src="../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ * Based on code copyright (C) 2010-2011 by the BlueEyes Web Framework Team (http://github.com/jdegoes/blueeyes)
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray.http
+
+<span class="keyword">sealed</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <a title="class HttpEncodingRange extends java.lang.Object with ScalaObject" id="9589">HttpEncodingRange</a> <a href="#9589" title="ScalaObject" class="delimiter">{</a>
+  <span class="keyword">def</span> <a title="=&gt; String" id="27946">value</a>: <span title="String">String</span>
+  <span class="keyword">def</span> <a title="(encoding: cc.spray.http.HttpEncoding)Boolean" id="27947">matches</a><span class="delimiter">(</span><a title="cc.spray.http.HttpEncoding" id="41625">encoding</a>: <a href="#9590" title="cc.spray.http.HttpEncoding">HttpEncoding</a><span class="delimiter">)</span>: <span title="Boolean">Boolean</span>
+  <span class="keyword">override</span> <span class="keyword">def</span> <a title="()java.lang.String" id="27948">toString</a> = <span title="java.lang.String(&quot;HttpEncodingRange(&quot;)" class="string">&quot;HttpEncodingRange(&quot;</span> <span title="(x$1: Any)java.lang.String">+</span> <a href="#27946" title="=&gt; String">value</a> <span title="(x$1: Any)java.lang.String">+</span> <span title="Char(\')\')" class="char">')'</span>
+<span class="delimiter">}</span>
+
+<span class="keyword">sealed</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <a title="class HttpEncoding extends cc.spray.http.HttpEncodingRange with ScalaObject" id="9590">HttpEncoding</a> <a href="#9590" title="ScalaObject" class="keyword">extends</a> <a href="#9589" title="cc.spray.http.HttpEncodingRange">HttpEncodingRange</a> <span class="delimiter">{</span>
+  <span class="keyword">def</span> <a title="(encoding: cc.spray.http.HttpEncoding)Boolean" id="27950">matches</a><span class="delimiter">(</span><a title="cc.spray.http.HttpEncoding" id="41631">encoding</a>: <a href="#9590" title="cc.spray.http.HttpEncoding">HttpEncoding</a><span class="delimiter">)</span> = <a href="#9590" title="HttpEncoding.this.type" class="keyword">this</a> <span title="(x$1: AnyRef)Boolean">==</span> <a href="#41631" title="cc.spray.http.HttpEncoding">encoding</a>
+  <span class="keyword">override</span> <span class="keyword">def</span> <a title="(obj: Any)Boolean" id="27951">equals</a><span class="delimiter">(</span><a title="Any" id="41638">obj</a>: <span title="Any">Any</span><span class="delimiter">)</span> = <a href="#41638" title="Any">obj</a> <span title="Boolean" class="keyword">match</span> <span class="delimiter">{</span>
+    <span class="keyword">case</span> <a title="Boolean" id="41641">x</a>: <a href="#9590" title="cc.spray.http.HttpEncoding">HttpEncoding</a> =&gt; <span class="delimiter">(</span><a href="#9590" title="HttpEncoding.this.type" class="keyword">this</a> <span title="(x$1: AnyRef)Boolean">eq</span> <a href="#41641" title="cc.spray.http.HttpEncoding">x</a><span class="delimiter">)</span> <span title="(x: Boolean)Boolean">||</span> <span class="delimiter">(</span><a href="#27946" title="=&gt; String">value</a> <span title="(x$1: AnyRef)Boolean">eq</span> <a href="#41641" title="cc.spray.http.HttpEncoding">x</a>.<a href="#27946" title="=&gt; String">value</a><span class="delimiter">)</span>
+    <span class="keyword">case</span> <span title="Boolean(false)">_</span> =&gt; <span title="Boolean(false)" class="keyword">false</span>
+  <span class="delimiter">}</span>
+  <span class="keyword">override</span> <span class="keyword">def</span> <a title="()Int" id="27952">hashCode</a><span class="delimiter">(</span><span class="delimiter">)</span> = <a href="#27946" title="=&gt; String">value</a>.<span title="()Int">##</span>
+  <span class="keyword">override</span> <span class="keyword">def</span> <a title="()java.lang.String" id="27953">toString</a> = <span title="java.lang.String(&quot;HttpEncoding(&quot;)" class="string">&quot;HttpEncoding(&quot;</span> <span title="(x$1: Any)java.lang.String">+</span> <a href="#27946" title="=&gt; String">value</a> <span title="(x$1: Any)java.lang.String">+</span> <span title="Char(\')\')" class="char">')'</span>
+<span class="delimiter">}</span>
+
+<span class="comment">// see http://www.iana.org/assignments/http-parameters/http-parameters.xml</span>
+<span class="keyword">object</span> <a title="object cc.spray.http.HttpEncodings" id="9591">HttpEncodings</a> <span title="ScalaObject" class="keyword">extends</span> <a href="ObjectRegistry.scala.html#9688" title="cc.spray.http.ObjectRegistry[String,cc.spray.http.HttpEncoding]">ObjectRegistry</a><span class="delimiter">[</span>String, HttpEncoding<span class="delimiter">]</span> <span class="delimiter">{</span>
+  
+  <span class="keyword">def</span> <a title="(encoding: cc.spray.http.HttpEncoding)cc.spray.http.HttpEncoding" id="28334">register</a><span class="delimiter">(</span><a title="cc.spray.http.HttpEncoding" id="28353">encoding</a>: <a href="#9590" title="cc.spray.http.HttpEncoding">HttpEncoding</a><span class="delimiter">)</span>: <a href="#9590" title="cc.spray.http.HttpEncoding">HttpEncoding</a> = <span class="delimiter">{</span> <a href="ObjectRegistry.scala.html#22871" title="(obj: cc.spray.http.HttpEncoding, key: String)Unit">register</a><span class="delimiter">(</span><a href="#28353" title="cc.spray.http.HttpEncoding">encoding</a>, <a href="#28353" title="cc.spray.http.HttpEncoding">encoding</a>.<a href="#27946" title="=&gt; String">value</a><span class="delimiter">)</span>; <a href="#28353" title="cc.spray.http.HttpEncoding">encoding</a> <span class="delimiter">}</span>
+  
+  <span class="keyword">val</span> <a title="cc.spray.http.HttpEncodingRange" id="28335">`*`</a> = <a href="#41649" title="cc.spray.http.HttpEncodingRange" class="keyword">new</a> <a href="#9589" title="anonymous class $anon extends cc.spray.http.HttpEncodingRange" id="41649">HttpEncodingRange</a> <span class="delimiter">{</span>
+    <span class="keyword">def</span> <a title="=&gt; java.lang.String" id="41651">value</a> = <span title="java.lang.String(&quot;*&quot;)" class="string">&quot;*&quot;</span>
+    <span class="keyword">def</span> <a title="(encoding: cc.spray.http.HttpEncoding)Boolean" id="41652">matches</a><span class="delimiter">(</span><a title="cc.spray.http.HttpEncoding" id="41653">encoding</a>: <a href="#9590" title="cc.spray.http.HttpEncoding">HttpEncoding</a><span class="delimiter">)</span> = <span title="Boolean(true)" class="keyword">true</span>
+  <span class="delimiter">}</span>
+  
+  <span class="keyword">private</span> <span class="keyword">class</span> <a title="class PredefEncoding extends cc.spray.http.HttpEncoding with ScalaObject" id="28337">PredefEncoding</a><a href="#28337" title="ScalaObject" class="delimiter">(</a><span class="keyword">val</span> <a title="String" id="28368">value</a>: <span title="String">String</span><span class="delimiter">)</span> <span class="keyword">extends</span> <a href="#9590" title="cc.spray.http.HttpEncoding">HttpEncoding</a>
+  
+  <span class="keyword">val</span> <a title="cc.spray.http.HttpEncoding" id="28338">compress</a>      = <a href="#28334" title="(encoding: cc.spray.http.HttpEncoding)cc.spray.http.HttpEncoding">register</a><span class="delimiter">(</span><span title="cc.spray.http.HttpEncodings.PredefEncoding" class="keyword">new</span> <a href="#28337" title="cc.spray.http.HttpEncodings.PredefEncoding">PredefEncoding</a><span class="delimiter">(</span><span title="java.lang.String(&quot;compress&quot;)" class="string">&quot;compress&quot;</span><span class="delimiter">)</span><span class="delimiter">)</span>
+  <span class="keyword">val</span> <a title="cc.spray.http.HttpEncoding" id="28340">chunked</a>       = <a href="#28334" title="(encoding: cc.spray.http.HttpEncoding)cc.spray.http.HttpEncoding">register</a><span class="delimiter">(</span><span title="cc.spray.http.HttpEncodings.PredefEncoding" class="keyword">new</span> <a href="#28337" title="cc.spray.http.HttpEncodings.PredefEncoding">PredefEncoding</a><span class="delimiter">(</span><span title="java.lang.String(&quot;chunked&quot;)" class="string">&quot;chunked&quot;</span><span class="delimiter">)</span><span class="delimiter">)</span>
+  <span class="keyword">val</span> <a title="cc.spray.http.HttpEncoding" id="28342">deflate</a>       = <a href="#28334" title="(encoding: cc.spray.http.HttpEncoding)cc.spray.http.HttpEncoding">register</a><span class="delimiter">(</span><span title="cc.spray.http.HttpEncodings.PredefEncoding" class="keyword">new</span> <a href="#28337" title="cc.spray.http.HttpEncodings.PredefEncoding">PredefEncoding</a><span class="delimiter">(</span><span title="java.lang.String(&quot;deflate&quot;)" class="string">&quot;deflate&quot;</span><span class="delimiter">)</span><span class="delimiter">)</span>
+  <span class="keyword">val</span> <a title="cc.spray.http.HttpEncoding" id="28344">gzip</a>          = <a href="#28334" title="(encoding: cc.spray.http.HttpEncoding)cc.spray.http.HttpEncoding">register</a><span class="delimiter">(</span><span title="cc.spray.http.HttpEncodings.PredefEncoding" class="keyword">new</span> <a href="#28337" title="cc.spray.http.HttpEncodings.PredefEncoding">PredefEncoding</a><span class="delimiter">(</span><span title="java.lang.String(&quot;gzip&quot;)" class="string">&quot;gzip&quot;</span><span class="delimiter">)</span><span class="delimiter">)</span>
+  <span class="keyword">val</span> <a title="cc.spray.http.HttpEncoding" id="28346">identity</a>      = <a href="#28334" title="(encoding: cc.spray.http.HttpEncoding)cc.spray.http.HttpEncoding">register</a><span class="delimiter">(</span><span title="cc.spray.http.HttpEncodings.PredefEncoding" class="keyword">new</span> <a href="#28337" title="cc.spray.http.HttpEncodings.PredefEncoding">PredefEncoding</a><span class="delimiter">(</span><span title="java.lang.String(&quot;identity&quot;)" class="string">&quot;identity&quot;</span><span class="delimiter">)</span><span class="delimiter">)</span>
+  <span class="keyword">val</span> <a title="cc.spray.http.HttpEncoding" id="28348">`x-compress`</a>  = <a href="#28334" title="(encoding: cc.spray.http.HttpEncoding)cc.spray.http.HttpEncoding">register</a><span class="delimiter">(</span><span title="cc.spray.http.HttpEncodings.PredefEncoding" class="keyword">new</span> <a href="#28337" title="cc.spray.http.HttpEncodings.PredefEncoding">PredefEncoding</a><span class="delimiter">(</span><span title="java.lang.String(&quot;x-compress&quot;)" class="string">&quot;x-compress&quot;</span><span class="delimiter">)</span><span class="delimiter">)</span>
+  <span class="keyword">val</span> <a title="cc.spray.http.HttpEncoding" id="28350">`x-zip`</a>       = <a href="#28334" title="(encoding: cc.spray.http.HttpEncoding)cc.spray.http.HttpEncoding">register</a><span class="delimiter">(</span><span title="cc.spray.http.HttpEncodings.PredefEncoding" class="keyword">new</span> <a href="#28337" title="cc.spray.http.HttpEncodings.PredefEncoding">PredefEncoding</a><span class="delimiter">(</span><span title="java.lang.String(&quot;x-zip&quot;)" class="string">&quot;x-zip&quot;</span><span class="delimiter">)</span><span class="delimiter">)</span>
+
+  <span class="keyword">class</span> <a title="class CustomHttpEncoding extends cc.spray.http.HttpEncoding with ScalaObject" id="28352">CustomHttpEncoding</a><a href="#28352" title="ScalaObject" class="delimiter">(</a><a title="String" id="41705">_value</a>: <span title="String">String</span><span class="delimiter">)</span> <span class="keyword">extends</span> <a href="#9590" title="cc.spray.http.HttpEncoding">HttpEncoding</a> <span class="delimiter">{</span>
+    <span class="keyword">val</span> <a title="java.lang.String" id="41699">value</a> = <a href="#41705" title="String">_value</a>.<span title="()java.lang.String">toLowerCase</span>.<span title="()java.lang.String">intern</span><span class="delimiter">(</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+<span class="delimiter">}</span>
+
+        </pre>
+    </body>
+</html>

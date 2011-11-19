@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/http/MultipartContent.scala</title>
+        <script type="text/javascript" src="../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ * Based on code copyright (C) 2010-2011 by the BlueEyes Web Framework Team (http://github.com/jdegoes/blueeyes)
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray
+<span class="keyword">package</span> http
+
+<span class="keyword">import</span> typeconversion._
+
+<span class="comment">/**
+ * Basic model for multipart content as defind in RFC 2046.
+ * If you are looking for a model for `multipart/form-data` you should be using [[cc.spray.http.MultipartFormData]].
+ */</span>
+case <span class="keyword">class</span> <a title="class MultipartContent extends java.lang.Object with ScalaObject with Product with Serializable" id="47659">MultipartContent</a><a href="#47659" title="ScalaObject" class="delimiter">(</a><a title="Seq[cc.spray.http.BodyPart]" id="35631">parts</a>: <span title="Seq[cc.spray.http.BodyPart]">Seq</span><span class="delimiter">[</span>BodyPart<span class="delimiter">]</span><span class="delimiter">)</span>
+
+<span class="comment">/**
+ * Model for `multipart/form-data` content as defined in RFC 2388.
+ */</span>
+case <span class="keyword">class</span> <a title="class MultipartFormData extends java.lang.Object with ScalaObject with Product with Serializable" id="47655">MultipartFormData</a><a href="#47655" title="ScalaObject" class="delimiter">(</a><a title="Map[String,cc.spray.http.BodyPart]" id="37606">parts</a>: <span title="Map[String,cc.spray.http.BodyPart]">Map</span><span class="delimiter">[</span>String, BodyPart<span class="delimiter">]</span><span class="delimiter">)</span>
+
+<span class="comment">/**
+ * Model for one part of a multipart message.
+ */</span>
+case <span class="keyword">class</span> <a title="class BodyPart extends java.lang.Object with ScalaObject with Product with Serializable" id="37326">BodyPart</a><a href="#37326" title="ScalaObject" class="delimiter">(</a><a title="List[cc.spray.http.HttpHeader]" id="37338">headers</a>: <span title="List[cc.spray.http.HttpHeader]">List</span><span class="delimiter">[</span>HttpHeader<span class="delimiter">]</span>, <a title="Option[cc.spray.http.HttpContent]" id="37339">content</a>: <span title="Option[cc.spray.http.HttpContent]">Option</span><span class="delimiter">[</span>HttpContent<span class="delimiter">]</span><span class="delimiter">)</span>
+
+<span class="keyword">object</span> <a title="object cc.spray.http.BodyPart" id="47604">BodyPart</a> <span title="ScalaObject" class="delimiter">{</span>
+  <span class="keyword">def</span> <a title="[A](value: A)(implicit evidence$1: cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[A])cc.spray.http.BodyPart" id="37347">apply</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="37323">A</a> :Marshaller<span class="delimiter">]</span><span class="delimiter">(</span><a title="A" id="37346">value</a>: <a href="#37323" title="A">A</a><span class="delimiter">)</span>: <a href="#37326" title="cc.spray.http.BodyPart">BodyPart</a> = <a href="#37324" title="(content: cc.spray.http.HttpContent)cc.spray.http.BodyPart">apply</a><span class="delimiter">(</span><a href="../typeconversion/package.scala.html#10079" title="(obj: A)(implicit evidence$1: cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[A])cc.spray.typeconversion.package.ToHttpContentPimp[A]">value</a>.<a href="../typeconversion/package.scala.html#33881" title="=&gt; cc.spray.http.HttpContent">toHttpContent</a><span class="delimiter">)</span>
+  <span class="keyword">def</span> <a title="(content: cc.spray.http.HttpContent)cc.spray.http.BodyPart" id="37324">apply</a><span class="delimiter">(</span><a title="cc.spray.http.HttpContent" id="37344">content</a>: <a href="HttpContent.scala.html#9562" title="cc.spray.http.HttpContent">HttpContent</a><span class="delimiter">)</span>: <a href="#37326" title="cc.spray.http.BodyPart">BodyPart</a> = <a href="#37325" title="(headers: List[cc.spray.http.HttpHeader], content: cc.spray.http.HttpContent)cc.spray.http.BodyPart">apply</a><span class="delimiter">(</span><span title="object Nil">Nil</span>, <a href="#37344" title="cc.spray.http.HttpContent">content</a><span class="delimiter">)</span>
+  <span class="keyword">def</span> <a title="(headers: List[cc.spray.http.HttpHeader], content: cc.spray.http.HttpContent)cc.spray.http.BodyPart" id="37325">apply</a><span class="delimiter">(</span><a title="List[cc.spray.http.HttpHeader]" id="37341">headers</a>: <span title="List[cc.spray.http.HttpHeader]">List</span><span class="delimiter">[</span>HttpHeader<span class="delimiter">]</span>, <a title="cc.spray.http.HttpContent" id="37342">content</a>: <a href="HttpContent.scala.html#9562" title="cc.spray.http.HttpContent">HttpContent</a><span class="delimiter">)</span>: <a href="#37326" title="cc.spray.http.BodyPart">BodyPart</a> = <span title="cc.spray.http.BodyPart" class="keyword">new</span> <a href="#37326" title="cc.spray.http.BodyPart">BodyPart</a><span class="delimiter">(</span><a href="#37341" title="List[cc.spray.http.HttpHeader]">headers</a>, <span title="(x: cc.spray.http.HttpContent)Some[cc.spray.http.HttpContent]">Some</span><span class="delimiter">(</span><a href="#37342" title="cc.spray.http.HttpContent">content</a><span class="delimiter">)</span><span class="delimiter">)</span>
+<span class="delimiter">}</span>
+
+<span class="comment">/**
+ * Model for `application/x-www-form-urlencoded` form data.
+ */</span>
+case <span class="keyword">class</span> <a title="class FormData extends java.lang.Object with ScalaObject with Product with Serializable" id="47651">FormData</a><a href="#47651" title="ScalaObject" class="delimiter">(</a><a title="Map[String,String]" id="34697">fields</a>: <span title="Map[String,String]">Map</span><span class="delimiter">[</span>String, String<span class="delimiter">]</span><span class="delimiter">)</span>
+        </pre>
+    </body>
+</html>

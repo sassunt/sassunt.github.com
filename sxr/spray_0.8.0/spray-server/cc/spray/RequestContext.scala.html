@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/RequestContext.scala</title>
+        <script type="text/javascript" src="../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray
+
+<span class="keyword">import</span> http._
+<span class="keyword">import</span> <span title="object cc.spray.http.StatusCodes">StatusCodes</span>._
+<span class="keyword">import</span> <span title="object cc.spray.http.HttpHeaders">HttpHeaders</span>._
+<span class="keyword">import</span> <span title="object cc.spray.http.MediaTypes">MediaTypes</span>._
+<span class="keyword">import</span> typeconversion._
+<span class="keyword">import</span> akka.dispatch.Future
+
+<span class="comment">/**
+ * Immutable object encapsulating the context of an [[cc.spray.http.HttpRequest]]
+ * as it flows through a ''spray'' Route structure.
+ */</span>
+case <span class="keyword">class</span> <a title="class RequestContext extends java.lang.Object with ScalaObject with Product with Serializable" id="34280">RequestContext</a><a href="#34280" title="ScalaObject" class="delimiter">(</a>
+  <a title="cc.spray.http.HttpRequest" id="34258">request</a>: <span title="cc.spray.http.HttpRequest">HttpRequest</span>,
+  <a title="cc.spray.http.HttpIp" id="34267">remoteHost</a>: <span title="cc.spray.http.HttpIp">HttpIp</span> = <span title="implicit cc.spray.http.HttpIp.fromString : (s: String)cc.spray.http.HttpIp" class="string">&quot;127.0.01&quot;</span>,
+  <a title="cc.spray.RoutingResult =&gt; Unit" id="34268">responder</a>: RoutingResult =&gt; Unit = <span class="delimiter">{</span> <a title="cc.spray.RoutingResult" id="34277">_</a> =&gt; <span class="delimiter">}</span>,
+  <a title="String" id="34269">unmatchedPath</a>: <span title="String">String</span> = <span title="java.lang.String(&quot;&quot;)" class="string">&quot;&quot;</span>
+<span class="delimiter">)</span> <span class="delimiter">{</span>
+
+  <span class="comment">/**
+   * Returns a copy of this context with the HttpRequest transformed by the given function.
+   */</span>
+  <span class="keyword">def</span> <a title="(f: cc.spray.http.HttpRequest =&gt; cc.spray.http.HttpRequest)cc.spray.RequestContext" id="23751">withRequestTransformed</a><span class="delimiter">(</span><a title="cc.spray.http.HttpRequest =&gt; cc.spray.http.HttpRequest" id="33302">f</a>: HttpRequest =&gt; HttpRequest<span class="delimiter">)</span>: <a href="#34280" title="cc.spray.RequestContext">RequestContext</a> = <span class="delimiter">{</span>
+    <span class="keyword">val</span> <a title="cc.spray.http.HttpRequest" id="33304">newRequest</a> = <a href="#33302" title="(v1: cc.spray.http.HttpRequest)cc.spray.http.HttpRequest">f</a><span class="delimiter">(</span><a href="#34258" title="=&gt; cc.spray.http.HttpRequest">request</a><span class="delimiter">)</span>
+    <span title="cc.spray.RequestContext" class="keyword">if</span> <span class="delimiter">(</span><a href="#33304" title="cc.spray.http.HttpRequest">newRequest</a> <span title="(x$1: AnyRef)Boolean">eq</span> <a href="#34258" title="=&gt; cc.spray.http.HttpRequest">request</a><span class="delimiter">)</span> <a href="#34280" title="cc.spray.RequestContext" class="keyword">this</a> <span class="keyword">else</span> <a href="#34280" title="(request: cc.spray.http.HttpRequest, remoteHost: cc.spray.http.HttpIp, responder: cc.spray.RoutingResult =&gt; Unit, unmatchedPath: String)cc.spray.RequestContext">copy</a><span class="delimiter">(</span>request = <a href="#33304" title="cc.spray.http.HttpRequest">newRequest</a><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Returns a copy of this context with the the given response transformation function chained into the responder.
+   */</span>
+  <span class="keyword">def</span> <a title="(f: cc.spray.http.HttpResponse =&gt; cc.spray.http.HttpResponse)cc.spray.RequestContext" id="23752">withHttpResponseTransformed</a><span class="delimiter">(</span><a title="cc.spray.http.HttpResponse =&gt; cc.spray.http.HttpResponse" id="33324">f</a>: HttpResponse =&gt; HttpResponse<span class="delimiter">)</span>: <a href="#34280" title="cc.spray.RequestContext">RequestContext</a> = <span class="delimiter">{</span>
+    <a href="#23753" title="(f: cc.spray.RoutingResult =&gt; cc.spray.RoutingResult)cc.spray.RequestContext">withRoutingResultTransformed</a> <a href="#33327" title="cc.spray.RoutingResult" class="delimiter">{</a>
+      <span class="keyword">case</span> <span title="cc.spray.Respond">Respond</span><span class="delimiter">(</span><a title="cc.spray.http.HttpResponse" id="33346">response</a><span class="delimiter">)</span> =&gt; <a href="RoutingResult.scala.html#28771" title="(response: cc.spray.http.HttpResponse)cc.spray.Respond">Respond</a><span class="delimiter">(</span><a href="#33324" title="(v1: cc.spray.http.HttpResponse)cc.spray.http.HttpResponse">f</a><span class="delimiter">(</span><a href="#33346" title="cc.spray.http.HttpResponse">response</a><span class="delimiter">)</span><span class="delimiter">)</span>
+      <span class="keyword">case</span> <a title="cc.spray.Reject" id="33349">x</a>: <a href="RoutingResult.scala.html#9627" title="cc.spray.Reject">Reject</a> =&gt; <a href="#33349" title="cc.spray.Reject">x</a>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+  
+  <span class="comment">/**
+   * Returns a copy of this context with the the given RoutingResult transformation function chained into the responder.
+   */</span>
+  <span class="keyword">def</span> <a title="(f: cc.spray.RoutingResult =&gt; cc.spray.RoutingResult)cc.spray.RequestContext" id="23753">withRoutingResultTransformed</a><span class="delimiter">(</span><a title="cc.spray.RoutingResult =&gt; cc.spray.RoutingResult" id="27494">f</a>: RoutingResult =&gt; RoutingResult<span class="delimiter">)</span>: <a href="#34280" title="cc.spray.RequestContext">RequestContext</a> = <span class="delimiter">{</span>
+    <a href="#23754" title="(newResponder: cc.spray.RoutingResult =&gt; Unit)cc.spray.RequestContext">withResponder</a> <span class="delimiter">{</span> <a title="cc.spray.RoutingResult" id="33361">rr</a> =&gt; <a href="#34268" title="(v1: cc.spray.RoutingResult)Unit">responder</a><span class="delimiter">(</span><a href="#27494" title="(v1: cc.spray.RoutingResult)cc.spray.RoutingResult">f</a><span class="delimiter">(</span><a href="#33361" title="cc.spray.RoutingResult">rr</a><span class="delimiter">)</span><span class="delimiter">)</span> <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Returns a copy of this context with the responder replaced by the given responder.
+   */</span>
+  <span class="keyword">def</span> <a title="(newResponder: cc.spray.RoutingResult =&gt; Unit)cc.spray.RequestContext" id="23754">withResponder</a><span class="delimiter">(</span><a title="cc.spray.RoutingResult =&gt; Unit" id="33350">newResponder</a>: RoutingResult =&gt; Unit<span class="delimiter">)</span> = <a href="#34258" title="cc.spray.http.HttpRequest" id="33359">copy</a><span class="delimiter">(</span>responder = <a href="#33350" title="cc.spray.RoutingResult =&gt; Unit" id="33356">newResponder</a><span class="delimiter">)</span>
+
+  <span class="comment">/**
+   * Rejects the request with the given rejections.
+   */</span>
+  <span class="keyword">def</span> <a title="(rejections: cc.spray.Rejection*)Unit" id="23755">reject</a><span class="delimiter">(</span><a title="cc.spray.Rejection*" id="33364">rejections</a>: <span title="cc.spray.Rejection*">Rejection</span>*<span class="delimiter">)</span> <span class="delimiter">{</span> <a href="#23756" title="(rejections: Set[cc.spray.Rejection])Unit">reject</a><span class="delimiter">(</span><span title="(elems: cc.spray.Rejection*)scala.collection.immutable.Set[cc.spray.Rejection]">Set</span><span class="delimiter">(</span><a href="#33364" title="cc.spray.Rejection*">rejections</a>: _*<span class="delimiter">)</span><span class="delimiter">)</span> <span class="delimiter">}</span>
+  
+  <span class="comment">/**
+   * Rejects the request with the given rejections.
+   */</span>
+  <span class="keyword">def</span> <a title="(rejections: Set[cc.spray.Rejection])Unit" id="23756">reject</a><span class="delimiter">(</span><a title="Set[cc.spray.Rejection]" id="33370">rejections</a>: <span title="Set[cc.spray.Rejection]">Set</span><span class="delimiter">[</span>Rejection<span class="delimiter">]</span><span class="delimiter">)</span> <span class="delimiter">{</span> <a href="#34268" title="(v1: cc.spray.RoutingResult)Unit">responder</a><span class="delimiter">(</span><a href="RoutingResult.scala.html#28346" title="(rejections: Set[cc.spray.Rejection])cc.spray.Reject">Reject</a><span class="delimiter">(</span><a href="#33370" title="Set[cc.spray.Rejection]">rejections</a><span class="delimiter">)</span><span class="delimiter">)</span> <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Completes the request with status &quot;200 Ok&quot; and the response content created by marshalling the given object using
+   * the in-scope marshaller for the type.
+   */</span>
+  <span class="keyword">def</span> <a title="[A](obj: A)(implicit evidence$1: cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[A])Unit" id="28296">complete</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="23759">A</a> :Marshaller<span class="delimiter">]</span><span class="delimiter">(</span><a title="A" id="28295">obj</a>: <a href="#23759" title="A">A</a><span class="delimiter">)</span> <span class="delimiter">{</span> <a href="#28286" title="(status: cc.spray.http.StatusCode, obj: A)(implicit evidence$2: cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[A])Unit">complete</a><a href="#28296" title="cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[A]" class="delimiter">(</a><span title="=&gt; cc.spray.http.StatusCodes.Success">OK</span>, <a href="#28295" title="A">obj</a><span class="delimiter">)</span> <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Completes the request with the given status and the response content created by marshalling the given object using
+   * the in-scope marshaller for the type.
+   */</span>
+  <span class="keyword">def</span> <a title="[A](status: cc.spray.http.StatusCode, obj: A)(implicit evidence$2: cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[A])Unit" id="28286">complete</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="23762">A</a> :Marshaller<span class="delimiter">]</span><span class="delimiter">(</span><a title="cc.spray.http.StatusCode" id="28284">status</a>: <span title="cc.spray.http.StatusCode">StatusCode</span>, <a title="A" id="28285">obj</a>: <a href="#23762" title="A">A</a><span class="delimiter">)</span> <span class="delimiter">{</span> <a href="#28273" title="(status: cc.spray.http.StatusCode, headers: List[cc.spray.http.HttpHeader], obj: A)(implicit evidence$3: cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[A])Unit">complete</a><a href="#28286" title="cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[A]" class="delimiter">(</a><a href="#28284" title="cc.spray.http.StatusCode">status</a>, <span title="object Nil">Nil</span>, <a href="#28285" title="A">obj</a><span class="delimiter">)</span> <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Completes the request with the given status, headers and the response content created by marshalling the
+   * given object using the in-scope marshaller for the type.
+   */</span>
+  <span class="keyword">def</span> <a title="[A](status: cc.spray.http.StatusCode, headers: List[cc.spray.http.HttpHeader], obj: A)(implicit evidence$3: cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[A])Unit" id="28273">complete</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="23765">A</a> :Marshaller<span class="delimiter">]</span><span class="delimiter">(</span><a title="cc.spray.http.StatusCode" id="28270">status</a>: <span title="cc.spray.http.StatusCode">StatusCode</span>, <a title="List[cc.spray.http.HttpHeader]" id="28271">headers</a>: <span title="List[cc.spray.http.HttpHeader]">List</span><span class="delimiter">[</span>HttpHeader<span class="delimiter">]</span>, <a title="A" id="28272">obj</a>: <a href="#23765" title="A">A</a><span class="delimiter">)</span> <span class="delimiter">{</span>
+    <a href="#28273" title="(implicit m: cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[A])cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[A]">marshaller</a>.<span title="(v1: cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType])cc.spray.typeconversion.Marshalling[A]">apply</span><span class="delimiter">(</span><a href="#34258" title="=&gt; cc.spray.http.HttpRequest">request</a>.<a href="#33476" title="(contentType: cc.spray.http.ContentType)Option[cc.spray.http.ContentType]">acceptableContentType</a><span class="delimiter">)</span> <span title="Unit" class="keyword">match</span> <span class="delimiter">{</span>
+      <span class="keyword">case</span> <span title="Unit">MarshalWith</span><span class="delimiter">(</span><a title="A =&gt; cc.spray.http.HttpContent" id="33507">converter</a><span class="delimiter">)</span> =&gt; <a href="#23769" title="(response: cc.spray.http.HttpResponse)Unit">complete</a><span class="delimiter">(</span><span title="(status: cc.spray.http.StatusCode, headers: List[cc.spray.http.HttpHeader], content: cc.spray.http.HttpContent)cc.spray.http.HttpResponse">HttpResponse</span><span class="delimiter">(</span><a href="#28270" title="cc.spray.http.StatusCode">status</a>, <a href="#28271" title="List[cc.spray.http.HttpHeader]">headers</a>, <a href="#33507" title="(v1: A)cc.spray.http.HttpContent">converter</a><span class="delimiter">(</span><a href="#28272" title="A">obj</a><span class="delimiter">)</span><span class="delimiter">)</span><span class="delimiter">)</span>
+      <span class="keyword">case</span> <span title="Unit">CantMarshal</span><span class="delimiter">(</span><a title="List[cc.spray.http.ContentType]" id="33585">onlyTo</a><span class="delimiter">)</span> =&gt; <a href="#23755" title="(rejections: cc.spray.Rejection*)Unit">reject</a><span class="delimiter">(</span><a href="Rejection.scala.html#31637" title="(supported: Seq[cc.spray.http.ContentType])cc.spray.UnacceptedResponseContentTypeRejection">UnacceptedResponseContentTypeRejection</a><span class="delimiter">(</span><a href="#33585" title="List[cc.spray.http.ContentType]">onlyTo</a><span class="delimiter">)</span><span class="delimiter">)</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Schedules the completion of the request with status &quot;200 Ok&quot; and the response content created by marshalling the
+   * future result using the in-scope marshaller for A.
+   */</span>
+  <span class="keyword">def</span> <a title="[A](responseFuture: akka.dispatch.Future[A])(implicit evidence$4: cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[A])Unit" id="27506">complete</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="23768">A</a> :Marshaller<span class="delimiter">]</span><span class="delimiter">(</span><a title="akka.dispatch.Future[A]" id="27505">responseFuture</a>: <span title="akka.dispatch.Future[A]">Future</span><span class="delimiter">[</span>A<span class="delimiter">]</span><span class="delimiter">)</span> <span class="delimiter">{</span>
+    <a href="#27505" title="akka.dispatch.Future[A]">responseFuture</a>.<span title="(func: akka.dispatch.Future[A] =&gt; Unit)responseFuture.type">onComplete</span><span title="Unit" class="delimiter">(</span><a title="akka.dispatch.Future[A]" id="33637">future</a> =&gt; <a href="#28296" title="(obj: A)(implicit evidence$1: cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[A])Unit">complete</a><a href="#27506" title="cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[A]" class="delimiter">(</a><a href="#33637" title="akka.dispatch.Future[A]">future</a>.<span title="=&gt; Option[A]">resultOrException</span>.<span title="=&gt; A">get</span><span class="delimiter">)</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Completes the request with the given [[cc.spray.http.HttpResponse]].
+   */</span>
+  <span class="keyword">def</span> <a title="(response: cc.spray.http.HttpResponse)Unit" id="23769">complete</a><span class="delimiter">(</span><a title="cc.spray.http.HttpResponse" id="27503">response</a>: <span title="cc.spray.http.HttpResponse">HttpResponse</span><span class="delimiter">)</span> <span class="delimiter">{</span> <a href="#34268" title="(v1: cc.spray.RoutingResult)Unit">responder</a><span class="delimiter">(</span><a href="RoutingResult.scala.html#28771" title="(response: cc.spray.http.HttpResponse)cc.spray.Respond">Respond</a><span class="delimiter">(</span><a href="#27503" title="cc.spray.http.HttpResponse">response</a><span class="delimiter">)</span><span class="delimiter">)</span> <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Returns a copy of this context that cancels all rejections of type R with
+   * a [[cc.spray.RejectionRejection]]. 
+   */</span>
+  <span class="keyword">def</span> <a title="[R &lt;: cc.spray.Rejection](implicit evidence$5: ClassManifest[R])cc.spray.RequestContext" id="33684">cancelRejectionsOfType</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: cc.spray.Rejection" id="23772">R</a> &lt;: Rejection :ClassManifest<span class="delimiter">]</span>: <a href="#34280" title="cc.spray.RequestContext">RequestContext</a> = <span class="delimiter">{</span>
+    <span class="keyword">val</span> <a title="java.lang.Class[_]" id="33687">erasure</a> = <a href="#33684" title="(implicit m: ClassManifest[R])ClassManifest[R]">classManifest</a>.<span title="=&gt; java.lang.Class[_]">erasure</span>
+    <a href="#23773" title="(reject: cc.spray.Rejection =&gt; Boolean)cc.spray.RequestContext">cancelRejections</a><span class="delimiter">(</span><a href="#33687" title="java.lang.Class[_]">erasure</a>.<span title="(x$1: Any)Boolean">isInstance</span><span class="delimiter">(</span><a href="#33698" title="cc.spray.Rejection">_</a><span class="delimiter">)</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+  
+  <span class="comment">/**
+   * Returns a copy of this context that cancels all rejections matching the given predicate with
+   * a [[cc.spray.RejectionRejection]].
+   */</span>
+  <span class="keyword">def</span> <a title="(reject: cc.spray.Rejection =&gt; Boolean)cc.spray.RequestContext" id="23773">cancelRejections</a><span class="delimiter">(</span><a title="cc.spray.Rejection =&gt; Boolean" id="33695">reject</a>: Rejection =&gt; Boolean<span class="delimiter">)</span>: <a href="#34280" title="cc.spray.RequestContext">RequestContext</a> = <span class="delimiter">{</span>
+    <a href="#23753" title="(f: cc.spray.RoutingResult =&gt; cc.spray.RoutingResult)cc.spray.RequestContext">withRoutingResultTransformed</a> <span class="delimiter">{</span>
+      <a href="#33700" title="cc.spray.RoutingResult">_</a> <span title="cc.spray.RoutingResult" class="keyword">match</span> <span class="delimiter">{</span>
+        <span class="keyword">case</span> <a title="cc.spray.Respond" id="33701">x</a>: <a href="RoutingResult.scala.html#9622" title="cc.spray.Respond">Respond</a> =&gt; <a href="#33701" title="cc.spray.Respond">x</a>
+        <span class="keyword">case</span> <span title="cc.spray.Reject">Reject</span><span class="delimiter">(</span><a title="Set[cc.spray.Rejection]" id="33702">rejections</a><span class="delimiter">)</span> =&gt; <a href="RoutingResult.scala.html#28346" title="(rejections: Set[cc.spray.Rejection])cc.spray.Reject">Reject</a><span class="delimiter">(</span><a href="#33702" title="Set[cc.spray.Rejection]">rejections</a> <span title="(elem: cc.spray.Rejection)scala.collection.immutable.Set[cc.spray.Rejection]">+</span> <a href="Rejection.scala.html#32549" title="(reject: cc.spray.Rejection =&gt; Boolean)cc.spray.RejectionRejection">RejectionRejection</a><span class="delimiter">(</span><a href="#33695" title="cc.spray.Rejection =&gt; Boolean">reject</a><span class="delimiter">)</span><span class="delimiter">)</span>
+      <span class="delimiter">}</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+  
+  <span class="comment">/**
+   * Completes the request with the given [[cc.spray.http.HttpFailure]].
+   */</span>
+  <span class="keyword">def</span> <a title="(status: cc.spray.http.HttpFailure)Unit" id="23774">fail</a><span class="delimiter">(</span><a title="cc.spray.http.HttpFailure" id="33719">status</a>: <span title="cc.spray.http.HttpFailure">HttpFailure</span><span class="delimiter">)</span> <span class="delimiter">{</span> <a href="#33741" title="(status: cc.spray.http.HttpFailure, obj: String)(implicit evidence$6: cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[String])Unit">fail</a><span class="delimiter">(</span><a href="#33719" title="cc.spray.http.HttpFailure">status</a>, <a href="#33719" title="cc.spray.http.HttpFailure">status</a>.<span title="=&gt; String">defaultMessage</span><span class="delimiter">)</span><span class="delimiter">(</span><span title="object cc.spray.typeconversion.DefaultMarshallers">DefaultMarshallers</span>.<span title="=&gt; cc.spray.typeconversion.MarshallerBase[String]">StringMarshaller</span><span class="delimiter">)</span> <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Completes the request with the given status and the response content created by marshalling the given object using
+   * the in-scope marshaller for the type.
+   */</span>
+  <span class="keyword">def</span> <a title="[A](status: cc.spray.http.HttpFailure, obj: A)(implicit evidence$6: cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[A])Unit" id="33741">fail</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="23777">A</a> :Marshaller<span class="delimiter">]</span><span class="delimiter">(</span><a title="cc.spray.http.HttpFailure" id="33739">status</a>: <span title="cc.spray.http.HttpFailure">HttpFailure</span>, <a title="A" id="33740">obj</a>: <a href="#23777" title="A">A</a><span class="delimiter">)</span> <span class="delimiter">{</span> <a href="#33728" title="(status: cc.spray.http.HttpFailure, headers: List[cc.spray.http.HttpHeader], obj: A)(implicit evidence$7: cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[A])Unit">fail</a><a href="#33741" title="cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[A]" class="delimiter">(</a><a href="#33739" title="cc.spray.http.HttpFailure">status</a>, <span title="object Nil">Nil</span>, <a href="#33740" title="A">obj</a><span class="delimiter">)</span> <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Completes the request with the given status, headers and the response content created by marshalling the
+   * given object using the in-scope marshaller for the type.
+   */</span>
+  <span class="keyword">def</span> <a title="[A](status: cc.spray.http.HttpFailure, headers: List[cc.spray.http.HttpHeader], obj: A)(implicit evidence$7: cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[A])Unit" id="33728">fail</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="23780">A</a> :Marshaller<span class="delimiter">]</span><span class="delimiter">(</span><a title="cc.spray.http.HttpFailure" id="33725">status</a>: <span title="cc.spray.http.HttpFailure">HttpFailure</span>, <a title="List[cc.spray.http.HttpHeader]" id="33726">headers</a>: <span title="List[cc.spray.http.HttpHeader]">List</span><span class="delimiter">[</span>HttpHeader<span class="delimiter">]</span>, <a title="A" id="33727">obj</a>: <a href="#23780" title="A">A</a><span class="delimiter">)</span> <span class="delimiter">{</span> <a href="#28273" title="(status: cc.spray.http.StatusCode, headers: List[cc.spray.http.HttpHeader], obj: A)(implicit evidence$3: cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[A])Unit">complete</a><a href="#33728" title="cc.spray.http.ContentType =&gt; Option[cc.spray.http.ContentType] =&gt; cc.spray.typeconversion.Marshalling[A]" class="delimiter">(</a><a href="#33725" title="cc.spray.http.HttpFailure">status</a>, <a href="#33726" title="List[cc.spray.http.HttpHeader]">headers</a>, <a href="#33727" title="A">obj</a><span class="delimiter">)</span> <span class="delimiter">}</span>
+  
+  <span class="comment">/**
+   * Completes the request with a redirection response to the given URI.
+   */</span>
+  <span class="keyword">def</span> <a title="(uri: String, redirectionType: cc.spray.http.StatusCodes.Redirection)Unit" id="23781">redirect</a><span class="delimiter">(</span><a title="String" id="33837">uri</a>: <span title="String">String</span>, <a title="cc.spray.http.StatusCodes.Redirection" id="33840">redirectionType</a>: <span title="cc.spray.http.StatusCodes.Redirection">Redirection</span> = <span title="=&gt; cc.spray.http.StatusCodes.Redirection">Found</span><span class="delimiter">)</span> <span class="delimiter">{</span>
+    <a href="#23769" title="(response: cc.spray.http.HttpResponse)Unit">complete</a> <span class="delimiter">{</span>
+      <span title="(status: cc.spray.http.StatusCode, headers: List[cc.spray.http.HttpHeader], content: cc.spray.http.HttpContent)cc.spray.http.HttpResponse">HttpResponse</span><span class="delimiter">(</span>
+        status = <a href="#33840" title="cc.spray.http.StatusCodes.Redirection">redirectionType</a>,
+        headers = <span title="(absoluteUri: String)cc.spray.http.HttpHeaders.Location">Location</span><span class="delimiter">(</span><a href="#33837" title="String">uri</a><span class="delimiter">)</span> <a href="#33874" title="(x: cc.spray.http.HttpHeaders.Location)List[cc.spray.http.HttpHeaders.Location]">::</a> <span title="object Nil">Nil</span>,
+        content = <span title="(contentType: cc.spray.http.ContentType, string: String)cc.spray.http.HttpContent">HttpContent</span><span class="delimiter">(</span><span title="implicit cc.spray.http.ContentType.fromMimeType : (mimeType: cc.spray.http.MediaType)cc.spray.http.ContentType">`text/html`</span>,
+          <span title="java.lang.String(&quot;The requested resource temporarily resides under this &lt;a href=\&quot;&quot;)" class="string">&quot;The requested resource temporarily resides under this &lt;a href=\&quot;&quot;</span> <span title="(x$1: Any)java.lang.String">+</span> <a href="#33837" title="String">uri</a> <span title="(x$1: Any)java.lang.String">+</span> <span title="java.lang.String(&quot;\&quot;&gt;URI&lt;/a&gt;.&quot;)" class="string">&quot;\&quot;&gt;URI&lt;/a&gt;.&quot;</span><span class="delimiter">)</span>
+      <span class="delimiter">)</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+<span class="delimiter">}</span>
+        </pre>
+    </body>
+</html>

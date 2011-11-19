@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/http/HttpRequest.scala</title>
+        <script type="text/javascript" src="../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ * Based on code copyright (C) 2010-2011 by the BlueEyes Web Framework Team (http://github.com/jdegoes/blueeyes)
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray
+<span class="keyword">package</span> http
+
+<span class="keyword">import</span> utils._
+<span class="keyword">import</span> <a href="HttpHeader.scala.html#9606" title="object cc.spray.http.HttpHeaders">HttpHeaders</a>._
+<span class="keyword">import</span> <a href="HttpCharset.scala.html#9553" title="object cc.spray.http.HttpCharsets">HttpCharsets</a>._
+<span class="keyword">import</span> <a href="HttpProtocol.scala.html#9631" title="object cc.spray.http.HttpProtocols">HttpProtocols</a>._
+<span class="keyword">import</span> parser.QueryParser
+<span class="keyword">import</span> java.net.URI
+
+<span class="comment">/**
+ * Sprays immutable model of an HTTP request.
+ * The `uri` member contains the the undecoded URI of the request as it appears in the HTTP message, i.e. just the path,
+ * query and fragment string without scheme and authority (host and port).
+ */</span>
+case <span class="keyword">class</span> <a title="class HttpRequest extends cc.spray.http.HttpMessage[cc.spray.http.HttpRequest] with ScalaObject with Product with Serializable" id="46298">HttpRequest</a><a href="#46298" title="ScalaObject" class="delimiter">(</a><a title="cc.spray.http.HttpMethod" id="25011">method</a>: <a href="HttpMethod.scala.html#9624" title="cc.spray.http.HttpMethod">HttpMethod</a> = <a href="HttpMethod.scala.html#9625" title="object cc.spray.http.HttpMethods">HttpMethods</a>.<a href="HttpMethod.scala.html#22981" title="=&gt; cc.spray.http.HttpMethod">GET</a>,
+                       <a title="String" id="25012">uri</a>: <span title="String">String</span> = <span title="java.lang.String(&quot;/&quot;)" class="string">&quot;/&quot;</span>,
+                       <a title="List[cc.spray.http.HttpHeader]" id="25013">headers</a>: <span title="List[cc.spray.http.HttpHeader]">List</span><span class="delimiter">[</span>HttpHeader<span class="delimiter">]</span> = <span title="object Nil">Nil</span>,
+                       <a title="Option[cc.spray.http.HttpContent]" id="25014">content</a>: <span title="Option[cc.spray.http.HttpContent]">Option</span><span class="delimiter">[</span>HttpContent<span class="delimiter">]</span> = <span title="object None">None</span>,
+                       <a title="cc.spray.http.HttpProtocol" id="25015">protocol</a>: <a href="HttpProtocol.scala.html#9630" title="cc.spray.http.HttpProtocol">HttpProtocol</a> = <a href="HttpProtocol.scala.html#23063" title="=&gt; cc.spray.http.HttpProtocol">`HTTP/1.1`</a><span class="delimiter">)</span> <span class="keyword">extends</span> <a href="HttpMessage.scala.html#9619" title="cc.spray.http.HttpMessage[cc.spray.http.HttpRequest]">HttpMessage</a><span class="delimiter">[</span>HttpRequest<span class="delimiter">]</span> <span class="delimiter">{</span>
+
+  <span class="keyword">lazy</span> <span class="keyword">val</span> <a title="java.net.URI" id="24964">URI</a> = <span title="java.net.URI" class="keyword">new</span> <span title="java.net.URI">URI</span><span class="delimiter">(</span><a href="#25012" title="=&gt; String">uri</a><span class="delimiter">)</span>
+
+  <span class="keyword">lazy</span> <span class="keyword">val</span> <a title="Map[String,String]" id="24966">queryParams</a>: <span title="Map[String,String]">Map</span><span class="delimiter">[</span>String, String<span class="delimiter">]</span> = <a href="parser/QueryParser.scala.html#9816" title="object cc.spray.http.parser.QueryParser">QueryParser</a>.<a href="parser/QueryParser.scala.html#45536" title="(queryString: String)Map[String,String]">parse</a><span class="delimiter">(</span><a href="#24969" title="=&gt; java.lang.String">rawQuery</a><span class="delimiter">)</span>
+
+  <span class="keyword">def</span> <a title="=&gt; java.lang.String" id="24967">path</a> = <a href="#24971" title="(s: String)java.lang.String">nonNull</a><span class="delimiter">(</span><a href="#24963" title="=&gt; java.net.URI">URI</a>.<span title="()java.lang.String">getPath</span><span class="delimiter">)</span>
+  <span class="keyword">def</span> <a title="=&gt; java.lang.String" id="24968">query</a> = <a href="#24971" title="(s: String)java.lang.String">nonNull</a><span class="delimiter">(</span><a href="#24963" title="=&gt; java.net.URI">URI</a>.<span title="()java.lang.String">getQuery</span><span class="delimiter">)</span>
+  <span class="keyword">def</span> <a title="=&gt; java.lang.String" id="24969">rawQuery</a> = <a href="#24971" title="(s: String)java.lang.String">nonNull</a><span class="delimiter">(</span><a href="#24963" title="=&gt; java.net.URI">URI</a>.<span title="()java.lang.String">getRawQuery</span><span class="delimiter">)</span>
+  <span class="keyword">def</span> <a title="=&gt; java.lang.String" id="24970">fragment</a> = <a href="#24971" title="(s: String)java.lang.String">nonNull</a><span class="delimiter">(</span><a href="#24963" title="=&gt; java.net.URI">URI</a>.<span title="()java.lang.String">getFragment</span><span class="delimiter">)</span>
+
+  <span class="keyword">private</span> <span class="keyword">def</span> <a title="(s: String)java.lang.String" id="24971">nonNull</a><span class="delimiter">(</span><a title="String" id="45547">s</a>: <span title="String">String</span><span class="delimiter">)</span> = <span title="java.lang.String" class="keyword">if</span> <span class="delimiter">(</span><a href="#45547" title="String">s</a> <span title="(x$1: AnyRef)Boolean">==</span> <span title="Null(null)" class="keyword">null</span><span class="delimiter">)</span> <span title="java.lang.String(&quot;&quot;)" class="string">&quot;&quot;</span> <span class="keyword">else</span> <a href="#45547" title="String">s</a>
+
+  <span class="keyword">def</span> <a title="=&gt; String" id="24972">host</a>: <span title="String">String</span> = <a href="../utils/package.scala.html#10097" title="(seq: scala.collection.immutable.LinearSeq[cc.spray.http.HttpHeader])cc.spray.utils.PimpedLinearSeq[cc.spray.http.HttpHeader]">headers</a>.<a href="../utils/PimpedLinearSeq.scala.html#13186" title="[B](implicit evidence$1: ClassManifest[B])Option[B]">findByType</a><span title="(implicit evidence$1: ClassManifest[cc.spray.http.HttpHeaders.Host])Option[cc.spray.http.HttpHeaders.Host]" class="delimiter">[</span><a href="HttpHeader.scala.html#23038" title="cc.spray.http.HttpHeaders.Host">Host</a><span class="delimiter">]</span>.<span title="(f: cc.spray.http.HttpHeaders.Host =&gt; String)Option[String]">map</span><span class="delimiter">(</span><a href="#45607" title="cc.spray.http.HttpHeaders.Host">_</a>.<a href="HttpHeader.scala.html#44351" title="=&gt; String">host</a><span class="delimiter">)</span>.<span title="(default: =&gt; String)String">getOrElse</span><span class="delimiter">(</span><span title="java.lang.String(&quot;&quot;)" class="string">&quot;&quot;</span><span class="delimiter">)</span>
+  <span class="keyword">def</span> <a title="=&gt; Option[Int]" id="24973">port</a>: <span title="Option[Int]">Option</span><span class="delimiter">[</span>Int<span class="delimiter">]</span> = <a href="../utils/package.scala.html#10097" title="(seq: scala.collection.immutable.LinearSeq[cc.spray.http.HttpHeader])cc.spray.utils.PimpedLinearSeq[cc.spray.http.HttpHeader]">headers</a>.<a href="../utils/PimpedLinearSeq.scala.html#13186" title="[B](implicit evidence$1: ClassManifest[B])Option[B]">findByType</a><span title="(implicit evidence$1: ClassManifest[cc.spray.http.HttpHeaders.Host])Option[cc.spray.http.HttpHeaders.Host]" class="delimiter">[</span><a href="HttpHeader.scala.html#23038" title="cc.spray.http.HttpHeaders.Host">Host</a><span class="delimiter">]</span>.<span title="(f: cc.spray.http.HttpHeaders.Host =&gt; Option[Int])Option[Option[Int]]">map</span><span class="delimiter">(</span><a href="#45650" title="cc.spray.http.HttpHeaders.Host">_</a>.<a href="HttpHeader.scala.html#44353" title="=&gt; Option[Int]">port</a><span class="delimiter">)</span>.<span title="(default: =&gt; Option[Int])Option[Int]">getOrElse</span><span class="delimiter">(</span><span title="object None">None</span><span class="delimiter">)</span>
+  <span class="keyword">def</span> <a title="=&gt; String" id="24974">hostAndPort</a>: <span title="String">String</span> = <a href="../utils/package.scala.html#10097" title="(seq: scala.collection.immutable.LinearSeq[cc.spray.http.HttpHeader])cc.spray.utils.PimpedLinearSeq[cc.spray.http.HttpHeader]">headers</a>.<a href="../utils/PimpedLinearSeq.scala.html#13186" title="[B](implicit evidence$1: ClassManifest[B])Option[B]">findByType</a><span title="(implicit evidence$1: ClassManifest[cc.spray.http.HttpHeaders.Host])Option[cc.spray.http.HttpHeaders.Host]" class="delimiter">[</span><a href="HttpHeader.scala.html#23038" title="cc.spray.http.HttpHeaders.Host">Host</a><span class="delimiter">]</span>.<span title="(f: cc.spray.http.HttpHeaders.Host =&gt; java.lang.String)Option[java.lang.String]">map</span><span class="delimiter">(</span><a href="#45693" title="cc.spray.http.HttpHeaders.Host">_</a>.<a href="HttpHeader.scala.html#44356" title="=&gt; java.lang.String">value</a><span class="delimiter">)</span>.<span title="(default: =&gt; java.lang.String)java.lang.String">getOrElse</span><span class="delimiter">(</span><span title="java.lang.String(&quot;&quot;)" class="string">&quot;&quot;</span><span class="delimiter">)</span>
+
+  <span class="keyword">lazy</span> <span class="keyword">val</span> <a title="List[cc.spray.http.MediaRange]" id="24976">acceptedMediaRanges</a>: <span title="List[cc.spray.http.MediaRange]">List</span><span class="delimiter">[</span>MediaRange<span class="delimiter">]</span> = <span class="delimiter">{</span>
+    <span class="comment">// TODO: sort by preference</span>
+    <span class="keyword">for</span> <span class="delimiter">(</span>Accept<span class="delimiter">(</span><a title="Seq[cc.spray.http.MediaRange]" id="45731">mediaRanges</a><span class="delimiter">)</span> &lt;- <a href="#25013" title="(f: cc.spray.http.HttpHeader =&gt; scala.collection.GenTraversableOnce[cc.spray.http.MediaRange])(implicit bf: scala.collection.generic.CanBuildFrom[List[cc.spray.http.HttpHeader],cc.spray.http.MediaRange,List[cc.spray.http.MediaRange]])List[cc.spray.http.MediaRange]">headers</a>; <a title="cc.spray.http.MediaRange" id="45748">range</a> &lt;- <a href="#45731" title="(f: cc.spray.http.MediaRange =&gt; cc.spray.http.MediaRange)(implicit bf: scala.collection.generic.CanBuildFrom[Seq[cc.spray.http.MediaRange],cc.spray.http.MediaRange,Seq[cc.spray.http.MediaRange]])Seq[cc.spray.http.MediaRange]">mediaRanges</a><span class="delimiter">)</span> <span class="keyword">yield</span> <a href="#45748" title="cc.spray.http.MediaRange">range</a>
+  <span class="delimiter">}</span>
+  
+  <span class="keyword">lazy</span> <span class="keyword">val</span> <a title="List[cc.spray.http.HttpCharsetRange]" id="24978">acceptedCharsetRanges</a>: <span title="List[cc.spray.http.HttpCharsetRange]">List</span><span class="delimiter">[</span>HttpCharsetRange<span class="delimiter">]</span> = <span class="delimiter">{</span>
+    <span class="comment">// TODO: sort by preference</span>
+    <span class="keyword">for</span> <span class="delimiter">(</span>`Accept-Charset`<span class="delimiter">(</span><a title="Seq[cc.spray.http.HttpCharsetRange]" id="45827">charsetRanges</a><span class="delimiter">)</span> &lt;- <a href="#25013" title="(f: cc.spray.http.HttpHeader =&gt; scala.collection.GenTraversableOnce[cc.spray.http.HttpCharsetRange])(implicit bf: scala.collection.generic.CanBuildFrom[List[cc.spray.http.HttpHeader],cc.spray.http.HttpCharsetRange,List[cc.spray.http.HttpCharsetRange]])List[cc.spray.http.HttpCharsetRange]">headers</a>; <a title="cc.spray.http.HttpCharsetRange" id="45844">range</a> &lt;- <a href="#45827" title="(f: cc.spray.http.HttpCharsetRange =&gt; cc.spray.http.HttpCharsetRange)(implicit bf: scala.collection.generic.CanBuildFrom[Seq[cc.spray.http.HttpCharsetRange],cc.spray.http.HttpCharsetRange,Seq[cc.spray.http.HttpCharsetRange]])Seq[cc.spray.http.HttpCharsetRange]">charsetRanges</a><span class="delimiter">)</span> <span class="keyword">yield</span> <a href="#45844" title="cc.spray.http.HttpCharsetRange">range</a>
+  <span class="delimiter">}</span>
+  
+  <span class="keyword">lazy</span> <span class="keyword">val</span> <a title="List[cc.spray.http.HttpEncodingRange]" id="24980">acceptedEncodingRanges</a>: <span title="List[cc.spray.http.HttpEncodingRange]">List</span><span class="delimiter">[</span>HttpEncodingRange<span class="delimiter">]</span> = <span class="delimiter">{</span>
+    <span class="comment">// TODO: sort by preference</span>
+    <span class="keyword">for</span> <span class="delimiter">(</span>`Accept-Encoding`<span class="delimiter">(</span><a title="Seq[cc.spray.http.HttpEncodingRange]" id="45923">encodingRanges</a><span class="delimiter">)</span> &lt;- <a href="#25013" title="(f: cc.spray.http.HttpHeader =&gt; scala.collection.GenTraversableOnce[cc.spray.http.HttpEncodingRange])(implicit bf: scala.collection.generic.CanBuildFrom[List[cc.spray.http.HttpHeader],cc.spray.http.HttpEncodingRange,List[cc.spray.http.HttpEncodingRange]])List[cc.spray.http.HttpEncodingRange]">headers</a>; <a title="cc.spray.http.HttpEncodingRange" id="45940">range</a> &lt;- <a href="#45923" title="(f: cc.spray.http.HttpEncodingRange =&gt; cc.spray.http.HttpEncodingRange)(implicit bf: scala.collection.generic.CanBuildFrom[Seq[cc.spray.http.HttpEncodingRange],cc.spray.http.HttpEncodingRange,Seq[cc.spray.http.HttpEncodingRange]])Seq[cc.spray.http.HttpEncodingRange]">encodingRanges</a><span class="delimiter">)</span> <span class="keyword">yield</span> <a href="#45940" title="cc.spray.http.HttpEncodingRange">range</a>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">lazy</span> <span class="keyword">val</span> <a title="List[cc.spray.http.HttpCookie]" id="24982">cookies</a>: <span title="List[cc.spray.http.HttpCookie]">List</span><span class="delimiter">[</span>HttpCookie<span class="delimiter">]</span> = <span class="keyword">for</span> <span class="delimiter">(</span>`Cookie`<span class="delimiter">(</span><a title="Seq[cc.spray.http.HttpCookie]" id="46019">cookies</a><span class="delimiter">)</span> &lt;- <a href="#25013" title="(f: cc.spray.http.HttpHeader =&gt; scala.collection.GenTraversableOnce[cc.spray.http.HttpCookie])(implicit bf: scala.collection.generic.CanBuildFrom[List[cc.spray.http.HttpHeader],cc.spray.http.HttpCookie,List[cc.spray.http.HttpCookie]])List[cc.spray.http.HttpCookie]">headers</a>; <a title="cc.spray.http.HttpCookie" id="46036">cookie</a> &lt;- <a href="#46019" title="(f: cc.spray.http.HttpCookie =&gt; cc.spray.http.HttpCookie)(implicit bf: scala.collection.generic.CanBuildFrom[Seq[cc.spray.http.HttpCookie],cc.spray.http.HttpCookie,Seq[cc.spray.http.HttpCookie]])Seq[cc.spray.http.HttpCookie]">cookies</a><span class="delimiter">)</span> <span class="keyword">yield</span> <a href="#46036" title="cc.spray.http.HttpCookie">cookie</a>
+
+  <span class="comment">/**
+   * Determines whether the given mediatype is accepted by the client.
+   */</span>
+  <span class="keyword">def</span> <a title="(mediaType: cc.spray.http.MediaType)Boolean" id="24983">isMediaTypeAccepted</a><span class="delimiter">(</span><a title="cc.spray.http.MediaType" id="46086">mediaType</a>: <a href="MediaType.scala.html#9664" title="cc.spray.http.MediaType">MediaType</a><span class="delimiter">)</span> = <span class="delimiter">{</span>
+    <span class="comment">// according to the HTTP spec a client has to accept all mime types if no Accept header is sent with the request</span>
+    <span class="comment">// http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1</span>
+    <a href="#24975" title="=&gt; List[cc.spray.http.MediaRange]">acceptedMediaRanges</a>.<span title="=&gt; Boolean">isEmpty</span> <span title="(x: Boolean)Boolean">||</span> <a href="#24975" title="=&gt; List[cc.spray.http.MediaRange]">acceptedMediaRanges</a>.<span title="(p: cc.spray.http.MediaRange =&gt; Boolean)Boolean">exists</span><span class="delimiter">(</span><a href="#46095" title="cc.spray.http.MediaRange">_</a>.<a href="MediaType.scala.html#25309" title="(mediaType: cc.spray.http.MediaType)Boolean">matches</a><span class="delimiter">(</span><a href="#46086" title="cc.spray.http.MediaType">mediaType</a><span class="delimiter">)</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Determines whether the given charset is accepted by the client.
+   */</span>
+  <span class="keyword">def</span> <a title="(charset: cc.spray.http.HttpCharset)Boolean" id="24984">isCharsetAccepted</a><span class="delimiter">(</span><a title="cc.spray.http.HttpCharset" id="46096">charset</a>: <a href="HttpCharset.scala.html#9552" title="cc.spray.http.HttpCharset">HttpCharset</a><span class="delimiter">)</span> = <span class="delimiter">{</span>
+    <span class="comment">// according to the HTTP spec a client has to accept all charsets if no Accept-Charset header is sent with the request</span>
+    <span class="comment">// http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.2</span>
+    <a href="#24977" title="=&gt; List[cc.spray.http.HttpCharsetRange]">acceptedCharsetRanges</a>.<span title="=&gt; Boolean">isEmpty</span> <span title="(x: Boolean)Boolean">||</span> <a href="#24977" title="=&gt; List[cc.spray.http.HttpCharsetRange]">acceptedCharsetRanges</a>.<span title="(p: cc.spray.http.HttpCharsetRange =&gt; Boolean)Boolean">exists</span><span class="delimiter">(</span><a href="#46105" title="cc.spray.http.HttpCharsetRange">_</a>.<a href="HttpCharset.scala.html#29928" title="(charset: cc.spray.http.HttpCharset)Boolean">matches</a><span class="delimiter">(</span><a href="#46096" title="cc.spray.http.HttpCharset">charset</a><span class="delimiter">)</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Determines whether the given encoding is accepted by the client.
+   */</span>
+  <span class="keyword">def</span> <a title="(encoding: cc.spray.http.HttpEncoding)Boolean" id="24985">isEncodingAccepted</a><span class="delimiter">(</span><a title="cc.spray.http.HttpEncoding" id="46106">encoding</a>: <a href="HttpEncoding.scala.html#9590" title="cc.spray.http.HttpEncoding">HttpEncoding</a><span class="delimiter">)</span> = <span class="delimiter">{</span>
+    <span class="comment">// according to the HTTP spec the server MAY assume that the client will accept any content coding if no</span>
+    <span class="comment">// Accept-Encoding header is sent with the request (http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3)</span>
+    <span class="comment">// this is what we do here</span>
+    <a href="#24979" title="=&gt; List[cc.spray.http.HttpEncodingRange]">acceptedEncodingRanges</a>.<span title="=&gt; Boolean">isEmpty</span> <span title="(x: Boolean)Boolean">||</span> <a href="#24979" title="=&gt; List[cc.spray.http.HttpEncodingRange]">acceptedEncodingRanges</a>.<span title="(p: cc.spray.http.HttpEncodingRange =&gt; Boolean)Boolean">exists</span><span class="delimiter">(</span><a href="#46115" title="cc.spray.http.HttpEncodingRange">_</a>.<a href="HttpEncoding.scala.html#27947" title="(encoding: cc.spray.http.HttpEncoding)Boolean">matches</a><span class="delimiter">(</span><a href="#46106" title="cc.spray.http.HttpEncoding">encoding</a><span class="delimiter">)</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Determines whether the given content-type is accepted by the client.
+   */</span>
+  <span class="keyword">def</span> <a title="(ct: cc.spray.http.ContentType)Boolean" id="24986">isContentTypeAccepted</a><span class="delimiter">(</span><a title="cc.spray.http.ContentType" id="46116">ct</a>: <a href="ContentType.scala.html#9532" title="cc.spray.http.ContentType">ContentType</a><span class="delimiter">)</span> = <span class="delimiter">{</span>
+    <a href="#24983" title="(mediaType: cc.spray.http.MediaType)Boolean">isMediaTypeAccepted</a><span class="delimiter">(</span><a href="#46116" title="cc.spray.http.ContentType">ct</a>.<a href="ContentType.scala.html#25271" title="=&gt; cc.spray.http.MediaType">mediaType</a><span class="delimiter">)</span> <span title="(x: Boolean)Boolean">&amp;&amp;</span> <span class="delimiter">(</span><a href="#46116" title="cc.spray.http.ContentType">ct</a>.<a href="ContentType.scala.html#25273" title="=&gt; Option[cc.spray.http.HttpCharset]">charset</a>.<span title="=&gt; Boolean">isEmpty</span> <span title="(x: Boolean)Boolean">||</span> <a href="#24984" title="(charset: cc.spray.http.HttpCharset)Boolean">isCharsetAccepted</a><span class="delimiter">(</span><a href="#46116" title="cc.spray.http.ContentType">ct</a>.<a href="ContentType.scala.html#25273" title="=&gt; Option[cc.spray.http.HttpCharset]">charset</a>.<span title="=&gt; cc.spray.http.HttpCharset">get</span><span class="delimiter">)</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Determines whether the given content-type is accepted by the client.
+   * If the given content-type does not contain a charset an accepted charset is selected, i.e. the method guarantees
+   * that, if a content-type instance is returned within the option it will contain a charset.
+   */</span>
+  <span class="keyword">def</span> <a title="(contentType: cc.spray.http.ContentType)Option[cc.spray.http.ContentType]" id="24987">acceptableContentType</a><span class="delimiter">(</span><a title="cc.spray.http.ContentType" id="46119">contentType</a>: <a href="ContentType.scala.html#9532" title="cc.spray.http.ContentType">ContentType</a><span class="delimiter">)</span>: <span title="Option[cc.spray.http.ContentType]">Option</span><span class="delimiter">[</span>ContentType<span class="delimiter">]</span> = <span class="delimiter">{</span>
+    <span title="Option[cc.spray.http.ContentType]" class="keyword">if</span> <span class="delimiter">(</span><a href="#24986" title="(ct: cc.spray.http.ContentType)Boolean">isContentTypeAccepted</a><span class="delimiter">(</span><a href="#46119" title="cc.spray.http.ContentType">contentType</a><span class="delimiter">)</span><span class="delimiter">)</span> <span title="(x: cc.spray.http.ContentType)Some[cc.spray.http.ContentType]">Some</span> <span class="delimiter">{</span>
+      <span title="cc.spray.http.ContentType" class="keyword">if</span> <span class="delimiter">(</span><a href="#46119" title="cc.spray.http.ContentType">contentType</a>.<a href="ContentType.scala.html#25273" title="=&gt; Option[cc.spray.http.HttpCharset]">charset</a>.<span title="=&gt; Boolean">isDefined</span><span class="delimiter">)</span> <a href="#46119" title="cc.spray.http.ContentType">contentType</a>
+      <span class="keyword">else</span> <a href="ContentType.scala.html#25286" title="(mediaType: cc.spray.http.MediaType, charset: cc.spray.http.HttpCharset)cc.spray.http.ContentType">ContentType</a><span class="delimiter">(</span><a href="#46119" title="cc.spray.http.ContentType">contentType</a>.<a href="ContentType.scala.html#25271" title="=&gt; cc.spray.http.MediaType">mediaType</a>, <a href="#24988" title="=&gt; cc.spray.http.HttpCharset">acceptedCharset</a><span class="delimiter">)</span>
+    <span class="delimiter">}</span> <span class="keyword">else</span> <span title="object None">None</span>
+  <span class="delimiter">}</span>
+
+  <span class="comment">/**
+   * Returns a charset that is accepted by the client.
+   */</span>
+  <span class="keyword">def</span> <a title="=&gt; cc.spray.http.HttpCharset" id="24988">acceptedCharset</a>: <a href="HttpCharset.scala.html#9552" title="cc.spray.http.HttpCharset">HttpCharset</a> = <span class="delimiter">{</span>
+    <span title="cc.spray.http.HttpCharset" class="keyword">if</span> <span class="delimiter">(</span><a href="#24984" title="(charset: cc.spray.http.HttpCharset)Boolean">isCharsetAccepted</a><span class="delimiter">(</span><a href="HttpCharset.scala.html#24897" title="=&gt; cc.spray.http.HttpCharset">`ISO-8859-1`</a><span class="delimiter">)</span><span class="delimiter">)</span> <a href="HttpCharset.scala.html#24897" title="=&gt; cc.spray.http.HttpCharset">`ISO-8859-1`</a>
+    <span class="keyword">else</span> <a href="#24977" title="=&gt; List[cc.spray.http.HttpCharsetRange]">acceptedCharsetRanges</a> <span title="cc.spray.http.HttpCharset" class="keyword">match</span> <span class="delimiter">{</span>
+      <span class="keyword">case</span> <span title="cc.spray.http.HttpCharset" class="delimiter">(</span><a title="cc.spray.http.HttpCharset" id="46143">cs</a>: <a href="HttpCharset.scala.html#9552" title="cc.spray.http.HttpCharset">HttpCharset</a><span class="delimiter">)</span> :: _ =&gt; <a href="#46143" title="cc.spray.http.HttpCharset">cs</a>
+      <span class="keyword">case</span> <span title="Nothing">_</span> =&gt; <span title="Nothing" class="keyword">throw</span> <span title="java.lang.IllegalStateException" class="keyword">new</span> <span title="java.lang.IllegalStateException">IllegalStateException</span> <span class="comment">// a HttpCharsetRange that is not `*` ?</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">def</span> <a title="(headers: List[cc.spray.http.HttpHeader])cc.spray.http.HttpRequest" id="24989">withHeaders</a><span class="delimiter">(</span><a title="List[cc.spray.http.HttpHeader]" id="46155">headers</a>: <span title="List[cc.spray.http.HttpHeader]">List</span><span class="delimiter">[</span>HttpHeader<span class="delimiter">]</span><span class="delimiter">)</span> = <a href="#25011" title="cc.spray.http.HttpMethod" id="46185">copy</a><span class="delimiter">(</span>headers = <a href="#46155" title="List[cc.spray.http.HttpHeader]" id="46181">headers</a><span class="delimiter">)</span>
+
+  <span class="keyword">def</span> <a title="(content: Option[cc.spray.http.HttpContent])cc.spray.http.HttpRequest" id="24990">withContent</a><span class="delimiter">(</span><a title="Option[cc.spray.http.HttpContent]" id="46186">content</a>: <span title="Option[cc.spray.http.HttpContent]">Option</span><span class="delimiter">[</span>HttpContent<span class="delimiter">]</span><span class="delimiter">)</span> = <a href="#25011" title="cc.spray.http.HttpMethod" id="46196">copy</a><span class="delimiter">(</span>content = <a href="#46186" title="Option[cc.spray.http.HttpContent]" id="46192">content</a><span class="delimiter">)</span>
+
+  <span class="keyword">def</span> <a title="(headers: List[cc.spray.http.HttpHeader], content: Option[cc.spray.http.HttpContent])cc.spray.http.HttpRequest" id="24991">withHeadersAndContent</a><span class="delimiter">(</span><a title="List[cc.spray.http.HttpHeader]" id="46197">headers</a>: <span title="List[cc.spray.http.HttpHeader]">List</span><span class="delimiter">[</span>HttpHeader<span class="delimiter">]</span>, <a title="Option[cc.spray.http.HttpContent]" id="46198">content</a>: <span title="Option[cc.spray.http.HttpContent]">Option</span><span class="delimiter">[</span>HttpContent<span class="delimiter">]</span><span class="delimiter">)</span> =
+    <a href="#25011" title="cc.spray.http.HttpMethod" id="46205">copy</a><span class="delimiter">(</span>headers = <a href="#46197" title="List[cc.spray.http.HttpHeader]" id="46201">headers</a>, content = <a href="#46198" title="Option[cc.spray.http.HttpContent]" id="46202">content</a><span class="delimiter">)</span>
+<span class="delimiter">}</span>
+
+        </pre>
+    </body>
+</html>

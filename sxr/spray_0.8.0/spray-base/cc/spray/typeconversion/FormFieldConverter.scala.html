@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/typeconversion/FormFieldConverter.scala</title>
+        <script type="text/javascript" src="../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray
+<span class="keyword">package</span> typeconversion
+
+<span class="keyword">trait</span> <a title="trait FormFieldConverter[A] extends java.lang.Object" id="9891">FormFieldConverter</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="9892">A</a><span class="delimiter">]</span> <span title="java.lang.Object" class="delimiter">{</span>
+  <span class="keyword">def</span> <a title="=&gt; Option[cc.spray.typeconversion.package.FromStringOptionDeserializer[A]]" id="40765">urlEncodedFieldConverter</a>: <span title="Option[cc.spray.typeconversion.package.FromStringOptionDeserializer[A]]">Option</span><span class="delimiter">[</span>FromStringOptionDeserializer<span class="delimiter">[</span>A<span class="delimiter">]</span><span class="delimiter">]</span>
+  <span class="keyword">def</span> <a title="=&gt; Option[cc.spray.typeconversion.package.Unmarshaller[A]]" id="40766">multipartFieldConverter</a>: <span title="Option[cc.spray.typeconversion.package.Unmarshaller[A]]">Option</span><span class="delimiter">[</span>Unmarshaller<span class="delimiter">[</span>A<span class="delimiter">]</span><span class="delimiter">]</span>
+<span class="delimiter">}</span>
+
+<span class="keyword">object</span> <a title="object cc.spray.typeconversion.FormFieldConverter" id="9893">FormFieldConverter</a> <span title="ScalaObject" class="keyword">extends</span> <a href="#9895" title="cc.spray.typeconversion.FormFieldConverterLowerPriorityImplicits">FormFieldConverterLowerPriorityImplicits</a> <span class="delimiter">{</span>
+  <span class="keyword">implicit</span> <span class="keyword">def</span> <a title="[A](implicit evidence$1: cc.spray.typeconversion.package.FromStringOptionDeserializer[A], implicit evidence$2: cc.spray.typeconversion.package.Unmarshaller[A])java.lang.Object with cc.spray.typeconversion.FormFieldConverter[A]{lazy val urlEncodedFieldConverter: Some[cc.spray.typeconversion.package.FromStringOptionDeserializer[A]]; lazy val multipartFieldConverter: Some[cc.spray.typeconversion.package.Unmarshaller[A]]}" id="88524">dualModeFormFieldConverter</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="88521">A</a> :FromStringOptionDeserializer :Unmarshaller<span class="delimiter">]</span> = <a href="#88527" title="java.lang.Object with cc.spray.typeconversion.FormFieldConverter[A]{}" class="keyword">new</a> <a title="anonymous class $anon extends java.lang.Object with cc.spray.typeconversion.FormFieldConverter[A]" id="88527">FormFieldConverter</a><span class="delimiter">[</span>A<span class="delimiter">]</span> <span class="delimiter">{</span>
+    <span class="keyword">lazy</span> <span class="keyword">val</span> <a title="Some[cc.spray.typeconversion.package.FromStringOptionDeserializer[A]]" id="88530">urlEncodedFieldConverter</a> = <span title="(x: cc.spray.typeconversion.package.FromStringOptionDeserializer[A])Some[cc.spray.typeconversion.package.FromStringOptionDeserializer[A]]">Some</span><span class="delimiter">(</span><a href="package.scala.html#10073" title="[T](implicit ds: cc.spray.typeconversion.package.FromStringOptionDeserializer[T])cc.spray.typeconversion.package.FromStringOptionDeserializer[T]">fromStringOptionDeserializer</a><a href="#88524" title="(implicit ds: cc.spray.typeconversion.package.FromStringOptionDeserializer[A])cc.spray.typeconversion.package.FromStringOptionDeserializer[A]" class="delimiter">[</a><a href="#88521" title="A">A</a><span class="delimiter">]</span><span class="delimiter">)</span>
+    <span class="keyword">lazy</span> <span class="keyword">val</span> <a title="Some[cc.spray.typeconversion.package.Unmarshaller[A]]" id="88532">multipartFieldConverter</a> = <span title="(x: cc.spray.typeconversion.package.Unmarshaller[A])Some[cc.spray.typeconversion.package.Unmarshaller[A]]">Some</span><span class="delimiter">(</span><a href="package.scala.html#10065" title="[T](implicit um: cc.spray.typeconversion.package.Unmarshaller[T])cc.spray.typeconversion.package.Unmarshaller[T]">unmarshaller</a><a href="#88524" title="(implicit um: cc.spray.typeconversion.package.Unmarshaller[A])cc.spray.typeconversion.package.Unmarshaller[A]" class="delimiter">[</a><a href="#88521" title="A">A</a><span class="delimiter">]</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+<span class="delimiter">}</span>
+
+<span class="keyword">private</span><span class="delimiter">[</span>typeconversion<span class="delimiter">]</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <a title="class FormFieldConverterLowerPriorityImplicits extends java.lang.Object with ScalaObject" id="9895">FormFieldConverterLowerPriorityImplicits</a> <a href="#9895" title="ScalaObject" class="delimiter">{</a>
+  <span class="keyword">implicit</span> <span class="keyword">def</span> <a title="[A](implicit evidence$3: cc.spray.typeconversion.package.FromStringOptionDeserializer[A])java.lang.Object with cc.spray.typeconversion.FormFieldConverter[A]{lazy val urlEncodedFieldConverter: Some[cc.spray.typeconversion.package.FromStringOptionDeserializer[A]]; def multipartFieldConverter: None.type}" id="88573">urlEncodedFormFieldConverter</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="88511">A</a> :FromStringOptionDeserializer<span class="delimiter">]</span> = <a href="#88576" title="java.lang.Object with cc.spray.typeconversion.FormFieldConverter[A]{}" class="keyword">new</a> <a title="anonymous class $anon extends java.lang.Object with cc.spray.typeconversion.FormFieldConverter[A]" id="88576">FormFieldConverter</a><span class="delimiter">[</span>A<span class="delimiter">]</span> <span class="delimiter">{</span>
+    <span class="keyword">lazy</span> <span class="keyword">val</span> <a title="Some[cc.spray.typeconversion.package.FromStringOptionDeserializer[A]]" id="88579">urlEncodedFieldConverter</a> = <span title="(x: cc.spray.typeconversion.package.FromStringOptionDeserializer[A])Some[cc.spray.typeconversion.package.FromStringOptionDeserializer[A]]">Some</span><span class="delimiter">(</span><a href="package.scala.html#10073" title="[T](implicit ds: cc.spray.typeconversion.package.FromStringOptionDeserializer[T])cc.spray.typeconversion.package.FromStringOptionDeserializer[T]">fromStringOptionDeserializer</a><a href="#88573" title="(implicit ds: cc.spray.typeconversion.package.FromStringOptionDeserializer[A])cc.spray.typeconversion.package.FromStringOptionDeserializer[A]" class="delimiter">[</a><a href="#88511" title="A">A</a><span class="delimiter">]</span><span class="delimiter">)</span>
+    <span class="keyword">def</span> <a title="=&gt; None.type" id="88580">multipartFieldConverter</a> = <span title="object None">None</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">implicit</span> <span class="keyword">def</span> <a title="[A](implicit evidence$4: cc.spray.typeconversion.package.Unmarshaller[A])java.lang.Object with cc.spray.typeconversion.FormFieldConverter[A]{def urlEncodedFieldConverter: None.type; lazy val multipartFieldConverter: Some[cc.spray.typeconversion.package.Unmarshaller[A]]}" id="88607">multiPartFormFieldConverter</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="88514">A</a> :Unmarshaller<span class="delimiter">]</span> = <a href="#88610" title="java.lang.Object with cc.spray.typeconversion.FormFieldConverter[A]{}" class="keyword">new</a> <a title="anonymous class $anon extends java.lang.Object with cc.spray.typeconversion.FormFieldConverter[A]" id="88610">FormFieldConverter</a><span class="delimiter">[</span>A<span class="delimiter">]</span> <span class="delimiter">{</span>
+    <span class="keyword">def</span> <a title="=&gt; None.type" id="88612">urlEncodedFieldConverter</a> = <span title="object None">None</span>
+    <span class="keyword">lazy</span> <span class="keyword">val</span> <a title="Some[cc.spray.typeconversion.package.Unmarshaller[A]]" id="88614">multipartFieldConverter</a> = <span title="(x: cc.spray.typeconversion.package.Unmarshaller[A])Some[cc.spray.typeconversion.package.Unmarshaller[A]]">Some</span><span class="delimiter">(</span><a href="package.scala.html#10065" title="[T](implicit um: cc.spray.typeconversion.package.Unmarshaller[T])cc.spray.typeconversion.package.Unmarshaller[T]">unmarshaller</a><a href="#88607" title="(implicit um: cc.spray.typeconversion.package.Unmarshaller[A])cc.spray.typeconversion.package.Unmarshaller[A]" class="delimiter">[</a><a href="#88514" title="A">A</a><span class="delimiter">]</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">implicit</span> <span class="keyword">def</span> <a title="[A](implicit ffc: cc.spray.typeconversion.FormFieldConverter[A])java.lang.Object with cc.spray.typeconversion.FormFieldConverter[Option[A]]" id="88515">liftToTargetOption</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="88517">A</a><span class="delimiter">]</span><span class="delimiter">(</span><span class="keyword">implicit</span> <a title="cc.spray.typeconversion.FormFieldConverter[A]" id="88652">ffc</a>: <a href="#9891" title="cc.spray.typeconversion.FormFieldConverter[A]">FormFieldConverter</a><span class="delimiter">[</span>A<span class="delimiter">]</span><span class="delimiter">)</span> = <span class="delimiter">{</span>
+    <a href="#88655" title="java.lang.Object with cc.spray.typeconversion.FormFieldConverter[Option[A]]{}" class="keyword">new</a> <a title="anonymous class $anon extends java.lang.Object with cc.spray.typeconversion.FormFieldConverter[Option[A]]" id="88655">FormFieldConverter</a><span class="delimiter">[</span>Option<span class="delimiter">[</span>A<span class="delimiter">]</span><span class="delimiter">]</span> <span class="delimiter">{</span>
+      <span class="keyword">lazy</span> <span class="keyword">val</span> <a title="Option[java.lang.Object with cc.spray.typeconversion.Deserializer[Option[String],Option[A]]]" id="88658">urlEncodedFieldConverter</a> = <a href="#88652" title="cc.spray.typeconversion.FormFieldConverter[A]">ffc</a>.<a href="#40765" title="=&gt; Option[cc.spray.typeconversion.package.FromStringOptionDeserializer[A]]">urlEncodedFieldConverter</a>.<span title="(f: cc.spray.typeconversion.package.FromStringOptionDeserializer[A] =&gt; java.lang.Object with cc.spray.typeconversion.Deserializer[Option[String],Option[A]])Option[java.lang.Object with cc.spray.typeconversion.Deserializer[Option[String],Option[A]]]">map</span><span class="delimiter">(</span><a href="Deserializer.scala.html#9876" title="object cc.spray.typeconversion.Deserializer">Deserializer</a>.<a href="Deserializer.scala.html#39092" title="(implicit converter: cc.spray.typeconversion.Deserializer[Option[String],A])java.lang.Object with cc.spray.typeconversion.Deserializer[Option[String],Option[A]]">liftToTargetOption</a><span class="delimiter">(</span><a href="#88665" title="cc.spray.typeconversion.package.FromStringOptionDeserializer[A]">_</a><span class="delimiter">)</span><span class="delimiter">)</span>
+      <span class="keyword">lazy</span> <span class="keyword">val</span> <a title="Option[java.lang.Object with cc.spray.typeconversion.Deserializer[Option[cc.spray.http.HttpContent],Option[A]]]" id="88660">multipartFieldConverter</a> = <a href="#88652" title="cc.spray.typeconversion.FormFieldConverter[A]">ffc</a>.<a href="#40766" title="=&gt; Option[cc.spray.typeconversion.package.Unmarshaller[A]]">multipartFieldConverter</a>.<span title="(f: cc.spray.typeconversion.package.Unmarshaller[A] =&gt; java.lang.Object with cc.spray.typeconversion.Deserializer[Option[cc.spray.http.HttpContent],Option[A]])Option[java.lang.Object with cc.spray.typeconversion.Deserializer[Option[cc.spray.http.HttpContent],Option[A]]]">map</span><span class="delimiter">(</span><a href="Deserializer.scala.html#9876" title="object cc.spray.typeconversion.Deserializer">Deserializer</a>.<a href="Deserializer.scala.html#39092" title="(implicit converter: cc.spray.typeconversion.Deserializer[Option[cc.spray.http.HttpContent],A])java.lang.Object with cc.spray.typeconversion.Deserializer[Option[cc.spray.http.HttpContent],Option[A]]">liftToTargetOption</a><span class="delimiter">(</span><a href="#88679" title="cc.spray.typeconversion.package.Unmarshaller[A]">_</a><span class="delimiter">)</span><span class="delimiter">)</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+<span class="delimiter">}</span>
+
+
+
+
+
+
+
+
+
+
+
+        </pre>
+    </body>
+</html>

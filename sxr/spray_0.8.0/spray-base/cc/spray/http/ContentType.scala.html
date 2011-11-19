@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/http/ContentType.scala</title>
+        <script type="text/javascript" src="../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray.http
+
+<span class="keyword">import</span> <a href="HttpCharset.scala.html#9553" title="object cc.spray.http.HttpCharsets">HttpCharsets</a>._
+
+case <span class="keyword">class</span> <a title="class ContentTypeRange extends java.lang.Object with ScalaObject with Product with Serializable" id="30191">ContentTypeRange</a><a href="#30191" title="ScalaObject" class="delimiter">(</a><a title="cc.spray.http.MediaRange" id="30183">mediaRange</a>: <a href="MediaType.scala.html#9661" title="cc.spray.http.MediaRange">MediaRange</a>, <a title="cc.spray.http.HttpCharsetRange" id="30188">charsetRange</a>: <a href="HttpCharset.scala.html#9551" title="cc.spray.http.HttpCharsetRange">HttpCharsetRange</a> = <a href="HttpCharset.scala.html#24892" title="=&gt; cc.spray.http.HttpCharsetRange">`*`</a><span class="delimiter">)</span> <span class="delimiter">{</span>
+  <span class="keyword">def</span> <a title="=&gt; String" id="29919">value</a>: <span title="String">String</span> = <span title="String" class="keyword">if</span> <span class="delimiter">(</span><a href="#30188" title="=&gt; cc.spray.http.HttpCharsetRange">charsetRange</a> <span title="(x$1: AnyRef)Boolean">==</span> <a href="HttpCharset.scala.html#24892" title="=&gt; cc.spray.http.HttpCharsetRange">`*`</a><span class="delimiter">)</span> <a href="#30183" title="=&gt; cc.spray.http.MediaRange">mediaRange</a>.<a href="MediaType.scala.html#25306" title="=&gt; java.lang.String">value</a> <span class="keyword">else</span> <span class="delimiter">{</span>
+    <a href="#30183" title="=&gt; cc.spray.http.MediaRange">mediaRange</a>.<a href="MediaType.scala.html#25306" title="=&gt; java.lang.String">value</a> <span title="(x$1: Any)java.lang.String">+</span> <span title="java.lang.String(&quot;; charset=&quot;)" class="string">&quot;; charset=&quot;</span> <span title="(x$1: Any)java.lang.String">+</span> <a href="#30188" title="=&gt; cc.spray.http.HttpCharsetRange">charsetRange</a>.<a href="HttpCharset.scala.html#29927" title="=&gt; String">value</a>
+  <span class="delimiter">}</span>
+  <span class="keyword">def</span> <a title="(contentType: cc.spray.http.ContentType)Boolean" id="29920">matches</a><span class="delimiter">(</span><a title="cc.spray.http.ContentType" id="29972">contentType</a>: <a href="#25289" title="cc.spray.http.ContentType">ContentType</a><span class="delimiter">)</span> = <span class="delimiter">{</span>
+    <a href="#30183" title="=&gt; cc.spray.http.MediaRange">mediaRange</a>.<a href="MediaType.scala.html#25309" title="(mediaType: cc.spray.http.MediaType)Boolean">matches</a><span class="delimiter">(</span><a href="#29972" title="cc.spray.http.ContentType">contentType</a>.<a href="#25293" title="=&gt; cc.spray.http.MediaType">mediaType</a><span class="delimiter">)</span> <span title="(x: Boolean)Boolean">&amp;&amp;</span>
+            <span class="delimiter">(</span><a href="#30188" title="=&gt; cc.spray.http.HttpCharsetRange">charsetRange</a> <span title="(x$1: AnyRef)Boolean">==</span> <a href="HttpCharset.scala.html#24892" title="=&gt; cc.spray.http.HttpCharsetRange">`*`</a> <span title="(x: Boolean)Boolean">||</span> <a href="#29972" title="cc.spray.http.ContentType">contentType</a>.<a href="#25294" title="=&gt; Option[cc.spray.http.HttpCharset]">charset</a>.<span title="(f: cc.spray.http.HttpCharset =&gt; Boolean)Option[Boolean]">map</span><span class="delimiter">(</span><a href="#30188" title="=&gt; cc.spray.http.HttpCharsetRange">charsetRange</a>.<a href="HttpCharset.scala.html#29928" title="(charset: cc.spray.http.HttpCharset)Boolean">matches</a><span class="delimiter">(</span><a href="#29985" title="cc.spray.http.HttpCharset">_</a><span class="delimiter">)</span><span class="delimiter">)</span>.<span title="(default: =&gt; Boolean)Boolean">getOrElse</span><span class="delimiter">(</span><span title="Boolean(false)" class="keyword">false</span><span class="delimiter">)</span><span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+  
+  <span class="keyword">override</span> <span class="keyword">def</span> <a title="()java.lang.String" id="29921">toString</a> = <span title="java.lang.String(&quot;ContentTypeRange(&quot;)" class="string">&quot;ContentTypeRange(&quot;</span> <span title="(x$1: Any)java.lang.String">+</span> <a href="#29919" title="=&gt; String">value</a> <span title="(x$1: Any)java.lang.String">+</span> <span title="Char(\')\')" class="char">')'</span>
+<span class="delimiter">}</span>
+
+case <span class="keyword">class</span> <a title="class ContentType extends java.lang.Object with ScalaObject with Product with Serializable" id="25289">ContentType</a><a href="#25289" title="ScalaObject" class="delimiter">(</a><a title="cc.spray.http.MediaType" id="25293">mediaType</a>: <a href="MediaType.scala.html#9664" title="cc.spray.http.MediaType">MediaType</a>, <a title="Option[cc.spray.http.HttpCharset]" id="25294">charset</a>: <span title="Option[cc.spray.http.HttpCharset]">Option</span><span class="delimiter">[</span>HttpCharset<span class="delimiter">]</span><span class="delimiter">)</span> <span class="delimiter">{</span>
+  <span class="keyword">def</span> <a title="=&gt; String" id="25276">value</a>: <span title="String">String</span> = <a href="#25294" title="=&gt; Option[cc.spray.http.HttpCharset]">charset</a> <span title="String" class="keyword">match</span> <span class="delimiter">{</span>
+    <span class="comment">// don't print the charset parameter if it's the default charset</span>
+    <span class="keyword">case</span> <span title="java.lang.String">Some</span><span class="delimiter">(</span><a title="cc.spray.http.HttpCharset" id="30056">cs</a><span class="delimiter">)</span> <span class="keyword">if</span> <span class="delimiter">(</span><span title="=&gt; Boolean">!</span><a href="#25293" title="=&gt; cc.spray.http.MediaType">mediaType</a>.<a href="MediaType.scala.html#25315" title="=&gt; Boolean">isText</a> <span title="(x: Boolean)Boolean">||</span> <a href="#30056" title="cc.spray.http.HttpCharset">cs</a> <span title="(x$1: AnyRef)Boolean">!=</span> <a href="HttpCharset.scala.html#24897" title="=&gt; cc.spray.http.HttpCharset">`ISO-8859-1`</a><span class="delimiter">)</span>=&gt; <a href="#25293" title="=&gt; cc.spray.http.MediaType">mediaType</a>.<a href="MediaType.scala.html#25319" title="=&gt; java.lang.String">value</a> <span title="(x$1: Any)java.lang.String">+</span> <span title="java.lang.String(&quot;; charset=&quot;)" class="string">&quot;; charset=&quot;</span> <span title="(x$1: Any)java.lang.String">+</span> <a href="#30056" title="cc.spray.http.HttpCharset">cs</a>.<a href="HttpCharset.scala.html#29927" title="=&gt; String">value</a>
+    <span class="keyword">case</span> <span title="java.lang.String">_</span> =&gt; <a href="#25293" title="=&gt; cc.spray.http.MediaType">mediaType</a>.<a href="MediaType.scala.html#25319" title="=&gt; java.lang.String">value</a>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">override</span> <span class="keyword">def</span> <a title="(obj: Any)Boolean" id="25277">equals</a><span class="delimiter">(</span><a title="Any" id="30088">obj</a>: <span title="Any">Any</span><span class="delimiter">)</span> = <a href="#30088" title="Any">obj</a> <span title="Boolean" class="keyword">match</span> <span class="delimiter">{</span>
+    <span class="keyword">case</span> <a title="Boolean" id="30091">x</a>: <a href="#25289" title="cc.spray.http.ContentType">ContentType</a> =&gt; <a href="#25293" title="=&gt; cc.spray.http.MediaType">mediaType</a> <span title="(x$1: AnyRef)Boolean">==</span> <a href="#30091" title="cc.spray.http.ContentType">x</a>.<a href="#25293" title="=&gt; cc.spray.http.MediaType">mediaType</a> <span title="(x: Boolean)Boolean">&amp;&amp;</span> <a href="#25294" title="=&gt; Option[cc.spray.http.HttpCharset]">charset</a> <span title="(x$1: AnyRef)Boolean">==</span> <a href="#30091" title="cc.spray.http.ContentType">x</a>.<a href="#25294" title="=&gt; Option[cc.spray.http.HttpCharset]">charset</a>
+    <span class="keyword">case</span> <span title="Boolean(false)">_</span> =&gt; <span title="Boolean(false)" class="keyword">false</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">def</span> <a title="(charset: cc.spray.http.HttpCharset)cc.spray.http.ContentType" id="25278">withCharset</a><span class="delimiter">(</span><a title="cc.spray.http.HttpCharset" id="30100">charset</a>: <a href="HttpCharset.scala.html#9552" title="cc.spray.http.HttpCharset">HttpCharset</a><span class="delimiter">)</span> = <a href="#25293" title="cc.spray.http.MediaType" id="30115">copy</a><span class="delimiter">(</span>charset = <span title="(x: cc.spray.http.HttpCharset)Some[cc.spray.http.HttpCharset]">Some</span><a title="Some[cc.spray.http.HttpCharset]" id="30114" class="delimiter">(</a><a href="#30100" title="cc.spray.http.HttpCharset">charset</a><span class="delimiter">)</span><span class="delimiter">)</span>
+<span class="delimiter">}</span>
+
+<span class="keyword">object</span> <a title="object cc.spray.http.ContentType" id="30177">ContentType</a> <span title="ScalaObject" class="delimiter">{</span>
+  <span class="keyword">def</span> <a title="(mediaType: cc.spray.http.MediaType, charset: cc.spray.http.HttpCharset)cc.spray.http.ContentType" id="25286">apply</a><span class="delimiter">(</span><a title="cc.spray.http.MediaType" id="25298">mediaType</a>: <a href="MediaType.scala.html#9664" title="cc.spray.http.MediaType">MediaType</a>, <a title="cc.spray.http.HttpCharset" id="25299">charset</a>: <a href="HttpCharset.scala.html#9552" title="cc.spray.http.HttpCharset">HttpCharset</a><span class="delimiter">)</span>: <a href="#25289" title="cc.spray.http.ContentType">ContentType</a> = <a href="#25289" title="(mediaType: cc.spray.http.MediaType, charset: Option[cc.spray.http.HttpCharset])cc.spray.http.ContentType">apply</a><span class="delimiter">(</span><a href="#25298" title="cc.spray.http.MediaType">mediaType</a>, <span title="(x: cc.spray.http.HttpCharset)Some[cc.spray.http.HttpCharset]">Some</span><span class="delimiter">(</span><a href="#25299" title="cc.spray.http.HttpCharset">charset</a><span class="delimiter">)</span><span class="delimiter">)</span>
+  <span class="keyword">def</span> <a title="(mediaType: cc.spray.http.MediaType)cc.spray.http.ContentType" id="25287">apply</a><span class="delimiter">(</span><a title="cc.spray.http.MediaType" id="25296">mediaType</a>: <a href="MediaType.scala.html#9664" title="cc.spray.http.MediaType">MediaType</a><span class="delimiter">)</span>: <a href="#25289" title="cc.spray.http.ContentType">ContentType</a> = <a href="#25289" title="(mediaType: cc.spray.http.MediaType, charset: Option[cc.spray.http.HttpCharset])cc.spray.http.ContentType">apply</a><span class="delimiter">(</span><a href="#25296" title="cc.spray.http.MediaType">mediaType</a>, <span title="object None">None</span><span class="delimiter">)</span>
+  
+  <span class="keyword">implicit</span> <span class="keyword">def</span> <a title="implicit cc.spray.http.ContentType.fromMimeType : (mimeType: cc.spray.http.MediaType)cc.spray.http.ContentType" id="25288">fromMimeType</a><span class="delimiter">(</span><a title="cc.spray.http.MediaType" id="30135">mimeType</a>: <a href="MediaType.scala.html#9664" title="cc.spray.http.MediaType">MediaType</a><span class="delimiter">)</span>: <a href="#25289" title="cc.spray.http.ContentType">ContentType</a> = <a href="#25287" title="(mediaType: cc.spray.http.MediaType)cc.spray.http.ContentType">apply</a><span class="delimiter">(</span><a href="#30135" title="cc.spray.http.MediaType">mimeType</a><span class="delimiter">)</span> 
+<span class="delimiter">}</span>                     
+        </pre>
+    </body>
+</html>

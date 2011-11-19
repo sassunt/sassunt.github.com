@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>cc/spray/SprayCanSupport.scala</title>
+        <script type="text/javascript" src="../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="comment">/*
+ * Copyright (C) 2011 Mathias Doenitz
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+
+<span class="keyword">package</span> cc.spray
+
+<span class="keyword">import</span> http._
+<span class="keyword">import</span> java.net.InetAddress
+
+<span class="keyword">trait</span> <a title="trait SprayCanSupport extends java.lang.Object with cc.spray.SprayCanConversions with ScalaObject" id="9645">SprayCanSupport</a> <span title="ScalaObject" class="keyword">extends</span> <span title="cc.spray.SprayCanConversions">SprayCanConversions</span> <span class="delimiter">{</span>
+
+  <span class="keyword">protected</span> <span class="keyword">def</span> <a title="(request: cc.spray.can.HttpRequest, remoteAddress: java.net.InetAddress, responder: cc.spray.can.HttpResponse =&gt; Unit)cc.spray.RequestContext" id="36248">fromSprayCanContext</a><span class="delimiter">(</span><a title="cc.spray.can.HttpRequest" id="37289">request</a>: can.<span title="cc.spray.can.HttpRequest">HttpRequest</span>, <a title="java.net.InetAddress" id="37290">remoteAddress</a>: <span title="java.net.InetAddress">InetAddress</span>,
+                                    <a title="cc.spray.can.HttpResponse =&gt; Unit" id="37291">responder</a>: can.HttpResponse =&gt; Unit<span class="delimiter">)</span> = <span class="delimiter">{</span>
+    <a href="RequestContext.scala.html#33294" title="(request: cc.spray.http.HttpRequest, remoteHost: cc.spray.http.HttpIp, responder: cc.spray.RoutingResult =&gt; Unit, unmatchedPath: String)cc.spray.RequestContext">RequestContext</a><span class="delimiter">(</span>
+      request = <a href="#9645" title="(request: cc.spray.can.HttpRequest)cc.spray.http.HttpRequest">fromSprayCanRequest</a><span class="delimiter">(</span><a href="#37289" title="cc.spray.can.HttpRequest">request</a><span class="delimiter">)</span>,
+      remoteHost = <span title="(ip: java.net.InetAddress)cc.spray.http.HttpIp">HttpIp</span><span class="delimiter">(</span><a href="#37290" title="java.net.InetAddress">remoteAddress</a><span class="delimiter">)</span>,
+      responder = <a href="#36249" title="(responder: cc.spray.can.HttpResponse =&gt; Unit)(routingResult: cc.spray.RoutingResult)Unit">fromSprayCanResponder</a><a href="#37541" title="cc.spray.RoutingResult" class="delimiter">(</a><a href="#37291" title="cc.spray.can.HttpResponse =&gt; Unit">responder</a><span class="delimiter">)</span>
+    <span class="delimiter">)</span>
+  <span class="delimiter">}</span>
+
+  <span class="keyword">protected</span> <span class="keyword">def</span> <a title="(responder: cc.spray.can.HttpResponse =&gt; Unit)(routingResult: cc.spray.RoutingResult)Unit" id="36249">fromSprayCanResponder</a><span class="delimiter">(</span><a title="cc.spray.can.HttpResponse =&gt; Unit" id="37537">responder</a>: can.HttpResponse =&gt; Unit<span class="delimiter">)</span><span class="delimiter">(</span><a title="cc.spray.RoutingResult" id="37538">routingResult</a>: <a href="RoutingResult.scala.html#9621" title="cc.spray.RoutingResult">RoutingResult</a><span class="delimiter">)</span> <span class="delimiter">{</span>
+    <a href="#37538" title="cc.spray.RoutingResult">routingResult</a> <span title="Unit" class="keyword">match</span> <span class="delimiter">{</span>
+      <span class="keyword">case</span> <span title="Unit">Respond</span><span class="delimiter">(</span><a title="cc.spray.http.HttpResponse" id="37666">response</a><span class="delimiter">)</span> =&gt; <a href="#37537" title="(v1: cc.spray.can.HttpResponse)Unit">responder</a><span class="delimiter">(</span><a href="#9645" title="(response: cc.spray.http.HttpResponse)cc.spray.can.HttpResponse">toSprayCanResponse</a><span class="delimiter">(</span><a href="#37666" title="cc.spray.http.HttpResponse">response</a><span class="delimiter">)</span><span class="delimiter">)</span>
+      <span class="keyword">case</span> <span title="Nothing">_</span>: <a href="RoutingResult.scala.html#9627" title="cc.spray.Reject">Reject</a> =&gt; <span title="Nothing" class="keyword">throw</span> <span title="java.lang.IllegalStateException" class="keyword">new</span> <span title="java.lang.IllegalStateException">IllegalStateException</span>
+    <span class="delimiter">}</span>
+  <span class="delimiter">}</span>
+
+<span class="delimiter">}</span>
+
+        </pre>
+    </body>
+</html>
